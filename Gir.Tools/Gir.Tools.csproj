@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netcoreapp2.1</TargetFramework>
+        <OutputType>Exe</OutputType>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <PackAsTool>true</PackAsTool>
+        <ToolCommandName>gapi gir gtk</ToolCommandName>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Gir.CodeGen\Gir.CodeGen.csproj" />
+    </ItemGroup>
+
+</Project>

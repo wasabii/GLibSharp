@@ -1,0 +1,39 @@
+﻿<Project>
+
+    <UsingTask TaskName="Gir.Sdk.Build" AssemblyFile="$(_GirSdkTaskAssembly)" />
+
+    <PropertyGroup>
+        <EnableDefaultGirItems Condition=" '$(EnableDefaultGirItems)' == '' ">true</EnableDefaultGirItems>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <CoreCompileDependsOn>
+            GenerateGir;
+            $(CoreCompileDependsOn)
+        </CoreCompileDependsOn>
+    </PropertyGroup>
+
+    <Target Name="ResolveGirReferences" DependsOnTargets="ResolveAssemblyReferences">
+        <ItemGroup>
+            <_GirRepositories Remove="@(_GirRepositories)" />
+            <_GirRepositories Include="@(GirReference->'%(HintPath)')" />
+            <_GirNamespaces Remove="@(_GirNamespaces)" />
+            <_GirNamespaces Include="@(GirReference)" />
+        </ItemGroup>
+    </Target>
+
+    <Target Name="GenerateGir" Inputs="@(_GirRepositories)" Outputs="$(IntermediateOutputPath)gir.g.cs" DependsOnTargets="ResolveAssemblyReferences;ResolveGirReferences">
+        <Gir.Sdk.Build
+            Lang="$(Lang)"
+            LangVersion="$(LangVersion)"
+            BuildingModules="@(_ResolveAssemblyReferenceResolvedFiles)"
+            Repositories="@(_GirRepositories)"
+            Namespaces="@(_GirNamespaces)"
+            Output="$(IntermediateOutputPath)gir.g.cs" />
+        <ItemGroup>
+            <Compile Include="$(IntermediateOutputPath)gir.g.cs" />
+            <FileWrites Include="$(IntermediateOutputPath)gir.g.cs" />
+        </ItemGroup>
+    </Target>
+
+</Project>
