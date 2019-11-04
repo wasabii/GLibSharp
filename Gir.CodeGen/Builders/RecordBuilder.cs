@@ -33,7 +33,7 @@ namespace Gir.CodeGen
 
         string GetName(IContext context, RecordSymbol symbol)
         {
-            return 
+            return symbol.Name.Name;
         }
 
         IEnumerable<string> GetTypeParameters(IContext context, RecordSymbol symbol)
