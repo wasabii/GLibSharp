@@ -10,15 +10,12 @@ namespace Gir.Xml
 
         public static new IEnumerable<Constructor> LoadFrom(XContainer container)
         {
-            return CallableWithSignature.LoadFrom(container).OfType<Constructor>();
+            return container.Elements().Select(i => Load(i)).OfType<Constructor>();
         }
 
         public static new Constructor Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "constructor")
-                return Populate(new Constructor(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "constructor" ? Populate(new Constructor(), element) : null;
         }
 
         public static Constructor Populate(Constructor target, XElement element)

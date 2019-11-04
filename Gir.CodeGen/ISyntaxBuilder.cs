@@ -3,7 +3,7 @@
 namespace Gir.CodeGen
 {
 
-    public interface IRepositoryBuilder
+    public interface ISyntaxBuilder
     {
 
         /// <summary>
@@ -11,15 +11,14 @@ namespace Gir.CodeGen
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        IRepositoryBuilder AddSource(IRepositoryXmlSource source);
+        ISyntaxBuilder AddSymbols(ISymbolSource source);
 
         /// <summary>
         /// Adds a namespace to be built.
         /// </summary>
         /// <param name="name"></param>
-        /// <param name="version"></param>
         /// <returns></returns>
-        IRepositoryBuilder AddNamespace(string name, string version);
+        ISyntaxBuilder AddNamespace(string name);
 
         /// <summary>
         /// Initiates a build of the configured namespaces.

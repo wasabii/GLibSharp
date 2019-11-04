@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public abstract class Callable : IHasParameters, IHasReturnValue
+    public abstract class Callable : Element, IHasName, IHasParameters, IHasReturnValue
     {
 
         public static IEnumerable<Callable> LoadFrom(XContainer container)
@@ -20,10 +20,14 @@ namespace Gir.Xml
 
         public static Callable Populate(Callable target, XElement element)
         {
+            Element.Populate(target, element);
+            target.Name = (string)element.Attribute("name");
             target.Parameters = ParameterBase.LoadFrom(element).Cast<IParameter>().ToList();
             target.ReturnValue = ReturnValue.LoadFrom(element).FirstOrDefault();
             return target;
         }
+
+        public string Name { get; set; }
 
         public List<IParameter> Parameters { get; set; }
 

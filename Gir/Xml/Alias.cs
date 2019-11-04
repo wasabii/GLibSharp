@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Type's name substitution, representing a typedef in C.
     /// </summary>
-    public class Alias : IHasInfo
+    public class Alias : Element, IHasName, IHasInfo
     {
 
         public static IEnumerable<Alias> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static Alias Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "alias")
-                return Populate(new Alias(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "alias" ? Populate(new Alias(), element) : null;
         }
 
         public static Alias Populate(Alias target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

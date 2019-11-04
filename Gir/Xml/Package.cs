@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Package
+    public class Package : Element
     {
 
         public static IEnumerable<Package> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Package Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "package")
-                return Populate(new Package(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "package" ? Populate(new Package(), element) : null;
         }
 
         public static Package Populate(Package target, XElement element)
         {
+            Element.Populate(target, element);
             target.Name = (string)element.Attribute("name");
             return target;
         }

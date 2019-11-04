@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Xml.Linq;
 
 using Microsoft.CodeAnalysis;
@@ -9,27 +8,26 @@ namespace Gir.CodeGen
 {
 
     /// <summary>
-    /// Builds the syntax for class elements.
+    /// Builds the syntax for property elements.
     /// </summary>
-    class ClassProcessor : IProcessor
+    class PropertyProcessor : ISyntaxNodeBuilder
     {
 
         public IEnumerable<SyntaxNode> Build(IContext context, XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0 + "class")
-                yield return BuildClass(context, element);
+            if (element.Name == Xmlns.Core_1_0 + "property")
+                yield return BuildProperty(context, element);
         }
 
-        SyntaxNode BuildClass(IContext context, XElement element) =>
+        SyntaxNode BuildProperty(IContext context, XElement element) =>
             context.Syntax.AddAttributes(
-                context.Syntax.ClassDeclaration(
+                context.Syntax.PropertyDeclaration(
                     GetName(context, element),
-                    GetTypeParameters(context, element),
+                    GetType(context, element),
                     GetAccessibility(context, element),
                     GetModifiers(context, element),
-                    GetBaseType(context, element),
-                    GetInterfaceTypes(context, element),
-                    GetMembers(context, element)),
+                    GetGetAccessorStatements(context, element),
+                    GetSetAccessorStatements(context, element)),
                 GetAttributes(context, element))
             .NormalizeWhitespace();
 
@@ -47,9 +45,9 @@ namespace Gir.CodeGen
             return (string)element.Attribute("name");
         }
 
-        IEnumerable<string> GetTypeParameters(IContext context, XElement element)
+        SyntaxNode GetType(IContext context, XElement element)
         {
-            yield break;
+            return context.Syntax.IdentifierName("sometype");
         }
 
         Accessibility GetAccessibility(IContext context, XElement element)
@@ -65,21 +63,14 @@ namespace Gir.CodeGen
             return DeclarationModifiers.Partial;
         }
 
-        SyntaxNode? GetBaseType(IContext context, XElement element)
-        {
-            return default;
-        }
-
-        IEnumerable<SyntaxNode> GetInterfaceTypes(IContext context, XElement element)
+        IEnumerable<SyntaxNode> GetGetAccessorStatements(IContext context, XElement element)
         {
             yield break;
         }
 
-        IEnumerable<SyntaxNode> GetMembers(IContext context, XElement element)
+        IEnumerable<SyntaxNode> GetSetAccessorStatements(IContext context, XElement element)
         {
-            foreach (var i in element.Elements())
-                foreach (var j in context.Build(i))
-                    yield return j;
+            yield break;
         }
 
         public SyntaxNode Adjust(IContext context, XElement element, SyntaxNode initial)

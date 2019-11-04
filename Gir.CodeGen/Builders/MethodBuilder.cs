@@ -11,7 +11,7 @@ namespace Gir.CodeGen
     /// <summary>
     /// Builds the syntax for method elements.
     /// </summary>
-    class MethodProcessor : IProcessor
+    class MethodProcessor : ISyntaxNodeBuilder
     {
 
         public IEnumerable<SyntaxNode> Build(IContext context, XElement element)

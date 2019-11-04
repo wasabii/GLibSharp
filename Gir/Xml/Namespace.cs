@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Namespace
+    public class Namespace : Element
     {
 
         public static IEnumerable<Namespace> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Namespace Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "namespace")
-                return Populate(new Namespace(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "namespace" ? Populate(new Namespace(), element) : null;
         }
 
         public static Namespace Populate(Namespace target, XElement element)
         {
+            Element.Populate(target, element);
             target.Name = (string)element.Attribute("name");
             target.Version = (string)element.Attribute("version");
             target.CIdentifierPrefixes = XmlUtil.ParseStringList((string)element.Attribute(Xmlns.C_1_0_NS + "identifier-prefixes"));

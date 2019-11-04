@@ -28,7 +28,6 @@ namespace Gir.Xml
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();
-            target.Name = (string)element.Attribute("name");
             target.CIdentifier = (string)element.Attribute(Xmlns.C_1_0_NS + "identifier");
             target.ShadowedBy = (string)element.Attribute("shadowed-by");
             target.Shadows = (string)element.Attribute("shadows");
@@ -42,8 +41,6 @@ namespace Gir.Xml
         public Documentation Documentation { get; set; }
 
         public List<Annotation> Annotations { get; set; }
-
-        public string Name { get; set; }
 
         public string CIdentifier { get; set; }
 

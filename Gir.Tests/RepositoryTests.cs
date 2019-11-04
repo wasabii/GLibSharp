@@ -2,6 +2,8 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
+using Gir.Xml;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Gir.Tests

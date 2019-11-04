@@ -61,9 +61,9 @@ namespace Gir.Sdk
             var builder = provider.GetRequiredService<RepositoryBuilderFactory>().Create(syntax);
 
             // add repositories to be built
-            var repositories = new StaticRepositorySource();
+            var repositories = new SymbolXmlSource();
             foreach (var gir in Repositories)
-                repositories.Add(gir.GetMetadata("FullPath") ?? gir.ItemSpec);
+                repositories.Load(gir.GetMetadata("FullPath") ?? gir.ItemSpec);
             builder.AddSource(repositories);
 
             // add namespaces to be built

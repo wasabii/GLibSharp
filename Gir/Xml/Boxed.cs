@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Boxed type (wrapper to opaque C structures registered by the type system).
     /// </summary>
-    public class Boxed : IHasInfo
+    public class Boxed : Element, IHasInfo
     {
 
         public static IEnumerable<Boxed> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static Boxed Load(XElement element)
         {
-            if (element.Name == Xmlns.GLib_1_0_NS + "boxed")
-                return Populate(new Boxed(), element);
-
-            return null;
+            return element.Name == Xmlns.GLib_1_0_NS + "boxed" ? Populate(new Boxed(), element) : null;
         }
 
         public static Boxed Populate(Boxed target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

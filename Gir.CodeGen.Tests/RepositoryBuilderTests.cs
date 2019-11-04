@@ -30,10 +30,10 @@ namespace Gir.CodeGen.Tests
             var builder = provider.GetRequiredService<RepositoryBuilderFactory>().Create(syntax);
 
             // add repositories to be built
-            var repositories = new StaticRepositorySource();
-            repositories.Add("fontconfig-2.0.gir");
-            repositories.Add("GLib-2.0.gir");
-            repositories.Add("Gio-2.0.gir");
+            var repositories = new SymbolXmlSource();
+            repositories.Load("fontconfig-2.0.gir");
+            repositories.Load("GLib-2.0.gir");
+            repositories.Load("Gio-2.0.gir");
             builder.AddSource(repositories);
             builder.AddNamespace("GLib", "2.0");
             builder.AddNamespace("Gio", "2.0");

@@ -10,15 +10,12 @@ namespace Gir.Xml
 
         public static new IEnumerable<VirtualMethod> LoadFrom(XContainer container)
         {
-            return CallableWithSignature.LoadFrom(container).OfType<VirtualMethod>();
+            return container.Elements().Select(i => Load(i)).OfType<VirtualMethod>();
         }
 
         public static new VirtualMethod Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "virtual-method")
-                return Populate(new VirtualMethod(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "virtual-method" ? Populate(new VirtualMethod(), element) : null;
         }
 
         public static VirtualMethod Populate(VirtualMethod target, XElement element)

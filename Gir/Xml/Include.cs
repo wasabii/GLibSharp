@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Include
+    public class Include : Element
     {
 
         public static IEnumerable<Include> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Include Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "include")
-                return Populate(new Include(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "include" ? Populate(new Include(), element) : null;
         }
 
         public static Include Populate(Include target, XElement element)
         {
+            Element.Populate(target, element);
             target.Name = (string)element.Attribute("name");
             target.Version = (string)element.Attribute("version");
             return target;

@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Give the name of the interface it implements. This element is generally used within a class element.
     /// </summary>
-    public class Implements
+    public class Implements : Element
     {
 
         public static IEnumerable<Implements> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static Implements Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "implements")
-                return Populate(new Implements(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "implements" ? Populate(new Implements(), element) : null;
         }
 
         public static Implements Populate(Implements target, XElement element)
         {
+            Element.Populate(target, element);
             target.Name = (string)element.Attribute("name");
             return target;
         }

@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Element defining a bit field (as in C).
     /// </summary>
-    public class BitField : IHasInfo
+    public class BitField : Element, IHasName, IHasInfo
     {
 
         public static IEnumerable<BitField> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static BitField Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "bitfield")
-                return Populate(new BitField(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "bitfield" ? Populate(new BitField(), element) : null;
         }
 
         public static BitField Populate(BitField target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

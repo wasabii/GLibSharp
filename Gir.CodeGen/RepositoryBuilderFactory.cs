@@ -8,18 +8,18 @@ namespace Gir.CodeGen
     public class RepositoryBuilderFactory
     {
 
-        readonly Func<SyntaxGenerator, IRepositoryBuilder> builderFunc;
+        readonly Func<SyntaxGenerator, ISyntaxBuilder> builderFunc;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="builderFunc"></param>
-        public RepositoryBuilderFactory(Func<SyntaxGenerator, IRepositoryBuilder> builderFunc)
+        public RepositoryBuilderFactory(Func<SyntaxGenerator, ISyntaxBuilder> builderFunc)
         {
             this.builderFunc = builderFunc;
         }
 
-        public IRepositoryBuilder Create(SyntaxGenerator syntax)
+        public ISyntaxBuilder Create(SyntaxGenerator syntax)
         {
             return builderFunc(syntax);
         }

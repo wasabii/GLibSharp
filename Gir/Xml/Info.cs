@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System.Xml.Linq;
 
 namespace Gir.Xml
 {
@@ -15,23 +13,23 @@ namespace Gir.Xml
         {
             return new Info()
             {
-                Introspectable = (int?)element.Attribute("introspectable") != 0,
-                Deprecated = (int?)element.Attribute("introspectable") == 1,
+                Introspectable = element.Attribute("introspectable").ToBool(),
+                Deprecated = element.Attribute("deprecated").ToBool(),
                 DeprecatedVersion = (string)element.Attribute("deprecated-version"),
                 Version = (string)element.Attribute("version"),
-                Stability = XmlUtil.ParseEnum<Stability>((string)element.Attribute("stability")),
+                Stability = element.Attribute("stability").ToEnum<Stability>(),
             };
         }
 
         /// <summary>
         /// Binary attribute which is false if the element is not introspectable.
         /// </summary>
-        public bool Introspectable { get; set; }
+        public bool? Introspectable { get; set; }
 
         /// <summary>
         /// Binary attribute which is true if the element has been deprecated.
         /// </summary>
-        public bool Deprecated { get; set; }
+        public bool? Deprecated { get; set; }
 
         /// <summary>
         /// Version number from which this element is deprecated.

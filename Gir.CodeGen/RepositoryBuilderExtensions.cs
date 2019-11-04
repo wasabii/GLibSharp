@@ -7,7 +7,7 @@ namespace Gir.CodeGen
 {
 
     /// <summary>
-    /// Provides extension methods for usage with the <see cref="RepositoryBuilder"/>.
+    /// Provides extension methods for usage with the <see cref="SyntaxBuilder"/>.
     /// </summary>
     public static class RepositoryBuilderExtensions
     {
@@ -19,18 +19,13 @@ namespace Gir.CodeGen
         /// <returns></returns>
         public static IServiceCollection AddGirCodeGen(this IServiceCollection services)
         {
-            services.AddTransient<Func<SyntaxGenerator, IRepositoryBuilder>>(p => s => new RepositoryBuilder(s, p.GetServices<ISyntaxNodeGenerator>(), p.GetServices<IProcessor>()));
+            services.AddTransient<Func<SyntaxGenerator, ISyntaxBuilder>>(p => s => new SyntaxBuilder(s, p.GetServices<ISyntaxNodeBuilder>()));
             services.AddTransient<RepositoryBuilderFactory>();
 
-            // register available node generators
-            foreach (var t in typeof(RepositoryBuilder).Assembly.GetTypes())
-                if (t.IsClass && !t.IsAbstract && typeof(ISyntaxNodeGenerator).IsAssignableFrom(t))
-                    services.AddScoped(typeof(ISyntaxNodeGenerator), t);
-
-            // register available processors
-            foreach (var t in typeof(RepositoryBuilder).Assembly.GetTypes())
-                if (t.IsClass && !t.IsAbstract && typeof(IProcessor).IsAssignableFrom(t))
-                    services.AddScoped(typeof(IProcessor), t);
+            // register available builders
+            foreach (var t in typeof(SyntaxBuilder).Assembly.GetTypes())
+                if (t.IsClass && !t.IsAbstract && typeof(ISyntaxNodeBuilder).IsAssignableFrom(t))
+                    services.AddScoped(typeof(ISyntaxNodeBuilder), t);
 
             return services;
         }

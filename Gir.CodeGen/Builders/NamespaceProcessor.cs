@@ -10,7 +10,7 @@ namespace Gir.CodeGen
     /// <summary>
     /// Builds the syntax for namespace elements.
     /// </summary>
-    class NamespaceProcessor : IProcessor
+    class NamespaceProcessor : ISyntaxNodeBuilder
     {
 
         public IEnumerable<SyntaxNode> Build(IContext context, XElement element)

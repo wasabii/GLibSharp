@@ -6,13 +6,13 @@
 
         string Name { get; set; }
 
-        bool Nullable { get; set; }
+        bool? Nullable { get; set; }
 
-        bool AllowNone { get; set; }
+        bool? AllowNone { get; set; }
 
         ParameterDirection? Direction { get; set; }
 
-        bool CallerAllocates { get; set; }
+        bool? CallerAllocates { get; set; }
 
         TransferOwnership? TransferOwnership { get; set; }
 

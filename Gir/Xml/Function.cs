@@ -10,15 +10,12 @@ namespace Gir.Xml
 
         public static new IEnumerable<Function> LoadFrom(XContainer container)
         {
-            return CallableWithSignature.LoadFrom(container).OfType<Function>();
+            return container.Elements().Select(i => Load(i)).OfType<Function>();
         }
 
         public static new Function Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "function")
-                return Populate(new Function(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "function" ? Populate(new Function(), element) : null;
         }
 
         public static Function Populate(Function target, XElement element)

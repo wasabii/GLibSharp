@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Element defining an annotation from the source code, usually a user-defined annotation associated to a parameter or a return value.
     /// </summary>
-    public class Annotation
+    public class Annotation : Element
     {
 
         public static IEnumerable<Annotation> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static Annotation Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "attribute")
-                return Populate(new Annotation(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "attribute" ? Populate(new Annotation(), element) : null;
         }
 
         public static Annotation Populate(Annotation target, XElement element)
         {
+            Element.Populate(target, element);
             target.Name = (string)element.Attribute("name");
             target.Value = (string)element.Attribute("value");
             return target;

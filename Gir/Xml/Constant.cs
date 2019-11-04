@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Constant : IHasInfo
+    public class Constant : Element, IHasName, IHasInfo
     {
 
         public static IEnumerable<Constant> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Constant Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "constant")
-                return Populate(new Constant(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "constant" ? Populate(new Constant(), element) : null;
         }
 
         public static Constant Populate(Constant target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

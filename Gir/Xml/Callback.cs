@@ -10,15 +10,12 @@ namespace Gir.Xml
 
         public static new IEnumerable<Callback> LoadFrom(XContainer container)
         {
-            return Callable.LoadFrom(container).OfType<Callback>();
+            return container.Elements().Select(i => Load(i)).OfType<Callback>();
         }
 
         public static new Callback Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "callback")
-                return Populate(new Callback(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "callback" ? Populate(new Callback(), element) : null;
         }
 
         public static Callback Populate(Callback target, XElement element)
@@ -26,9 +23,8 @@ namespace Gir.Xml
             Callable.Populate(target, element);
             target.Documentation = Documentation.Load(element);
             target.Info = Info.Load(element);
-            target.Name = (string)element.Attribute("name");
             target.CType = (string)element.Attribute(Xmlns.C_1_0_NS + "type");
-            target.Throws = (int?)element.Attribute("throws") == 1;
+            target.Throws = element.Attribute("throws").ToBool();
             return target;
         }
 
@@ -38,11 +34,9 @@ namespace Gir.Xml
 
         public List<Annotation> Annotations { get; set; }
 
-        public string Name { get; set; }
-
         public string CType { get; set; }
 
-        public bool Throws { get; set; }
+        public bool? Throws { get; set; }
 
         public override string ToString()
         {

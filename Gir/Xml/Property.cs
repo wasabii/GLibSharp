@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Property : IHasInfo
+    public class Property : Element, IHasInfo
     {
 
         public static IEnumerable<Property> LoadFrom(XContainer container)
@@ -15,23 +15,21 @@ namespace Gir.Xml
 
         public static Property Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "property")
-                return Populate(new Property(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "property" ? Populate(new Property(), element) : null;
         }
 
         public static Property Populate(Property target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();
             target.Name = (string)element.Attribute("name");
-            target.Writable = (int?)element.Attribute("writable") == 1;
-            target.Readable = (int?)element.Attribute("readable") == 1;
-            target.Construct = (int?)element.Attribute("construct") == 1;
-            target.ConstructOnly = (int?)element.Attribute("construct-only") == 1;
-            target.TransferOwnership = XmlUtil.ParseEnum<TransferOwnership>((string)element.Attribute("transfer-ownership"));
+            target.Writable = element.Attribute("writable").ToBool();
+            target.Readable = element.Attribute("readable").ToBool();
+            target.Construct = element.Attribute("construct").ToBool();
+            target.ConstructOnly = element.Attribute("construct-only").ToBool();
+            target.TransferOwnership = element.Attribute("transfer-ownership").ToEnum<TransferOwnership>();
             target.Type = AnyType.LoadFrom(element).FirstOrDefault();
             return target;
         }
@@ -44,13 +42,13 @@ namespace Gir.Xml
 
         public string Name { get; set; }
 
-        public bool Writable { get; set; }
+        public bool? Writable { get; set; }
 
-        public bool Readable { get; set; }
+        public bool? Readable { get; set; }
 
-        public bool Construct { get; set; }
+        public bool? Construct { get; set; }
 
-        public bool ConstructOnly { get; set; }
+        public bool? ConstructOnly { get; set; }
 
         public TransferOwnership? TransferOwnership { get; set; }
 

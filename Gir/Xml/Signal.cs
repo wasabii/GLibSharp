@@ -10,15 +10,12 @@ namespace Gir.Xml
 
         public static new IEnumerable<Signal> LoadFrom(XContainer container)
         {
-            return Callable.LoadFrom(container).OfType<Signal>();
+            return container.Elements().Select(i => Load(i)).OfType<Signal>();
         }
 
         public static new Signal Load(XElement element)
         {
-            if (element.Name == Xmlns.GLib_1_0_NS + "signal")
-                return Populate(new Signal(), element);
-
-            return null;
+            return element.Name == Xmlns.GLib_1_0_NS + "signal" ? Populate(new Signal(), element) : null;
         }
 
         public static Signal Populate(Signal target, XElement element)
@@ -27,12 +24,11 @@ namespace Gir.Xml
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();
-            target.Name = (string)element.Attribute("name");
-            target.Detailed = (int?)element.Attribute("detailed") == 1;
-            target.When = XmlUtil.ParseEnum<When>((string)element.Attribute("when"));
-            target.Action = (int?)element.Attribute("action") == 1;
-            target.NoHooks = (int?)element.Attribute("no-hooks") == 1;
-            target.NoRecurse = (int?)element.Attribute("no-recurse") == 1;
+            target.Detailed = element.Attribute("detailed").ToBool();
+            target.When = element.Attribute("when").ToEnum<When>();
+            target.Action = element.Attribute("action").ToBool();
+            target.NoHooks = element.Attribute("no-hooks").ToBool();
+            target.NoRecurse = element.Attribute("no-recurse").ToBool();
             return target;
         }
 
@@ -42,17 +38,15 @@ namespace Gir.Xml
 
         public List<Annotation> Annotations { get; set; }
 
-        public string Name { get; set; }
-
-        public bool Detailed { get; set; }
+        public bool? Detailed { get; set; }
 
         public When? When { get; set; }
 
-        public bool Action { get; set; }
+        public bool? Action { get; set; }
 
-        public bool NoHooks { get; set; }
+        public bool? NoHooks { get; set; }
 
-        public bool NoRecurse { get; set; }
+        public bool? NoRecurse { get; set; }
 
         public override string ToString()
         {

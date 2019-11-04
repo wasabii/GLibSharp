@@ -8,7 +8,7 @@ namespace Gir.Xml
     /// <summary>
     /// Element defining a member of a bit field or an enumeration
     /// </summary>
-    public class Member : IHasInfo
+    public class Member : Element, IHasInfo
     {
 
         public static IEnumerable<Member> LoadFrom(XContainer container)
@@ -18,14 +18,12 @@ namespace Gir.Xml
 
         public static Member Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "member")
-                return Populate(new Member(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "member" ? Populate(new Member(), element) : null;
         }
 
         public static Member Populate(Member target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

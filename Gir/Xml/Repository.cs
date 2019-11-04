@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Repository
+    public class Repository : Element
     {
 
         public static IEnumerable<Repository> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Repository Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "repository")
-                return Populate(new Repository(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "repository" ? Populate(new Repository(), element) : null;
         }
 
         public static Repository Populate(Repository target, XElement element)
         {
+            Element.Populate(target, element);
             target.Version = (string)element.Attribute("version");
             target.CIdentifierPrefixes = XmlUtil.ParseStringList((string)element.Attribute(Xmlns.C_1_0_NS + "identifier-prefixes"));
             target.CSymbolPrefixes = XmlUtil.ParseStringList((string)element.Attribute(Xmlns.C_1_0_NS + "symbol-prefixes"));

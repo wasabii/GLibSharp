@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Interface : IHasInfo
+    public class Interface : Element, IHasName, IHasInfo
     { 
 
         public static IEnumerable<Interface> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Interface Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "interface")
-                return Populate(new Interface(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "interface" ? Populate(new Interface(), element) : null;
         }
 
         public static Interface Populate(Interface target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();

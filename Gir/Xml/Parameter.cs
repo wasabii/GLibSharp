@@ -15,10 +15,7 @@ namespace Gir.Xml
 
         public static new Parameter Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "parameter")
-                return Populate(new Parameter(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "parameter" ? Populate(new Parameter(), element) : null;
         }
 
         public static Parameter Populate(Parameter target, XElement element)
@@ -27,9 +24,9 @@ namespace Gir.Xml
             target.Introspectable = (int?)element.Attribute("introspectable") != 0;
             target.Closure = (int?)element.Attribute("closure");
             target.Destroy = (int?)element.Attribute("destroy");
-            target.Scope = XmlUtil.ParseEnum<ValueScope>((string)element.Attribute("scope"));
-            target.Optional = (int?)element.Attribute("optional") == 1;
-            target.Skip = (int?)element.Attribute("skip") == 1;
+            target.Scope = element.Attribute("scope").ToEnum<ValueScope>();
+            target.Optional = element.Attribute("optional").ToBool();
+            target.Skip = element.Attribute("skip").ToBool();
             target.Type = AnyType.LoadFrom(element).FirstOrDefault();
             target.VarArgs = element.Elements("varargs").Any();
             return target;
@@ -43,9 +40,9 @@ namespace Gir.Xml
 
         public ValueScope? Scope { get; set; }
 
-        public bool Optional { get; set; }
+        public bool? Optional { get; set; }
 
-        public bool Skip { get; set; }
+        public bool? Skip { get; set; }
 
         public AnyType Type { get; set; }
 

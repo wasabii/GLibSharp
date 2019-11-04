@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace Gir.Xml
 {
 
-    public class Enum : IHasInfo
+    public class Enum : Element, IHasName, IHasInfo
     {
 
         public static IEnumerable<Enum> LoadFrom(XContainer container)
@@ -15,14 +15,12 @@ namespace Gir.Xml
 
         public static Enum Load(XElement element)
         {
-            if (element.Name == Xmlns.Core_1_0_NS + "enum")
-                return Populate(new Enum(), element);
-
-            return null;
+            return element.Name == Xmlns.Core_1_0_NS + "enum" ? Populate(new Enum(), element) : null;
         }
 
         public static Enum Populate(Enum target, XElement element)
         {
+            Element.Populate(target, element);
             target.Info = Info.Load(element);
             target.Documentation = Documentation.Load(element);
             target.Annotations = Annotation.LoadFrom(element).ToList();
