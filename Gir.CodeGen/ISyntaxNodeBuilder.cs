@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+using Gir.Model;
+
 using Microsoft.CodeAnalysis;
 
 namespace Gir.CodeGen
@@ -15,18 +17,18 @@ namespace Gir.CodeGen
         /// Initiates a build for the given symbol.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="symbol"></param>
+        /// <param name="element"></param>
         /// <returns></returns>
-        IEnumerable<SyntaxNode> Build(IContext context, ISymbol symbol);
+        IEnumerable<SyntaxNode> Build(IContext context, Element element);
 
         /// <summary>
         /// Initiates an adjustment for the syntax node returned by the builder for the given symbol.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="symbol"></param>
+        /// <param name="element"></param>
         /// <param name="initial"></param>
         /// <returns></returns>
-        SyntaxNode Adjust(IContext context, ISymbol symbol, SyntaxNode initial);
+        SyntaxNode Adjust(IContext context, Element element, SyntaxNode initial);
 
     }
 

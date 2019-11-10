@@ -11,7 +11,7 @@ namespace Gir.CodeGen
         /// </summary>
         /// <param name="source"></param>
         /// <returns></returns>
-        ISyntaxBuilder AddSymbols(ISymbolSource source);
+        ISyntaxBuilder AddSource(IRepositorySource source);
 
         /// <summary>
         /// Adds a namespace to be built.

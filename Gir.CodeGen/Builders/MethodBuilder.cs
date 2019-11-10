@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
-
+using Gir.CodeGen.Builders;
+using Gir.Model;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 
@@ -11,64 +11,45 @@ namespace Gir.CodeGen
     /// <summary>
     /// Builds the syntax for method elements.
     /// </summary>
-    class MethodProcessor : ISyntaxNodeBuilder
+    class MethodBuilder : CallableWithSignatureBuilderBase<Method>
     {
 
-        public IEnumerable<SyntaxNode> Build(IContext context, XElement element)
+        protected override SyntaxNode BuildCallable(IContext context, Method method)
         {
-            if (element.Name == Xmlns.Core_1_0 + "method")
-                yield return BuildClass(context, element);
+            return BuildMethod(context, method);
         }
 
-        SyntaxNode BuildClass(IContext context, XElement element) =>
-            context.Syntax.MethodDeclaration(
-                GetName(context, element),
-                GetParameters(context, element),
-                GetTypeParameters(context, element),
-                GetReturnType(context, element),
-                GetAccessibility(context, element),
-                GetModifiers(context, element),
-                GetStatements(context, element))
+        protected virtual SyntaxNode BuildMethod(IContext context, Method method) =>
+            context.Syntax.AddAttributes(
+                context.Syntax.MethodDeclaration(
+                    GetName(context, method),
+                    BuildParameters(context, method),
+                    BuildTypeParameters(context, method),
+                    BuildReturnType(context, method),
+                    GetAccessibility(context, method),
+                    GetModifiers(context, method),
+                    BuildStatements(context, method)),
+                BuildAttributes(context, method))
             .NormalizeWhitespace();
 
-        string GetName(IContext context, XElement element)
+        protected override DeclarationModifiers GetModifiers(IContext context, Method symbol)
         {
-            return (string)element.Attribute(Xmlns.C_1_0 + "identifier");
+            return base.GetModifiers(context, symbol) | DeclarationModifiers.Sealed;
         }
 
-        IEnumerable<SyntaxNode> GetParameters(IContext context, XElement element)
+        protected override IEnumerable<SyntaxNode> BuildAttributes(IContext context, Method method)
         {
-            yield break;
+            foreach (var attr in base.BuildAttributes(context, method))
+                yield return attr;
+
+            yield return BuildMethodAttribute(context, method);
         }
 
-        IEnumerable<string> GetTypeParameters(IContext context, XElement element)
+        SyntaxNode BuildMethodAttribute(IContext context, Method method)
         {
-            yield break;
-        }
-
-        SyntaxNode? GetReturnType(IContext context, XElement element)
-        {
-            return null;
-        }
-
-        Accessibility GetAccessibility(IContext context, XElement element)
-        {
-            return Accessibility.Private;
-        }
-
-        DeclarationModifiers GetModifiers(IContext context, XElement element)
-        {
-            return DeclarationModifiers.None;
-        }
-
-        IEnumerable<SyntaxNode> GetStatements(IContext context, XElement element)
-        {
-            yield break;
-        }
-
-        public SyntaxNode Adjust(IContext context, XElement element, SyntaxNode initial)
-        {
-            return initial;
+            return context.Syntax.Attribute(
+                typeof(MethodAttribute).FullName,
+                context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(method.Name)));
         }
 
     }

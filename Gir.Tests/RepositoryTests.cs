@@ -2,7 +2,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 
-using Gir.Xml;
+using Gir.Model;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
