@@ -5,6 +5,9 @@ using Gir.Model;
 namespace Gir
 {
 
+    /// <summary>
+    /// Describes basic GObject information about an object.
+    /// </summary>
     public class InfoAttribute : Attribute
     {
 

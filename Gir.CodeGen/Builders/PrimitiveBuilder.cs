@@ -45,31 +45,35 @@ namespace Gir.CodeGen.Builders
 
         IEnumerable<SyntaxNode> BuildAttributeArguments(IContext context, Primitive primitive)
         {
-            var typeName = new GirTypeName(context.CurrentNamespace, primitive.Name);
-            var clrTypeInfo = context.ResolveClrTypeInfo(typeName);
-            if (clrTypeInfo == null)
+            var typeName = new TypeName(context.CurrentNamespace, primitive.Name);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            if (typeInfo == null)
                 yield break;
 
-            yield return BuildAttributeArgument(context, nameof(PrimitiveAttribute.Name), typeName.ToString());
-            yield return BuildAttributeArgument(context, nameof(PrimitiveAttribute.CType), primitive.CType);
-            yield return BuildAttributeArgument(context, nameof(PrimitiveAttribute.GLibTypeName), primitive.GLibTypeName);
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(typeName.ToString()));
+
+            var typeSpec = new TypeSpec(typeInfo);
+            var typeNode = typeSpec.GetClrTypeExpression(context.Syntax);
 
             // primitive is associated with a specific CLR type
-            if (clrTypeInfo.ClrTypeName != null)
+            if (typeNode != null)
+                yield return context.Syntax.AttributeArgument(context.Syntax.TypeOfExpression(typeNode));
+
+            if (primitive.CType != null)
                 yield return context.Syntax.AttributeArgument(
-                    nameof(PrimitiveAttribute.ClrType),
-                    context.Syntax.TypeOfExpression(context.Syntax.DottedName(clrTypeInfo.ClrTypeName)));
+                    nameof(PrimitiveAttribute.CType),
+                    context.Syntax.LiteralExpression(primitive.CType));
+
+            if (primitive.GLibTypeName != null)
+                yield return context.Syntax.AttributeArgument(
+                    nameof(PrimitiveAttribute.GLibTypeName),
+                    context.Syntax.LiteralExpression(primitive.GLibTypeName));
 
             // primitive is to be marshaled with a specific marshaler
-            if (clrTypeInfo.ClrMarshalerTypeName != null)
+            if (typeInfo.ClrMarshalerTypeExpression != null)
                 yield return context.Syntax.AttributeArgument(
                     nameof(PrimitiveAttribute.ClrMarshalerType),
-                    context.Syntax.TypeOfExpression(context.Syntax.DottedName(clrTypeInfo.ClrMarshalerTypeName)));
-        }
-
-        SyntaxNode BuildAttributeArgument(IContext context, string name, object value)
-        {
-            return context.Syntax.AttributeArgument(name, context.Syntax.LiteralExpression(value));
+                    context.Syntax.TypeOfExpression(typeSpec.GetClrMarshalerTypeExpression(context.Syntax)));
         }
 
     }

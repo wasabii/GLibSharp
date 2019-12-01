@@ -105,13 +105,25 @@ namespace Gir.CodeGen
         {
             if (info != null)
             {
-                yield return context.Syntax.Attribute(typeof(InfoAttribute).FullName,
-                    context.Syntax.AttributeArgument(nameof(InfoAttribute.Introspectable), context.Syntax.LiteralExpression(info.Introspectable)),
-                    context.Syntax.AttributeArgument(nameof(InfoAttribute.Stability), context.Syntax.LiteralExpression(info.Stability)));
+                yield return context.Syntax.Attribute(typeof(InfoAttribute).FullName, BuildInfoAttributeArguments(context, info));
 
                 if (info.Deprecated == true)
                     yield return context.Syntax.Attribute(typeof(ObsoleteAttribute).FullName);
             }
+        }
+
+        /// <summary>
+        /// Builds the set of attributes for the given annotation.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="annotations"></param>
+        /// <returns></returns>
+        protected virtual IEnumerable<SyntaxNode> BuildInfoAttributeArguments(IContext context, Info info)
+        {
+            if (info.Introspectable != null)
+                yield return context.Syntax.AttributeArgument(nameof(InfoAttribute.Introspectable), context.Syntax.LiteralExpression(info.Introspectable));
+            if (info.Stability != null)
+                yield return context.Syntax.AttributeArgument(nameof(InfoAttribute.Stability), context.Syntax.LiteralExpression(info.Stability));
         }
 
         /// <summary>

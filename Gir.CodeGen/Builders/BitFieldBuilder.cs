@@ -21,11 +21,23 @@ namespace Gir.CodeGen
 
         SyntaxNode BuildBitFieldAttribute(IContext context, BitField flag)
         {
-            return context.Syntax.Attribute(typeof(BitFieldAttribute).FullName,
-                context.Syntax.AttributeArgument(nameof(BitFieldAttribute.Name), context.Syntax.LiteralExpression(flag.Name)),
-                context.Syntax.AttributeArgument(nameof(BitFieldAttribute.CType), context.Syntax.LiteralExpression(flag.CType)),
-                context.Syntax.AttributeArgument(nameof(BitFieldAttribute.GLibGetType), context.Syntax.LiteralExpression(flag.GLibGetType)),
-                context.Syntax.AttributeArgument(nameof(BitFieldAttribute.GLibTypeName), context.Syntax.LiteralExpression(flag.GLibTypeName)));
+            return context.Syntax.Attribute(
+                typeof(BitFieldAttribute).FullName,
+                BuildBitFIeldAttributeArguments(context, flag));
+        }
+
+        IEnumerable<SyntaxNode> BuildBitFIeldAttributeArguments(IContext context, BitField flag)
+        {
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(flag.Name));
+
+            if (flag.CType != null)
+                yield return context.Syntax.AttributeArgument(nameof(BitFieldAttribute.CType), context.Syntax.LiteralExpression(flag.CType));
+
+            if (flag.GLibGetType != null)
+                yield return context.Syntax.AttributeArgument(nameof(BitFieldAttribute.GLibGetType), context.Syntax.LiteralExpression(flag.GLibGetType));
+
+            if (flag.GLibTypeName != null)
+                yield return context.Syntax.AttributeArgument(nameof(BitFieldAttribute.GLibTypeName), context.Syntax.LiteralExpression(flag.GLibTypeName));
         }
 
     }

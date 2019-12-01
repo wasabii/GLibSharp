@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+
+<repository
+    version="1.2"
+    xmlns="http://www.gtk.org/introspection/core/1.0"
+    xmlns:c="http://www.gtk.org/introspection/c/1.0"
+    xmlns:glib="http://www.gtk.org/introspection/glib/1.0"
+    xmlns:clr="http://www.gtk.org/introspection/clr/1.0">
+    <package name="test-1.0"/>
+    <c:include name="test.h"/>
+    <namespace
+        name="Test"
+        version="1.0"
+        shared-library="libtest-1.0.so.0,libtest-1.0.so.0"
+        c:identifier-prefixes="T"
+        c:symbol-prefixes="t,tlib">
+        <primitive name="int" clr:type="System.Int32" />
+        <class name="TestClass">
+            <method name="no_parameters_no_return">
+                <return-value transfer-ownership="none">
+                    <type name="none" />
+                </return-value>
+            </method>
+        </class>
+    </namespace>
+</repository>

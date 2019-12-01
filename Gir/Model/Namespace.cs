@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Xml.Linq;
 
 namespace Gir.Model
@@ -27,6 +28,7 @@ namespace Gir.Model
             target.CSymbolPrefixes = XmlUtil.ParseStringList((string)element.Attribute(Xmlns.C_1_0_NS + "symbol-prefixes"));
             target.CPrefix = (string)element.Attribute(Xmlns.C_1_0_NS + "prefix");
             target.SharedLibraries = XmlUtil.ParseStringList((string)element.Attribute("shared-library"));
+            target.ClrSharedLibrary = (string)element.Attribute(Xmlns.CLR_1_0_NS + "shared-library");
             target.Primitives = Primitive.LoadFrom(element).ToList();
             target.Aliases = Alias.LoadFrom(element).ToList();
             target.Classes = Class.LoadFrom(element).ToList();
@@ -54,6 +56,11 @@ namespace Gir.Model
         public string CPrefix { get; set; }
 
         public List<string> SharedLibraries { get; set; }
+
+        /// <summary>
+        /// Name of the library to specify for generated <see cref="DllImportAttribute"/> attributes.
+        /// </summary>
+        public string ClrSharedLibrary { get; set; }
 
         public List<Primitive> Primitives { get; set; }
 

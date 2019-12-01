@@ -31,7 +31,6 @@ namespace Gir.Model
             target.CIdentifier = (string)element.Attribute(Xmlns.C_1_0_NS + "identifier");
             target.ShadowedBy = (string)element.Attribute("shadowed-by");
             target.Shadows = (string)element.Attribute("shadows");
-            target.Throws = element.Attribute("throws").ToBool();
             target.MovedTo = (string)element.Attribute("moved-to");
             return target;
         }
@@ -47,8 +46,6 @@ namespace Gir.Model
         public string ShadowedBy { get; set; }
 
         public string Shadows { get; set; }
-
-        public bool? Throws { get; set; }
 
         public string MovedTo { get; set; }
 

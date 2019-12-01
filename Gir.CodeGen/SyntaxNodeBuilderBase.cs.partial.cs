@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using Gir.Model;
@@ -31,9 +32,19 @@ namespace Gir.CodeGen
             // apply documentation to the member
             if (doc?.Text != null)
             {
-                var s = doc.Text.Split('\n').Select(line => XmlTextLiteral(line)).ToList();
-                for (var i = 1; i < s.Count; i += 2)
-                    s.Insert(i, XmlTextNewLine("\n"));
+                var l = doc.Text.Split('\n');
+                var s = new List<SyntaxToken>(l.Length * 2 + 4);
+
+                s.Add(XmlTextNewLine("\n"));
+
+                foreach (var i in l)
+                {
+                    s.Add(XmlTextLiteral(" "));
+                    s.Add(XmlTextLiteral(i));
+                    s.Add(XmlTextNewLine("\n"));
+                }
+
+                s.Add(XmlTextLiteral(" "));
 
                 member = member.WithLeadingTrivia(
                     TriviaList(

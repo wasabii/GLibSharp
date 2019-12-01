@@ -21,7 +21,7 @@ namespace Gir.CodeGen
         readonly SyntaxBuilder builder;
         readonly SyntaxGenerator syntax;
         readonly IRepositoryProvider repositories;
-        readonly IClrTypeInfoProvider clrTypeInfo;
+        readonly ITypeInfoProvider clrTypeInfo;
         readonly ImmutableList<object> annotations;
 
         /// <summary>
@@ -38,7 +38,7 @@ namespace Gir.CodeGen
             SyntaxBuilder builder,
             SyntaxGenerator syntax,
             IRepositoryProvider repositories,
-            IClrTypeInfoProvider clrTypeInfo,
+            ITypeInfoProvider clrTypeInfo,
             ImmutableList<object> annotations)
         {
             this.defaultNamespace = defaultNamespace;
@@ -58,7 +58,7 @@ namespace Gir.CodeGen
 
         public SyntaxGenerator Syntax => syntax;
 
-        public IClrTypeInfoProvider ClrTypeInfo => clrTypeInfo;
+        public ITypeInfoProvider Types => clrTypeInfo;
 
         public T Annotation<T>() => annotations.OfType<T>().FirstOrDefault();
 

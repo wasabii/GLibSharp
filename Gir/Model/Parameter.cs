@@ -21,7 +21,7 @@ namespace Gir.Model
         public static Parameter Populate(Parameter target, XElement element)
         {
             ParameterBase.Populate(target, element);
-            target.Introspectable = (int?)element.Attribute("introspectable") != 0;
+            target.Introspectable = element.Attribute("introspectable").ToBool();
             target.Closure = (int?)element.Attribute("closure");
             target.Destroy = (int?)element.Attribute("destroy");
             target.Scope = element.Attribute("scope").ToEnum<ValueScope>();
@@ -32,7 +32,7 @@ namespace Gir.Model
             return target;
         }
 
-        public bool Introspectable { get; set; }
+        public bool? Introspectable { get; set; }
 
         public int? Closure { get; set; }
 

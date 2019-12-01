@@ -51,7 +51,12 @@ namespace Gir.CodeGen.Builders
                     throw new InvalidOperationException("Unsupported language.");
             }
 
-            var importName = ns.SharedLibraries.Count > 0 ? ns.SharedLibraries[0] : "unknown";
+            var importName = ns.ClrSharedLibrary;
+            if (importName == null && ns.SharedLibraries.Count > 0)
+                importName = ns.SharedLibraries[0];
+            if (importName == null)
+                throw new InvalidOperationException("Unable to determine DllImport name.");
+
             var entryPoint = callable.CIdentifier ?? callable.Name;
 
             // DllImport attribute for the function
@@ -99,14 +104,20 @@ namespace Gir.CodeGen.Builders
             if (returnTypeElement == null)
                 return null;
 
+            // void return
+            if (returnTypeElement.Name == "none")
+                return null;
+
             // resolve type
-            var returnType = BuildTypeReference(context, returnTypeElement);
+            var typeSpec = GetTypeSpec(context, returnTypeElement);
+            if (typeSpec == null)
+                throw new GirException("Unable to resolve type specification for return type.");
 
             // value allows nulls
             if (callable.ReturnValue.Nullable == true)
-                returnType = context.Syntax.NullableTypeExpression(returnType);
+                typeSpec = typeSpec.AsNullableType();
 
-            return returnType;
+            return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
         static IEnumerable<SyntaxNode> BuildNativeFunctionParameters(IContext context, Callable callable)
@@ -134,28 +145,23 @@ namespace Gir.CodeGen.Builders
             if (name == "...")
                 name = "args";
 
-            // resolve type name
-            var typeName = GetTypeName(context, parameter.Type);
-            if (typeName == null)
-                throw new GirException("Could not resolve type name for parameter.");
-
             // build type syntax
-            var typeNode = BuildTypeReference(context, parameter.Type);
-            if (typeNode == null)
-                throw new GirException("Could not build type reference for parameter.");
-
-            // parameter supports nullable types
-            if (parameter.Nullable == true)
-                typeNode = context.Syntax.NullableTypeExpression(typeNode);
+            var typeSpec = GetTypeSpec(context, parameter.Type);
+            if (typeSpec == null)
+                throw new GirException("Could not determine type specification for parameter.");
 
             // varargs takes specified type and converts to array
             if (parameter.VarArgs)
-                typeNode = context.Syntax.ArrayTypeExpression(typeNode);
+                typeSpec = typeSpec.AsArrayType();
+
+            // parameter supports nullable types
+            if (parameter.Nullable == true)
+                typeSpec = typeSpec.AsNullableType();
 
             // parameter declaration
             var decl = context.Syntax.ParameterDeclaration(
                 name,
-                typeNode,
+                typeSpec.GetClrTypeExpression(context.Syntax),
                 null,
                 GetNativeParameterRefKind(parameter));
 
@@ -167,7 +173,7 @@ namespace Gir.CodeGen.Builders
                     case Microsoft.CodeAnalysis.CSharp.Syntax.ParameterSyntax cs:
                         decl = cs.AddModifiers(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ParamsKeyword));
                         break;
-                    case Microsoft.CodeAnalysis.VisualBasic.Syntax.ParameterSyntax vb:
+                    case Microsoft.CodeAnalysis.VisualBasic.Syntax.ParameterSyntax _:
                     default:
                         throw new InvalidOperationException("Unsupported language.");
                 }
@@ -175,32 +181,32 @@ namespace Gir.CodeGen.Builders
 
             // apply attributes to the parameter
             decl = context.Syntax.AddAttributes(decl,
-                BuildNativeFunctionParameterAttributes(context, callable, parameter, (GirTypeName)typeName));
+                BuildNativeFunctionParameterAttributes(context, callable, parameter, typeSpec.TypeInfo.Name));
 
             yield return decl;
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, Callable callable, Parameter parameter, GirTypeName typeName)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, Callable callable, Parameter parameter, TypeName typeName)
         {
             if (BuildNativeFunctionParameterMarshalAsAttribute(context, callable, parameter, typeName) is SyntaxNode n)
                 yield return n;
         }
 
-        static SyntaxNode BuildNativeFunctionParameterMarshalAsAttribute(IContext context, Callable callable, Parameter parameter, GirTypeName typeName)
+        static SyntaxNode BuildNativeFunctionParameterMarshalAsAttribute(IContext context, Callable callable, Parameter parameter, TypeName typeName)
         {
-            var clrTypeInfo = context.ResolveClrTypeInfo(typeName);
+            var clrTypeInfo = context.ResolveTypeInfo(typeName);
             if (clrTypeInfo == null)
                 throw new GirException($"Unable to resolve CLR type name from {typeName}.");
 
             var unmanagedType = (UnmanagedType?)null;
             var arguments = new List<SyntaxNode>();
 
-            if (clrTypeInfo.ClrMarshalerTypeName != null)
+            if (clrTypeInfo.ClrMarshalerTypeExpression != null)
             {
                 unmanagedType = UnmanagedType.CustomMarshaler;
                 arguments.Add(context.Syntax.AttributeArgument(
                     nameof(MarshalAsAttribute.MarshalTypeRef),
-                    context.Syntax.TypeOfExpression(context.Syntax.DottedName(clrTypeInfo.ClrMarshalerTypeName))));
+                    context.Syntax.TypeOfExpression(clrTypeInfo.ClrMarshalerTypeExpression)));
             }
 
             if (unmanagedType != null)
@@ -226,10 +232,14 @@ namespace Gir.CodeGen.Builders
             if (callable is null)
                 throw new ArgumentNullException(nameof(callable));
 
+            var typeSpec = GetTypeSpec(context, parameter.Type);
+            if (typeSpec == null)
+                throw new GirException("Unable to resolve type specification for parameter.");
+
             // standard native parameter declaration
             var decl = context.Syntax.ParameterDeclaration(
                 parameter.Name,
-                BuildTypeReference(context, parameter.Type),
+                typeSpec.GetClrTypeExpression(context.Syntax),
                 null,
                 GetNativeParameterRefKind(parameter));
 
@@ -276,15 +286,15 @@ namespace Gir.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static SyntaxNode BuildTypeReference(IContext context, AnyType type)
+        public static TypeSpec GetTypeSpec(IContext context, AnyType type)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
             return type switch
             {
-                Gir.Model.Type t => BuildTypeReference(context, t),
-                ArrayType a => BuildTypeReference(context, a),
+                Gir.Model.Type t => BuildTypeSpec(context, t),
+                ArrayType a => BuildTypeSpec(context, a),
                 _ => throw new InvalidOperationException(),
             };
         }
@@ -295,21 +305,17 @@ namespace Gir.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        static SyntaxNode BuildTypeReference(IContext context, Gir.Model.Type type)
+        static TypeSpec BuildTypeSpec(IContext context, Gir.Model.Type type)
         {
             // default to object for unknown types
             if (type == null || type.Name == "none")
                 return null;
 
-            var typeName = context.ResolveTypeName(type.Name);
-            if (typeName == null)
-                throw new GirException($"Unable to resolve type name {type.Name}.");
+            var typeInfo = context.ResolveTypeInfo(type.Name);
+            if (typeInfo == null)
+                throw new GirException($"Could not resolve type reference {type.Name}.");
 
-            var clrTypeName = context.ResolveClrTypeName((GirTypeName)typeName);
-            if (clrTypeName == null)
-                throw new GirException($"Unable to resolve CLR type name from {typeName}.");
-
-            return context.Syntax.DottedName(clrTypeName);
+            return new TypeSpec(typeInfo);
         }
 
         /// <summary>
@@ -318,54 +324,9 @@ namespace Gir.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        static SyntaxNode BuildTypeReference(IContext context, ArrayType type)
+        static TypeSpec BuildTypeSpec(IContext context, ArrayType type)
         {
-            return context.Syntax.ArrayTypeExpression(BuildTypeReference(context, type.Type));
-        }
-
-        /// <summary>
-        /// Builds a reference to a specific GIR-described type.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static GirTypeName? GetTypeName(IContext context, AnyType type)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
-
-            return type switch
-            {
-                Gir.Model.Type t => GetTypeName(context, t),
-                ArrayType a => GetTypeName(context, a),
-                _ => throw new InvalidOperationException()
-            };
-        }
-
-        /// <summary>
-        /// Gets the original underlying type of the given <see cref="Type"/>.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        static GirTypeName? GetTypeName(IContext context, Gir.Model.Type type)
-        {
-            // default to object for unknown types
-            if (type == null || type.Name == "none")
-                return null;
-
-            return context.ResolveTypeName(type.Name);
-        }
-
-        /// <summary>
-        /// Gets the original underlying type of the given <see cref="ArrayType"/>.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        static GirTypeName? GetTypeName(IContext context, ArrayType type)
-        {
-            return GetTypeName(context, type.Type);
+            return GetTypeSpec(context, type.Type).AsArrayType();
         }
 
     }

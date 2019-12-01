@@ -24,11 +24,23 @@ namespace Gir.CodeGen
 
         SyntaxNode BuildEnumerationAttribute(IContext context, Enumeration enumeration)
         {
-            return context.Syntax.Attribute(typeof(EnumerationAttribute).FullName,
-                context.Syntax.AttributeArgument(nameof(EnumerationAttribute.Name), context.Syntax.LiteralExpression(enumeration.Name)),
-                context.Syntax.AttributeArgument(nameof(EnumerationAttribute.CType), context.Syntax.LiteralExpression(enumeration.CType)),
-                context.Syntax.AttributeArgument(nameof(EnumerationAttribute.GLibGetType), context.Syntax.LiteralExpression(enumeration.GLibGetType)),
-                context.Syntax.AttributeArgument(nameof(EnumerationAttribute.GLibTypeName), context.Syntax.LiteralExpression(enumeration.GLibTypeName)));
+            return context.Syntax.Attribute(
+                typeof(EnumerationAttribute).FullName,
+                BuildEnumerationAttributeArguments(context, enumeration));
+        }
+
+        IEnumerable<SyntaxNode> BuildEnumerationAttributeArguments(IContext context, Enumeration enumeration)
+        {
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(enumeration.Name));
+
+            if (enumeration.CType != null)
+                yield return context.Syntax.AttributeArgument(nameof(EnumerationAttribute.CType), context.Syntax.LiteralExpression(enumeration.CType));
+
+            if (enumeration.GLibGetType != null)
+                yield return context.Syntax.AttributeArgument(nameof(EnumerationAttribute.GLibGetType), context.Syntax.LiteralExpression(enumeration.GLibGetType));
+
+            if (enumeration.GLibTypeName != null)
+                yield return context.Syntax.AttributeArgument(nameof(EnumerationAttribute.GLibTypeName), context.Syntax.LiteralExpression(enumeration.GLibTypeName));
         }
 
     }

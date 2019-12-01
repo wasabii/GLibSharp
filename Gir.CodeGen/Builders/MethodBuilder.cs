@@ -34,7 +34,7 @@ namespace Gir.CodeGen
 
         protected override DeclarationModifiers GetModifiers(IContext context, Method symbol)
         {
-            return base.GetModifiers(context, symbol) | DeclarationModifiers.Sealed;
+            return base.GetModifiers(context, symbol);
         }
 
         protected override IEnumerable<SyntaxNode> BuildAttributes(IContext context, Method method)

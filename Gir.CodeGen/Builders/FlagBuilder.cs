@@ -54,7 +54,7 @@ namespace Gir.CodeGen
 
         IEnumerable<SyntaxNode> BuildMember(IContext context, TElement flag, Member member)
         {
-            yield return context.Syntax.EnumMember(member.Name, ConvertValue(context.Syntax, member.Value));
+            yield return context.Syntax.EnumMember(member.Name.ToPascalCase(), ConvertValue(context.Syntax, member.Value));
         }
 
         SyntaxNode ConvertValue(SyntaxGenerator syntax, string value)
@@ -62,7 +62,7 @@ namespace Gir.CodeGen
             if (int.TryParse(value, out var i))
                 return syntax.LiteralExpression(i);
             if (long.TryParse(value, out var l))
-                return syntax.LiteralExpression(l);
+                return syntax.LiteralExpression((int)l);
 
             throw new InvalidOperationException();
         }

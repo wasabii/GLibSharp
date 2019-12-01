@@ -6,6 +6,9 @@ namespace Gir.Model
     public enum Stability
     {
 
+        [XmlEnum(null)]
+        Unknown,
+
         [XmlEnum("stable")]
         Stable,
 

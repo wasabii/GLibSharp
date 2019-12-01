@@ -1,0 +1,34 @@
+﻿<Project>
+    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
+    <Import Project="..\Gir.Sdk\build\Gir.Sdk.props" />
+
+    <PropertyGroup>
+        <TargetFramework>net472</TargetFramework>
+        <_GirTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' ">netcoreapp2.0</_GirTaskFolder>
+        <_GirTaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net472</_GirTaskFolder>
+        <_GirSdkTaskAssembly>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\Gir.Sdk\bin\Debug\$(_GirTaskFolder)\Gir.Sdk.dll'))</_GirSdkTaskAssembly>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Gir.Sdk\Gir.Sdk.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <GirReference Include="GLib" Version="2.0">
+            <HintPath>GLib-2.0.gir</HintPath>
+            <XsltPath>GLib-2.0.gir.xslt</XsltPath>
+        </GirReference>
+        <GirReference Include="GObject" Version="2.0">
+            <HintPath>GObject-2.0.gir</HintPath>
+        </GirReference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="GLib-2.0.gir.xslt">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
+    <Import Project="..\Gir.Sdk\build\Gir.Sdk.targets" />
+</Project>

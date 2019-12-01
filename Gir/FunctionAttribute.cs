@@ -6,7 +6,16 @@ namespace Gir
     public class FunctionAttribute : Attribute
     {
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="name"></param>
+        public FunctionAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
 
         public string CIdentifier { get; set; }
 

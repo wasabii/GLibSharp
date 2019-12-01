@@ -1,4 +1,5 @@
 ﻿using System;
+
 using Gir.Model;
 
 namespace Gir
@@ -7,7 +8,16 @@ namespace Gir
     public class ParameterAttribute : Attribute
     {
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="name"></param>
+        public ParameterAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
 
         public bool? Nullable { get; set; }
 

@@ -32,7 +32,7 @@ namespace Gir.CodeGen
         /// <summary>
         /// CLR symbol mapping.
         /// </summary>
-        IClrTypeInfoProvider ClrTypeInfo { get; }
+        ITypeInfoProvider Types { get; }
 
         /// <summary>
         /// Provides the current <see cref="SyntaxGenerator"/>.

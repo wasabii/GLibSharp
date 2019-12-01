@@ -64,7 +64,7 @@ namespace Gir.CodeGen
         {
             var z = ImmutableList<string>.Empty;
             var r = new RepositoryProvider(sources);
-            var p = new ClrTypeInfoProvider(new[] { new ClrTypeInfoRepositorySource(r) });
+            var p = new TypeInfoProvider(new[] { new TypeInfoRepositorySource(syntax, r) });
             var c = new SymbolBuilderContext(null, z, this, syntax, r, p, ImmutableList<object>.Empty);
             var l = namespaces.SelectMany(i => r.GetRepositories().SelectMany(j => j.Namespaces.Where(k => k.Name == i).Select(k => new { Repository = j, Namespace = k })));
             var s = l.SelectMany(i => BuildNamespace(c, i.Repository, i.Namespace)).ToList();

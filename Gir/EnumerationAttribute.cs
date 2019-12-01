@@ -6,7 +6,16 @@ namespace Gir
     public class EnumerationAttribute : Attribute
     {
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="name"></param>
+        public EnumerationAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
 
         public string CType { get; set; }
 

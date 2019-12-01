@@ -39,7 +39,7 @@ namespace Gir
         /// <summary>
         /// Name of the associated CLR type to map primitive to.
         /// </summary>
-        public Type ClrType { get; set; }
+        public Type ClrType { get; }
 
         /// <summary>
         /// Type of the custom marshaler to use for the type.

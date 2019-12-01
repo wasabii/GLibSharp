@@ -34,7 +34,7 @@ namespace Gir.CodeGen
 
         string GetName(IContext context, Property property)
         {
-            return property.Name;
+            return property.Name.ToPascalCase();
         }
 
         /// <summary>
@@ -57,7 +57,11 @@ namespace Gir.CodeGen
         /// <returns></returns>
         SyntaxNode GetType(IContext context, Property property, AnyType type)
         {
-            return BuilderUtil.BuildTypeReference(context, type);
+            var typeSpec = BuilderUtil.GetTypeSpec(context, type);
+            if (typeSpec == null)
+                throw new GirException("Unable to determine type specification.");
+
+            return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
         Accessibility GetAccessibility(IContext context, Property property)

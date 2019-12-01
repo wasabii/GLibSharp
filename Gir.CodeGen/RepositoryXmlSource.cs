@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -23,6 +23,9 @@ namespace Gir.CodeGen
         /// <returns></returns>
         public RepositoryXmlSource Load(Repository repository)
         {
+            if (repository is null)
+                throw new ArgumentNullException(nameof(repository));
+
             repositories.Add(repository);
             return this;
         }
@@ -34,6 +37,9 @@ namespace Gir.CodeGen
         /// <returns></returns>
         public RepositoryXmlSource Load(XDocument girXml)
         {
+            if (girXml is null)
+                throw new ArgumentNullException(nameof(girXml));
+
             foreach (var r in Repository.LoadFrom(girXml))
                 Load(r);
 
@@ -43,54 +49,14 @@ namespace Gir.CodeGen
         /// <summary>
         /// Adds an input GIR file to the builder.
         /// </summary>
-        /// <param name="girXml"></param>
+        /// <param name="xml"></param>
         /// <returns></returns>
-        public RepositoryXmlSource Load(XmlReader girXml)
+        public RepositoryXmlSource Load(XmlReader xml)
         {
-            return Load(XDocument.Load(girXml));
-        }
+            if (xml is null)
+                throw new ArgumentNullException(nameof(xml));
 
-        /// <summary>
-        /// Adds an input GIR file to the builder.
-        /// </summary>
-        /// <param name="girXml"></param>
-        /// <returns></returns>
-        public RepositoryXmlSource Load(TextReader girXml)
-        {
-            using var reader = XmlReader.Create(girXml);
-            return Load(reader);
-        }
-
-        /// <summary>
-        /// Adds an input GIR file to the builder.
-        /// </summary>
-        /// <param name="girXml"></param>
-        /// <returns></returns>
-        public RepositoryXmlSource Load(Stream girXml)
-        {
-            using var reader = new StreamReader(girXml);
-            return Load(reader);
-        }
-
-        /// <summary>
-        /// Adds an input GIR file to the builder.
-        /// </summary>
-        /// <param name="girXmlPath"></param>
-        /// <returns></returns>
-        public RepositoryXmlSource Load(FileInfo girXmlPath)
-        {
-            using var stream = girXmlPath.OpenRead();
-            return Load(stream);
-        }
-
-        /// <summary>
-        /// Adds an input GIR file to the builder.
-        /// </summary>
-        /// <param name="girXmlPath"></param>
-        /// <returns></returns>
-        public RepositoryXmlSource Load(string girXmlPath)
-        {
-            return Load(new FileInfo(girXmlPath));
+            return Load(XDocument.Load(xml));
         }
 
         public IEnumerable<Repository> GetRepositories()

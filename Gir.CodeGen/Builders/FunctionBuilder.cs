@@ -48,8 +48,15 @@ namespace Gir.CodeGen.Builders
         SyntaxNode BuildFunctionAttribute(IContext context, Function function)
         {
             return context.Syntax.Attribute(typeof(FunctionAttribute).FullName,
-                context.Syntax.AttributeArgument(nameof(FunctionAttribute.Name), context.Syntax.LiteralExpression(function.Name)),
-                context.Syntax.AttributeArgument(nameof(FunctionAttribute.CIdentifier), context.Syntax.LiteralExpression(function.CIdentifier)));
+                BuildFunctionAttributeArguments(context, function));
+        }
+
+        IEnumerable<SyntaxNode> BuildFunctionAttributeArguments(IContext context, Function function)
+        {
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(function.Name));
+
+            if (function.CIdentifier != null)
+                yield return context.Syntax.AttributeArgument(nameof(FunctionAttribute.CIdentifier), context.Syntax.LiteralExpression(function.CIdentifier));
         }
 
     }

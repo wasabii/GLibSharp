@@ -10,14 +10,18 @@ namespace Gir.Model
         {
             return new ClrInfo()
             {
-                Name = (string)element.Attribute(Xmlns.CLR_1_0_NS + "name"),
-                Marshaler = (string)element.Attribute(Xmlns.CLR_1_0_NS + "marshaler")
+                Type = (string)element.Attribute(Xmlns.CLR_1_0_NS + "type"),
+                MarshalerType = (string)element.Attribute(Xmlns.CLR_1_0_NS + "marshaler-type")
             };
         }
 
-        public string Name { get; set; }
+        public string Type { get; set; }
 
-        public string Marshaler { get; set; }
+        public string NullableType { get; set; }
+
+        public string NullExpression { get; set; }
+
+        public string MarshalerType { get; set; }
 
     }
 

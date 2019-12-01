@@ -19,6 +19,11 @@ namespace Gir.CodeGen
 
         protected override IEnumerable<SyntaxNode> Build(IContext context, Class klass)
         {
+            // records mapped to CLR types explicitly do not get built
+            var clrInfo = context.ResolveTypeInfo(new TypeName(context.CurrentNamespace, klass.Name));
+            if (clrInfo?.ClrTypeExpression != null)
+                yield break;
+
             yield return BuildClass(context, klass);
         }
 
@@ -37,7 +42,7 @@ namespace Gir.CodeGen
 
         string GetName(IContext context, Class klass)
         {
-            return context.ClrTypeInfo.Resolve(new GirTypeName(context.CurrentNamespace, klass.Name)).ClrTypeName;
+            return klass.Name;
         }
 
         IEnumerable<string> BuildTypeParameters(IContext context, Class klass)
@@ -65,12 +70,14 @@ namespace Gir.CodeGen
             if (klass.Parent == null)
                 return null;
 
-            var parentTypeName = GirTypeName.Parse(klass.Parent, context.CurrentNamespace);
-            var parentSymbol = context.ClrTypeInfo.Resolve(parentTypeName);
-            if (parentSymbol == null)
-                throw new InvalidOperationException("Could not locate base type.");
+            var typeName = TypeName.Parse(klass.Parent, context.CurrentNamespace);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            if (typeInfo == null)
+                throw new GirException($"Coult not resolve base type {typeName}.");
 
-            return context.Syntax.DottedName(parentSymbol.ClrTypeName);
+            // use type specification to get CLR type
+            var typeSpec = new TypeSpec(typeInfo);
+            return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
         IEnumerable<SyntaxNode> BuildInterfaceTypes(IContext context, Class klass)
@@ -80,20 +87,21 @@ namespace Gir.CodeGen
 
         SyntaxNode BuildInterfaceType(IContext context, Class klass, Implements implements)
         {
-            var typeName = GirTypeName.Parse(implements.Name, context.CurrentNamespace);
-            var symbol = context.ClrTypeInfo.Resolve(typeName);
-            if (symbol == null)
-                throw new InvalidOperationException("Could not locate interface type.");
+            var typeName = TypeName.Parse(implements.Name, context.CurrentNamespace);
 
-            return context.Syntax.DottedName(symbol.ClrTypeName);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            if (typeInfo == null)
+                throw new GirException("Could not resolve type info for class.");
+
+            return context.Syntax.DottedName(typeInfo.Name);
         }
 
         IEnumerable<SyntaxNode> BuildMembers(IContext context, Class klass)
         {
             // pass current type information to members
-            var typeName = new GirTypeName(context.CurrentNamespace, klass.Name);
-            var clrTypeName = context.ResolveClrTypeName(typeName);
-            context = context.WithAnnotation(new CallableBuilderOptions(typeName, clrTypeName, true));
+            var typeName = new TypeName(context.CurrentNamespace, klass.Name);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            context = context.WithAnnotation(new CallableBuilderOptions(typeInfo, true));
 
             foreach (var i in klass.Unions)
                 foreach (var j in context.Build(i))
@@ -115,6 +123,9 @@ namespace Gir.CodeGen
                 foreach (var j in context.Build(i))
                     yield return j;
 
+            foreach (var i in BuildHandleMembers(context, klass))
+                yield return i;
+
             foreach (var i in klass.Constructors)
                 foreach (var j in context.Build(i))
                     yield return j;
@@ -129,6 +140,37 @@ namespace Gir.CodeGen
             foreach (var i in klass.Signals)
                 foreach (var j in context.Build(i))
                     yield return j;
+        }
+
+        IEnumerable<SyntaxNode> BuildHandleMembers(IContext context, Class klass)
+        {
+            yield return BuildHandleConstructor(context, klass);
+        }
+
+        SyntaxNode BuildHandleConstructor(IContext context, Class klass)
+        {
+            return context.Syntax.ConstructorDeclaration(
+                GetName(context, klass),
+                BuildHandleConstructorParameters(context, klass),
+                Accessibility.Internal,
+                DeclarationModifiers.None,
+                BuildHandleConstructorBaseArguments(context, klass),
+                BuildHandleConstructorStatements(context, klass));
+        }
+
+        IEnumerable<SyntaxNode> BuildHandleConstructorParameters(IContext context, Class klass)
+        {
+            yield return context.Syntax.ParameterDeclaration("handle", context.Syntax.DottedName(typeof(IntPtr).FullName));
+        }
+
+        IEnumerable<SyntaxNode> BuildHandleConstructorBaseArguments(IContext context, Class klass)
+        {
+            yield return context.Syntax.Argument(context.Syntax.IdentifierName("handle"));
+        }
+
+        IEnumerable<SyntaxNode> BuildHandleConstructorStatements(IContext context, Class klass)
+        {
+            yield break;
         }
 
         IEnumerable<SyntaxNode> BuildMethods(IContext context, Class klass)

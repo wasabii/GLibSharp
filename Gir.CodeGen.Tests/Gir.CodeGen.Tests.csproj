@@ -16,19 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="fontconfig-2.0.gir">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Gio-2.0.gir">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="GLib-2.0.gir">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="GObject-2.0.gir">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="GLib-2.0.gir.xslt">
+    <None Update="Test-1.0.gir">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

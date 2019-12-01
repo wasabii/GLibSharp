@@ -6,7 +6,16 @@ namespace Gir
     public class BitFieldAttribute : Attribute
     {
 
-        public string Name { get; set; }
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="name"></param>
+        public BitFieldAttribute(string name)
+        {
+            Name = name;
+        }
+
+        public string Name { get; }
 
         public string CType { get; set; }
 

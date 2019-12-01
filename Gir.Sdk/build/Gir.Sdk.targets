@@ -24,9 +24,9 @@
 
     <Target Name="GenerateGir" Inputs="@(_GirRepositories)" Outputs="$(IntermediateOutputPath)gir.g.cs" DependsOnTargets="ResolveAssemblyReferences;ResolveGirReferences">
         <Gir.Sdk.Build
-            Lang="$(Lang)"
-            LangVersion="$(LangVersion)"
-            BuildingModules="@(_ResolveAssemblyReferenceResolvedFiles)"
+            Language="$(Language)"
+            LanguageVersion="$(LangVersion)"
+            Modules="@(_ResolveAssemblyReferenceResolvedFiles)"
             Repositories="@(_GirRepositories)"
             Namespaces="@(_GirNamespaces)"
             Output="$(IntermediateOutputPath)gir.g.cs" />

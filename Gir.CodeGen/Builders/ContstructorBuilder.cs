@@ -23,7 +23,7 @@ namespace Gir.CodeGen.Builders
         SyntaxNode BuildConstructor(IContext context, Constructor ctor) =>
             context.Syntax.AddAttributes(
                 context.Syntax.ConstructorDeclaration(
-                    GetContainingTypeName(context, ctor),
+                    null,
                     BuildParameters(context, ctor),
                     GetAccessibility(context, ctor),
                     GetModifiers(context, ctor),
@@ -31,21 +31,6 @@ namespace Gir.CodeGen.Builders
                     BuildStatements(context, ctor)),
                 BuildAttributes(context, ctor))
             .NormalizeWhitespace();
-
-        /// <summary>
-        /// Gets the name of the parent class or struct.
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="ctor"></param>
-        /// <returns></returns>
-        string GetContainingTypeName(IContext context, Constructor ctor)
-        {
-            var parentClrTypeName = context.Annotation<CallableBuilderOptions>()?.ClrTypeName;
-            if (parentClrTypeName == null)
-                throw new InvalidOperationException("Missing callable builder options.");
-
-            return parentClrTypeName.Value.Name;
-        }
 
         IEnumerable<SyntaxNode> BuildBaseArguments(IContext context, Constructor ctor)
         {

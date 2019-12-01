@@ -3,8 +3,8 @@
     <Import Project="..\Gir.Sdk\build\Gir.Sdk.props" />
 
     <PropertyGroup>
-        <TargetFramework>netcoreapp2.0</TargetFramework>
-        <_GirSdkTaskAssembly>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\Gir.Sdk\bin\Debug\netstandard2.0\Gir.Sdk.dll'))</_GirSdkTaskAssembly>
+        <TargetFramework>net472</TargetFramework>
+        <_GirSdkTaskAssembly>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\Gir.Sdk\bin\Debug\net472\Gir.Sdk.dll'))</_GirSdkTaskAssembly>
     </PropertyGroup>
     
     <ItemGroup>

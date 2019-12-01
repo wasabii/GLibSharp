@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Gir.CodeGen.Builders;
 using Gir.Model;
 
@@ -43,14 +43,16 @@ namespace Gir.CodeGen
                 return base.GetModifiers(context, method) | DeclarationModifiers.Virtual;
         }
 
-        IEnumerable<SyntaxNode> BuildAttributes(IContext context, VirtualMethod method)
+        protected override IEnumerable<SyntaxNode> BuildAttributes(IContext context, Element element)
+        {
+            return base.BuildAttributes(context, element).Concat(BuildVirtualMethodAttributes(context, (VirtualMethod)element));
+        }
+
+        IEnumerable<SyntaxNode> BuildVirtualMethodAttributes(IContext context, VirtualMethod method)
         {
             yield return context.Syntax.Attribute(
                 typeof(VirtualMethodAttribute).FullName,
                 context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(method.Name)));
-
-            if (method.Info.Deprecated == true)
-                yield return context.Syntax.Attribute(typeof(ObsoleteAttribute).FullName);
         }
 
     }

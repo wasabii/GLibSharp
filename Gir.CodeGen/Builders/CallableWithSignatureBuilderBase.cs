@@ -38,7 +38,7 @@ namespace Gir.CodeGen.Builders
 
         protected virtual string GetName(IContext context, TElement symbol)
         {
-            return symbol.Name;
+            return symbol.Name.ToPascalCase();
         }
 
         protected virtual IEnumerable<SyntaxNode> BuildParameters(IContext context, TElement callable)
@@ -46,12 +46,12 @@ namespace Gir.CodeGen.Builders
             return callable.Parameters.OfType<Parameter>().SelectMany(i => BuildParameter(context, callable, i));
         }
 
-        static IEnumerable<SyntaxNode> BuildParameter(IContext context, TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameter(IContext context, TElement callable, Parameter parameter)
         {
-            // replace varargs name with args
-            var name = parameter.Name;
-            if (name == "...")
-                name = "args";
+            // obtain parameter name
+            var name = GetArgumentName(parameter);
+            if (name == null)
+                throw new GirException("Unable to determine argument name.");
 
             // parameter type might be unknown, and thus object
             var type = parameter.Type;
@@ -59,18 +59,25 @@ namespace Gir.CodeGen.Builders
                 type = null;
 
             // type node either derived from specified type, or defaulted to object
-            var typeNode = type != null ? BuilderUtil.BuildTypeReference(context, type) : context.Syntax.TypeExpression(SpecialType.System_Object);
+            var typeSpec = type != null ? BuilderUtil.GetTypeSpec(context, type) : new TypeSpec();
 
             // varargs takes specified type and converts to array
             if (parameter.VarArgs)
-                typeNode = context.Syntax.ArrayTypeExpression(typeNode);
+                typeSpec = typeSpec.AsArrayType();
+
+            // construct type syntax
+            var typeNode = typeSpec.GetClrTypeExpression(context.Syntax);
+            if (typeNode == null)
+                throw new InvalidOperationException("Unable to retrieve type node.");
 
             // parameter declaration
-            var decl = context.Syntax.ParameterDeclaration(
-                name,
-                typeNode,
-                null,
-                GetParameterRefKind(parameter));
+            var decl = context.Syntax.AddAttributes(
+                    context.Syntax.ParameterDeclaration(
+                    name,
+                    typeNode,
+                    null,
+                    GetParameterRefKind(parameter)),
+                BuildParameterAttributes(context, callable, parameter));
 
             // varargs requires 'params' keyword
             if (parameter.VarArgs)
@@ -80,13 +87,37 @@ namespace Gir.CodeGen.Builders
                     case Microsoft.CodeAnalysis.CSharp.Syntax.ParameterSyntax cs:
                         decl = cs.AddModifiers(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ParamsKeyword));
                         break;
-                    case Microsoft.CodeAnalysis.VisualBasic.Syntax.ParameterSyntax vb:
+                    case Microsoft.CodeAnalysis.VisualBasic.Syntax.ParameterSyntax _:
                     default:
                         throw new InvalidOperationException("Unsupported language.");
                 }
             }
 
             yield return decl;
+        }
+
+        /// <summary>
+        /// Generates the attributes for a parameter.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="callable"></param>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        IEnumerable<SyntaxNode> BuildParameterAttributes(IContext context, TElement callable, Parameter parameter)
+        {
+            yield return BuildParameterAttribute(context, callable, parameter);
+        }
+
+        SyntaxNode BuildParameterAttribute(IContext context, TElement callable, Parameter parameter)
+        {
+            return context.Syntax.Attribute(
+                typeof(ParameterAttribute).FullName,
+                BuildParameterAttributeArguments(context, callable, parameter));
+        }
+
+        IEnumerable<SyntaxNode> BuildParameterAttributeArguments(IContext context, TElement callable, Parameter parameter)
+        {
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(parameter.Name));
         }
 
         /// <summary>
@@ -113,28 +144,32 @@ namespace Gir.CodeGen.Builders
             yield break;
         }
 
+        /// <summary>
+        /// Builds the return type syntax node.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="method"></param>
+        /// <returns></returns>
         protected virtual SyntaxNode BuildReturnType(IContext context, TElement method)
         {
             var returnTypeElement = method.ReturnValue?.Type;
             if (returnTypeElement == null)
                 return null;
 
-            // TODO lookup mapped type
-            var returnTypeName = returnTypeElement.Name;
-            if (returnTypeName == null || returnTypeName == "none")
+            // void return
+            if (returnTypeElement.Name == "none")
                 return null;
 
-            var returnType = context.Syntax.IdentifierName(returnTypeName);
-
-            // value is an array of the underlying type
-            if (returnTypeElement is ArrayType arrayType)
-                returnType = context.Syntax.ArrayTypeExpression(returnType);
+            // resolve return type
+            var typeSpec = BuilderUtil.GetTypeSpec(context, method.ReturnValue.Type);
+            if (typeSpec == null)
+                throw new InvalidOperationException("Unable to resolve type specification.");
 
             // value allows nulls
             if (method.ReturnValue.Nullable == true)
-                returnType = context.Syntax.NullableTypeExpression(returnType);
+                typeSpec = typeSpec.AsNullableType();
 
-            return returnType;
+            return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
         protected virtual Accessibility GetAccessibility(IContext context, TElement symbol)
@@ -167,10 +202,10 @@ namespace Gir.CodeGen.Builders
 
         protected virtual IEnumerable<SyntaxNode> GetNativeArguments(IContext context, TElement symbol)
         {
-            return symbol.Parameters.Select(i => GetNativeArgument(context, symbol, i));
+            return symbol.Parameters.Select(i => BuildNativeArgument(context, symbol, i));
         }
 
-        protected virtual SyntaxNode GetNativeArgument(IContext context, TElement symbol, IParameter parameter)
+        protected virtual SyntaxNode BuildNativeArgument(IContext context, TElement symbol, IParameter parameter)
         {
             // instance parameter represents the instance itself
             if (parameter is InstanceParameter)
@@ -179,7 +214,25 @@ namespace Gir.CodeGen.Builders
             return context.Syntax.Argument(
                 null,
                 BuilderUtil.GetNativeParameterRefKind(parameter),
-                context.Syntax.IdentifierName(parameter.Name));
+                context.Syntax.IdentifierName(GetArgumentName(parameter)));
+        }
+
+        string GetNativeArgumentName(IParameter parameter)
+        {
+            return parameter.Name switch
+            {
+                "..." => "args",
+                _ => parameter.Name,
+            };
+        }
+
+        string GetArgumentName(IParameter parameter)
+        {
+            return parameter.Name switch
+            {
+                "..." => "args",
+                _ => parameter.Name.ToCamelCase(),
+            };
         }
 
     }

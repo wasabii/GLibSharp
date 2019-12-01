@@ -32,9 +32,9 @@ namespace Gir.CodeGen
                 BuildAttributes(context, iface))
             .NormalizeWhitespace();
 
-        string GetName(IContext context, Interface klass)
+        string GetName(IContext context, Interface face)
         {
-            return context.ClrTypeInfo.Resolve(new GirTypeName(context.CurrentNamespace, klass.Name)).ClrTypeName;
+            return face.Name;
         }
 
         IEnumerable<string> BuildTypeParameters(IContext context, Interface iface)
@@ -54,20 +54,20 @@ namespace Gir.CodeGen
 
         SyntaxNode BuildInterfaceType(IContext context, Interface iface, Implements implements)
         {
-            var typeName = GirTypeName.Parse(implements.Name, context.CurrentNamespace);
-            var symbol = context.ClrTypeInfo.Resolve(typeName);
-            if (symbol == null)
-                throw new InvalidOperationException("Could not locate interface type.");
+            var typeName = TypeName.Parse(implements.Name, context.CurrentNamespace);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            if (typeInfo == null)
+                throw new GirException($"Could not resolve type info for {typeName}.");
 
-            return context.Syntax.DottedName(symbol.ClrTypeName);
+            return context.Syntax.DottedName(typeInfo.Name);
         }
 
         IEnumerable<SyntaxNode> BuildMembers(IContext context, Interface iface)
         {
             // pass current type information to members
-            var typeName = new GirTypeName(context.CurrentNamespace, iface.Name);
-            var clrTypeName = context.ResolveClrTypeName(typeName);
-            context = context.WithAnnotation(new CallableBuilderOptions(typeName, clrTypeName, true));
+            var typeName = new TypeName(context.CurrentNamespace, iface.Name);
+            var typeInfo = context.ResolveTypeInfo(typeName);
+            context = context.WithAnnotation(new CallableBuilderOptions(typeInfo, true));
 
             foreach (var i in iface.Functions)
                 foreach (var j in context.Build(i))

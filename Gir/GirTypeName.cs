@@ -6,7 +6,7 @@ namespace Gir
     /// <summary>
     /// Describes a combination of namespace and name.
     /// </summary>
-    public struct GirTypeName
+    public struct TypeName
     {
 
         /// <summary>
@@ -14,17 +14,17 @@ namespace Gir
         /// </summary>
         /// <param name="qualifiedName"></param>
         /// <returns></returns>
-        public static GirTypeName Parse(string qualifiedName, string defaultNamespace = null)
+        public static TypeName Parse(string qualifiedName, string defaultNamespace = null)
         {
             if (qualifiedName is null)
                 throw new ArgumentNullException(nameof(qualifiedName));
 
             if (IsQualified(qualifiedName) == false)
-                return new GirTypeName(defaultNamespace, qualifiedName);
+                return new TypeName(defaultNamespace, qualifiedName);
 
             // strip off last segment of name
             var i = qualifiedName.LastIndexOf('.');
-            return new GirTypeName(qualifiedName.Substring(0, i), qualifiedName.Substring(i + 1));
+            return new TypeName(qualifiedName.Substring(0, i), qualifiedName.Substring(i + 1));
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace Gir
         /// <returns></returns>
         public static bool IsQualified(string name) => name.Contains(".");
 
-        public static implicit operator string(GirTypeName qn)
+        public static implicit operator string(TypeName qn)
         {
             return qn.ToString();
         }
@@ -47,7 +47,7 @@ namespace Gir
         /// </summary>
         /// <param name="ns"></param>
         /// <param name="name"></param>
-        public GirTypeName(string ns, string name)
+        public TypeName(string ns, string name)
         {
             this.ns = ns ?? throw new ArgumentNullException(nameof(ns));
             this.name = name ?? throw new ArgumentNullException(nameof(name));

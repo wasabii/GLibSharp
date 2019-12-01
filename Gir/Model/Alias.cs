@@ -8,7 +8,7 @@ namespace Gir.Model
     /// <summary>
     /// Type's name substitution, representing a typedef in C.
     /// </summary>
-    public class Alias : Element, IHasName, IHasInfo
+    public class Alias : Element, IHasName, IHasInfo, IHasClrInfo
     {
 
         public static IEnumerable<Alias> LoadFrom(XContainer container)
@@ -30,6 +30,7 @@ namespace Gir.Model
             target.Name = (string)element.Attribute("name");
             target.CType = (string)element.Attribute(Xmlns.Core_1_0_NS + "type");
             target.Type = Type.LoadFrom(element).FirstOrDefault();
+            target.ClrInfo = ClrInfo.Load(element);
             return target;
         }
 
@@ -53,6 +54,8 @@ namespace Gir.Model
         /// 
         /// </summary>
         public Type Type { get; set; }
+
+        public ClrInfo ClrInfo { get; set; }
 
         public override string ToString()
         {

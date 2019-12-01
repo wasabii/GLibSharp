@@ -16,23 +16,60 @@ namespace Gir.CodeGen
     class NamespaceBuilder : SyntaxNodeBuilderBase<Namespace>
     {
 
-        protected override IEnumerable<SyntaxNode> Build(IContext context, Namespace symbol)
+        protected override IEnumerable<SyntaxNode> Build(IContext context, Namespace ns)
         {
-            foreach (var attr in BuildAssemblyAttributes(context, symbol))
+            foreach (var attr in BuildAssemblyAttributes(context, ns))
                 yield return attr;
 
-            yield return BuildNamespace(context, symbol);
-        }
-
-        IEnumerable<SyntaxNode> BuildAssemblyAttributes(IContext context, Namespace symbol)
-        {
-            return BuildPrimitives(context, symbol);
+            yield return BuildNamespace(context, ns);
         }
 
         SyntaxNode BuildNamespace(IContext context, Namespace symbol) =>
             context.Syntax.NamespaceDeclaration(
                 symbol.Name,
                 BuildMembers(context, symbol).OfType<SyntaxNode>());
+
+        IEnumerable<SyntaxNode> BuildAssemblyAttributes(IContext context, Namespace ns)
+        {
+            return Enumerable.Empty<SyntaxNode>()
+                .Concat(BuildPrimitives(context, ns))
+                .Append(BuildNamespaceAttribute(context, ns));
+        }
+
+        SyntaxNode BuildNamespaceAttribute(IContext context, Namespace ns)
+        {
+            var attribute = context.Syntax.Attribute(
+                typeof(NamespaceAttribute).FullName,
+                BuildNamespaceAttributeArguments(context, ns));
+
+            switch (attribute)
+            {
+                case Microsoft.CodeAnalysis.CSharp.Syntax.AttributeListSyntax a:
+                    attribute = a.WithTarget(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.AttributeTargetSpecifier(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.AssemblyKeyword)));
+                    break;
+                case Microsoft.CodeAnalysis.VisualBasic.Syntax.AttributeListSyntax b:
+                default:
+                    throw new InvalidOperationException("Unknown language.");
+            }
+
+            return attribute;
+        }
+
+        IEnumerable<SyntaxNode> BuildNamespaceAttributeArguments(IContext context, Namespace ns)
+        {
+            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(ns.Name));
+
+            if (ns.Version != null)
+                yield return context.Syntax.AttributeArgument(nameof(NamespaceAttribute.Version), context.Syntax.LiteralExpression(ns.Version));
+            if (ns.CPrefix != null)
+                yield return context.Syntax.AttributeArgument(nameof(NamespaceAttribute.CPrefix), context.Syntax.LiteralExpression(ns.CPrefix));
+            if (ns.CSymbolPrefixes?.Count > 0)
+                yield return context.Syntax.AttributeArgument(nameof(NamespaceAttribute.CSymbolPrefixes), context.Syntax.LiteralExpression(string.Join(";", ns.CSymbolPrefixes)));
+            if (ns.CIdentifierPrefixes?.Count > 0)
+                yield return context.Syntax.AttributeArgument(nameof(NamespaceAttribute.CIdentifierPrefixes), context.Syntax.LiteralExpression(string.Join(";", ns.CIdentifierPrefixes)));
+            if (ns.ClrSharedLibrary != null)
+                yield return context.Syntax.AttributeArgument(nameof(NamespaceAttribute.ClrSharedLibrary), context.Syntax.LiteralExpression(ns.ClrSharedLibrary));
+        }
 
         IEnumerable<SyntaxNode> BuildMembers(IContext context, Namespace symbol)
         {

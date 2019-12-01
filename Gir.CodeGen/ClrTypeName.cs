@@ -14,31 +14,20 @@ namespace Gir.CodeGen
         /// </summary>
         /// <param name="qualifiedName"></param>
         /// <returns></returns>
-        public static ClrTypeName Parse(string qualifiedName, string defaultNamespace = null)
+        public static ClrTypeName Parse(string value)
         {
-            if (qualifiedName is null)
-                throw new ArgumentNullException(nameof(qualifiedName));
+            if (value is null)
+                throw new ArgumentNullException(nameof(value));
 
-            if (IsQualified(qualifiedName) == false)
-            {
-                // required if not qualified
-                if (defaultNamespace is null)
-                    throw new ArgumentNullException(nameof(defaultNamespace));
+            var namespaceNameIndex = value.LastIndexOf('.');
+            var namespaceName = namespaceNameIndex > -1 ? value.Substring(0, namespaceNameIndex) : null;
+            var name = namespaceNameIndex > -1 ? value.Substring(namespaceNameIndex + 1) : value;
 
-                return new ClrTypeName(defaultNamespace, qualifiedName);
-            }
+            if (namespaceName is null)
+                throw new Exception("Unable to parse CLR type name. Missing namespace.");
 
-            // strip off last segment of name
-            var i = qualifiedName.LastIndexOf('.');
-            return new ClrTypeName(qualifiedName.Substring(0, i), qualifiedName.Substring(i + 1));
+            return new ClrTypeName(namespaceName, name);
         }
-
-        /// <summary>
-        /// Returns <c>true</c> if the given name is qualified.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static bool IsQualified(string name) => name.Contains(".");
 
         public static implicit operator string(ClrTypeName qn)
         {
