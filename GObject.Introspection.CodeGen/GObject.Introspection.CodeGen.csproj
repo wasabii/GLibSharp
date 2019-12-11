@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Cogito.Autofac" Version="1.2.21" />
+    <PackageReference Include="Microsoft.CodeAnalysis" Version="3.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GObject.Introspection\GObject.Introspection.csproj" />
+  </ItemGroup>
+
+</Project>

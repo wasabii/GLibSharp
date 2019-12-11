@@ -25,10 +25,8 @@ namespace GLibSharp
     using System;
     using GLib;
 
-    internal class IOFuncWrapper
+    public partial class IOFuncWrapper
     {
-
-        IOFunc managed;
 
         public IOFuncNative NativeDelegate;
 
@@ -37,6 +35,7 @@ namespace GLibSharp
             this.managed = managed;
             NativeDelegate = new IOFuncNative(NativeCallback);
         }
+
         bool NativeCallback(IntPtr source, int condition, IntPtr data)
         {
             try

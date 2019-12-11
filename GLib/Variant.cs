@@ -17,182 +17,186 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace GLib {
+namespace GLib
+{
 
-	public class Variant : IDisposable {
+    public partial class Variant : IDisposable
+    {
 
-		IntPtr handle;
-		public IntPtr Handle {
-			get { return handle; }
-		}
+        IntPtr handle;
 
-		// Docs say that GVariant is threadsafe.
-		~Variant ()
-		{
-			Dispose (false);
-		}
+        public IntPtr Handle
+        {
+            get { return handle; }
+        }
 
-		public void Dispose ()
-		{
-			Dispose (true);
-		}
+        // Docs say that GVariant is threadsafe.
+        ~Variant()
+        {
+            Dispose(false);
+        }
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern void g_variant_unref (IntPtr handle);
+        public void Dispose()
+        {
+            Dispose(true);
+        }
 
-		void Dispose (bool disposing)
-		{
-			if (handle == IntPtr.Zero)
-				return;
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern void g_variant_unref(IntPtr handle);
 
-			g_variant_unref (handle);
-			handle = IntPtr.Zero;
-			if (disposing)
-				GC.SuppressFinalize (this);
-		}
+        void Dispose(bool disposing)
+        {
+            if (handle == IntPtr.Zero)
+                return;
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_ref_sink (IntPtr handle);
+            g_variant_unref(handle);
+            handle = IntPtr.Zero;
+            if (disposing)
+                GC.SuppressFinalize(this);
+        }
 
-		public Variant (IntPtr handle)
-		{
-			this.handle = g_variant_ref_sink (handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_ref_sink(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_boolean (bool val);
+        public Variant(IntPtr handle)
+        {
+            this.handle = g_variant_ref_sink(handle);
+        }
 
-		public Variant (bool val) : this (g_variant_new_boolean (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_boolean(bool val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_byte (byte val);
+        public Variant(bool val) : this(g_variant_new_boolean(val)) { }
 
-		public Variant (byte val) : this (g_variant_new_byte (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_byte(byte val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_int16 (short val);
+        public Variant(byte val) : this(g_variant_new_byte(val)) { }
 
-		public Variant (short val) : this (g_variant_new_int16 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_int16(short val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_uint16 (ushort val);
+        public Variant(short val) : this(g_variant_new_int16(val)) { }
 
-		public Variant (ushort val) : this (g_variant_new_uint16 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_uint16(ushort val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_int32 (int val);
+        public Variant(ushort val) : this(g_variant_new_uint16(val)) { }
 
-		public Variant (int val) : this (g_variant_new_int32 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_int32(int val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_uint32 (uint val);
+        public Variant(int val) : this(g_variant_new_int32(val)) { }
 
-		public Variant (uint val) : this (g_variant_new_uint32 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_uint32(uint val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_int64 (long val);
+        public Variant(uint val) : this(g_variant_new_uint32(val)) { }
 
-		public Variant (long val) : this (g_variant_new_int64 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_int64(long val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_uint64 (ulong val);
+        public Variant(long val) : this(g_variant_new_int64(val)) { }
 
-		public Variant (ulong val) : this (g_variant_new_uint64 (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_uint64(ulong val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_double (double val);
+        public Variant(ulong val) : this(g_variant_new_uint64(val)) { }
 
-		public Variant (double val) : this (g_variant_new_double (val)) {}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_double(double val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_new_string (IntPtr val);
+        public Variant(double val) : this(g_variant_new_double(val)) { }
 
-		public Variant (string val)
-		{
-			IntPtr native_val = Marshaller.StringToPtrGStrdup (val);
-			handle = g_variant_ref_sink (g_variant_new_string (native_val));
-			Marshaller.Free (native_val);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_new_string(IntPtr val);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern bool g_variant_get_boolean (IntPtr handle);
+        public Variant(string val)
+        {
+            IntPtr native_val = Marshaller.StringToPtrGStrdup(val);
+            handle = g_variant_ref_sink(g_variant_new_string(native_val));
+            Marshaller.Free(native_val);
+        }
 
-		public static explicit operator bool (Variant val)
-		{
-			return g_variant_get_boolean (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern bool g_variant_get_boolean(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern byte g_variant_get_byte (IntPtr handle);
+        public static explicit operator bool(Variant val)
+        {
+            return g_variant_get_boolean(val.Handle);
+        }
 
-		public static explicit operator byte (Variant val)
-		{
-			return g_variant_get_byte (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern byte g_variant_get_byte(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern short g_variant_get_int16 (IntPtr handle);
+        public static explicit operator byte(Variant val)
+        {
+            return g_variant_get_byte(val.Handle);
+        }
 
-		public static explicit operator short (Variant val)
-		{
-			return g_variant_get_int16 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern short g_variant_get_int16(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern ushort g_variant_get_uint16 (IntPtr handle);
+        public static explicit operator short(Variant val)
+        {
+            return g_variant_get_int16(val.Handle);
+        }
 
-		public static explicit operator ushort (Variant val)
-		{
-			return g_variant_get_uint16 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern ushort g_variant_get_uint16(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern int g_variant_get_int32 (IntPtr handle);
+        public static explicit operator ushort(Variant val)
+        {
+            return g_variant_get_uint16(val.Handle);
+        }
 
-		public static explicit operator int (Variant val)
-		{
-			return g_variant_get_int32 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern int g_variant_get_int32(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern uint g_variant_get_uint32 (IntPtr handle);
+        public static explicit operator int(Variant val)
+        {
+            return g_variant_get_int32(val.Handle);
+        }
 
-		public static explicit operator uint (Variant val)
-		{
-			return g_variant_get_uint32 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern uint g_variant_get_uint32(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern long g_variant_get_int64 (IntPtr handle);
+        public static explicit operator uint(Variant val)
+        {
+            return g_variant_get_uint32(val.Handle);
+        }
 
-		public static explicit operator long (Variant val)
-		{
-			return g_variant_get_int64 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern long g_variant_get_int64(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern ulong g_variant_get_uint64 (IntPtr handle);
+        public static explicit operator long(Variant val)
+        {
+            return g_variant_get_int64(val.Handle);
+        }
 
-		public static explicit operator ulong (Variant val)
-		{
-			return g_variant_get_uint64 (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern ulong g_variant_get_uint64(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern double g_variant_get_double (IntPtr handle);
+        public static explicit operator ulong(Variant val)
+        {
+            return g_variant_get_uint64(val.Handle);
+        }
 
-		public static explicit operator double (Variant val)
-		{
-			return g_variant_get_double (val.Handle);
-		}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern double g_variant_get_double(IntPtr handle);
 
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern IntPtr g_variant_get_string (IntPtr handle);
+        public static explicit operator double(Variant val)
+        {
+            return g_variant_get_double(val.Handle);
+        }
 
-		public static explicit operator string (Variant val)
-		{
-			IntPtr str = g_variant_get_string (val.Handle);
-			return str == IntPtr.Zero ? null : GLib.Marshaller.Utf8PtrToString (str);
-		}
-	}
+        [DllImport(Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
+        static extern IntPtr g_variant_get_string(IntPtr handle);
+
+        public static explicit operator string(Variant val)
+        {
+            IntPtr str = g_variant_get_string(val.Handle);
+            return str == IntPtr.Zero ? null : GLib.Marshaller.Utf8PtrToString(str);
+        }
+    }
 }

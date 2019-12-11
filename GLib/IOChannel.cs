@@ -18,44 +18,6 @@
 // Free Software Foundation, Inc., 59 Temple Place - Suite 330,
 // Boston, MA 02111-1307, USA.
 
-
-namespace GLibSharp
-{
-
-    using System;
-    using System.Runtime.InteropServices;
-    using GLib;
-
-    [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    internal delegate bool IOFuncNative(IntPtr source, int condition, IntPtr data);
-
-    internal class IOFuncWrapper
-    {
-
-        IOFunc managed;
-
-        public IOFuncNative NativeDelegate;
-
-        public IOFuncWrapper(IOFunc managed)
-        {
-            this.managed = managed;
-            NativeDelegate = new IOFuncNative(NativeCallback);
-        }
-        bool NativeCallback(IntPtr source, int condition, IntPtr data)
-        {
-            try
-            {
-                return managed(IOChannel.FromHandle(source), (IOCondition)condition);
-            }
-            catch (Exception e)
-            {
-                ExceptionManager.RaiseUnhandledException(e, false);
-                return false;
-            }
-        }
-    }
-}
-
 namespace GLib
 {
 
@@ -452,55 +414,4 @@ namespace GLib
 
     public delegate bool IOFunc(IOChannel source, IOCondition condition);
 
-    public enum IOChannelError
-    {
-        FileTooBig,
-        Inval,
-        IO,
-        IsDir,
-        NoSpace,
-        Nxio,
-        Overflow,
-        Pipe,
-        Failed,
-    }
-
-    [Flags]
-    public enum IOCondition
-    {
-        In = 1 << 0,
-        Out = 1 << 2,
-        Pri = 1 << 1,
-        Err = 1 << 3,
-        Hup = 1 << 4,
-        Nval = 1 << 5,
-    }
-
-    [Flags]
-    public enum IOFlags
-    {
-        Append = 1 << 0,
-        Nonblock = 1 << 1,
-        IsReadable = 1 << 2,
-        IsWriteable = 1 << 3,
-        IsSeekable = 1 << 4,
-        Mask = 1 << 5 - 1,
-        GetMask = Mask,
-        SetMask = Append | Nonblock,
-    }
-
-    public enum IOStatus
-    {
-        Error,
-        Normal,
-        Eof,
-        Again,
-    }
-
-    public enum SeekType
-    {
-        Cur,
-        Set,
-        End,
-    }
 }
