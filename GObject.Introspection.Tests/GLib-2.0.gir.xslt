@@ -46,7 +46,7 @@
     </xsl:template>
 
     <xsl:template match="core:alias[@name='Type']/core:type">
-        <core:type name="GType" />
+        
     </xsl:template>
 
     <xsl:template match="core:record[@name='Variant']">

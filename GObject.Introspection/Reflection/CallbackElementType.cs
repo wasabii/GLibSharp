@@ -1,5 +1,6 @@
 ﻿using System;
 
+using GObject.Introspection.Internal;
 using GObject.Introspection.Model;
 
 namespace GObject.Introspection.Reflection

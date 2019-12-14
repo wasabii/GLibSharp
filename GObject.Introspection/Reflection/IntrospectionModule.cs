@@ -2,8 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Emit;
 
 namespace GObject.Introspection.Reflection
 {
@@ -53,6 +51,7 @@ namespace GObject.Introspection.Reflection
         IEnumerable<IntrospectionType> GetTypes()
         {
             return Enumerable.Empty<IntrospectionType>()
+                .Concat(GetAliasTypes())
                 .Concat(GetBitFieldTypes())
                 .Concat(GetCallbackTypes())
                 .Concat(GetClassTypes())
@@ -62,6 +61,11 @@ namespace GObject.Introspection.Reflection
                 .Concat(GetInterfaceTypes())
                 .Concat(GetRecordTypes())
                 .Concat(GetUnionTypes());
+        }
+
+        protected virtual IEnumerable<IntrospectionType> GetAliasTypes()
+        {
+            return ns.Aliases.Select(i => new AliasElementType(context, i));
         }
 
         protected virtual IEnumerable<EnumType> GetBitFieldTypes()
@@ -101,7 +105,7 @@ namespace GObject.Introspection.Reflection
             return ns.Interfaces.Select(i => new InterfaceElementType(context, i));
         }
 
-        protected virtual IEnumerable<StructureType> GetRecordTypes()
+        protected virtual IEnumerable<ClassType> GetRecordTypes()
         {
             return ns.Records.Select(i => new RecordElementType(context, i));
         }

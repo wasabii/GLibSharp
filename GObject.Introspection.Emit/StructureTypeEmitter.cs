@@ -27,7 +27,7 @@ namespace GObject.Introspection.Dynamic
                 TypeAttributes.AnsiClass;
         }
 
-        protected override TypeInfo GetParentType()
+        protected override TypeInfo GetParentType(IntrospectionType type)
         {
             return typeof(ValueType).GetTypeInfo();
         }

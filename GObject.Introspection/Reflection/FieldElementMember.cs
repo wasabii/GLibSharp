@@ -1,5 +1,5 @@
 ﻿using System;
-
+using System.Linq;
 using GObject.Introspection.Internal;
 using GObject.Introspection.Model;
 
@@ -38,7 +38,31 @@ namespace GObject.Introspection.Reflection
 
         public override string Name => field.Name.ToPascalCase();
 
-        protected override TypeSymbol GetFieldType() => field.Type?.ToSymbol(Context);
+        /// <summary>
+        /// Gets the field type.
+        /// </summary>
+        /// <returns></returns>
+        protected override TypeSymbol GetFieldType()
+        {
+            // standard field type
+            if (field.Type != null)
+                return field.Type.ToSymbol(Context);
+
+            // field is an unnamed callback type
+            if (field.Callback != null)
+            {
+                var cb = DeclaringType.Members
+                    .OfType<IntrospectionTypeMember>()
+                    .Select(i => i.Type).OfType<FieldElementMemberCallbackType>()
+                    .FirstOrDefault(i => i.Field == field);
+                if (cb is null)
+                    throw new InvalidOperationException("Could not locate generated field delegate type.");
+
+                return new IntrospectionTypeSymbol(cb);
+            }
+
+            throw new InvalidOperationException();
+        }
 
     }
 

@@ -54,7 +54,7 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the qualified name of the type.
         /// </summary>
-        public string QualifiedName => Context.CurrentNamespace + "." + Name;
+        public virtual string QualifiedName => Context.CurrentNamespace + "." + Name;
 
         /// <summary>
         /// Gets the type of the type.

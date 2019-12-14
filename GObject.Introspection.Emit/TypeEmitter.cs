@@ -60,9 +60,9 @@ namespace GObject.Introspection.Dynamic
         /// Gets the parent type to apply on generation.
         /// </summary>
         /// <returns></returns>
-        protected virtual TypeInfo GetParentType()
+        protected virtual TypeInfo GetParentType(IntrospectionType type)
         {
-            return typeof(object).GetTypeInfo();
+            return type.BaseType != null ? Context.ResolveTypeInfo(type.BaseType) : null;
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace GObject.Introspection.Dynamic
         public virtual IEnumerable<DynamicTypeInfo> EmitDynamicType(IntrospectionType type, TypeBuilder nestedTypeParent)
         {
             // build the new type definition
-            var builder = DefineType(type, GetTypeAttributes(type, nestedTypeParent != null), GetParentType(), nestedTypeParent);
+            var builder = DefineType(type, GetTypeAttributes(type, nestedTypeParent != null), GetParentType(type), nestedTypeParent);
             yield return DynamicTypeInfo.Create(type, builder, t => FinalizeDynamicType(builder, t));
 
             // emit nested type members
@@ -131,103 +131,10 @@ namespace GObject.Introspection.Dynamic
                 throw new ArgumentNullException(nameof(builder));
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
-
+            
             foreach (var member in type.Members)
-                EmitMember(builder, type, member);
-        }
-
-        /// <summary>
-        /// Emits the specified type member.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="member"></param>
-        protected virtual void EmitMember(TypeBuilder builder, IntrospectionType type, IntrospectionMember member)
-        {
-            if (builder is null)
-                throw new ArgumentNullException(nameof(builder));
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
-            if (member is null)
-                throw new ArgumentNullException(nameof(member));
-
-            switch (member)
-            {
-                case FieldMember field:
-                    EmitMember(builder, type, field);
-                    break;
-                case MethodMember method:
-                    EmitMember(builder, type, method);
-                    break;
-                case PropertyMember property:
-                    EmitMember(builder, type, property);
-                    break;
-                case EventMember evnt:
-                    EmitMember(builder, type, evnt);
-                    break;
-                case EnumerationMember field:
-                    EmitMember(builder, type, field);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Emits field members.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="field"></param>
-        protected void EmitMember(TypeBuilder builder, IntrospectionType type, FieldMember field)
-        {
-            var f = builder.DefineField(
-                field.Name,
-                Context.ResolveTypeInfo(field.FieldType),
-                FieldAttributes.Public);
-        }
-
-        /// <summary>
-        /// Emits method members.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="method"></param>
-        protected void EmitMember(TypeBuilder builder, IntrospectionType type, MethodMember method)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Emits property members.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="property"></param>
-        protected void EmitMember(TypeBuilder builder, IntrospectionType type, PropertyMember property)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Emits event members.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="evnt"></param>
-        protected void EmitMember(TypeBuilder builder, IntrospectionType type, EventMember evnt)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Emits enum members.
-        /// </summary>
-        /// <param name="builder"></param>
-        /// <param name="type"></param>
-        /// <param name="field"></param>
-        protected void EmitMember(TypeBuilder builder, IntrospectionType type, EnumerationMember field)
-        {
-            var f = builder.DefineField(field.Name, builder, FieldAttributes.Public | FieldAttributes.Literal | FieldAttributes.Static);
-            f.SetConstant(field.Value);
+                foreach (var info in Context.EmitDynamicMember(builder, member))
+                    info.GetHashCode();
         }
 
     }

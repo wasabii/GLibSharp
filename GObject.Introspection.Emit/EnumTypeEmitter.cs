@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using System.Reflection.Emit;
 
 using GObject.Introspection.Reflection;
@@ -22,6 +23,11 @@ namespace GObject.Introspection.Dynamic
 
         }
 
+        protected override TypeInfo GetParentType(IntrospectionType type)
+        {
+            return typeof(Enum).GetTypeInfo();
+        }
+
         protected override TypeAttributes GetTypeAttributes(IntrospectionType type, bool nested)
         {
             return base.GetTypeAttributes(type, nested) | TypeAttributes.Sealed;
@@ -29,8 +35,12 @@ namespace GObject.Introspection.Dynamic
 
         protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, IntrospectionType type)
         {
-            var e = (EnumType)type;
-            builder.DefineField("value__", Context.ResolveTypeInfo(e.BaseType), FieldAttributes.Private | FieldAttributes.SpecialName);
+            return FinalizeDynamicType(builder, (EnumType)type);
+        }
+
+        TypeInfo FinalizeDynamicType(TypeBuilder builder, EnumType type)
+        {
+            builder.DefineField("value__", typeof(int), FieldAttributes.Private | FieldAttributes.SpecialName);
             return base.FinalizeDynamicType(builder, type);
         }
 

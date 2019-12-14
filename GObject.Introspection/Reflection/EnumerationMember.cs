@@ -23,7 +23,7 @@
         /// <summary>
         /// Gets the value of the enumeration member.
         /// </summary>
-        public abstract object Value { get; }
+        public abstract int Value { get; }
 
     }
 

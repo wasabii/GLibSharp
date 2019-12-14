@@ -7,7 +7,7 @@ using GObject.Introspection.Model;
 namespace GObject.Introspection.Reflection
 {
 
-    class RecordElementType : StructureType
+    class RecordElementType : ClassType
     {
 
         readonly Record record;
@@ -33,12 +33,27 @@ namespace GObject.Introspection.Reflection
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {
             return base.GetMembers()
+                .Concat(GetFieldCallbackTypes())
                 .Concat(GetPropertyMembers())
                 .Concat(GetFieldMembers())
                 .Concat(GetConstructorMembers())
                 .Concat(GetFunctionMembers())
                 .Concat(GetMethodMembers())
                 .Concat(GetUnionMembers());
+        }
+
+        /// <summary>
+        /// Gets callback types declared as the type of fields.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IEnumerable<IntrospectionMember> GetFieldCallbackTypes()
+        {
+            return record.Fields.Where(i => i.Callback != null).Select(i => GetFieldCallbackType(i));
+        }
+
+        protected virtual IntrospectionMember GetFieldCallbackType(Field field)
+        {
+            return new IntrospectionTypeMember(Context, this, new FieldElementMemberCallbackType(Context, this, field));
         }
 
         protected virtual IEnumerable<PropertyMember> GetPropertyMembers()

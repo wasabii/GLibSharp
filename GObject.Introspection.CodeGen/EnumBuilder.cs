@@ -65,8 +65,6 @@ namespace GObject.Introspection.CodeGen
 
         SyntaxNode ConvertValue(string value)
         {
-            if (int.TryParse(value, out var i))
-                return Syntax.LiteralExpression(i);
             if (long.TryParse(value, out var l))
                 return Syntax.LiteralExpression((int)l);
 

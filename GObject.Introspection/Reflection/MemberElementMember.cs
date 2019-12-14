@@ -30,7 +30,7 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the value of the enumeration member.
         /// </summary>
-        public override object Value => long.Parse(member.Value);
+        public override int Value => (int)long.Parse(member.Value);
 
     }
 

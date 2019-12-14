@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -41,6 +42,9 @@ namespace GObject.Introspection.Dynamic
         /// <returns></returns>
         public IEnumerable<DynamicTypeInfo> EmitDynamicType(IntrospectionType type, TypeBuilder nestedTypeParent = null)
         {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+
             switch (type)
             {
                 case ClassType t:
@@ -53,6 +57,38 @@ namespace GObject.Introspection.Dynamic
                     return new EnumTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
                 case DelegateType t:
                     return new DelegateTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+
+        /// <summary>
+        /// Disptachs the dynamic type emission to an emitter.
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="nestedTypeParent"></param>
+        /// <returns></returns>
+        public IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder parent, IntrospectionMember member)
+        {
+            if (parent is null)
+                throw new ArgumentNullException(nameof(parent));
+            if (member is null)
+                throw new ArgumentNullException(nameof(member));
+
+            switch (member)
+            {
+                case FieldMember m:
+                    return new FieldMemberEmitter(this).EmitDynamicMember(parent, m);
+                case MethodMember m:
+                    return new MethodMemberEmitter(this).EmitDynamicMember(parent, m);
+                case PropertyMember m:
+                    return new PropertyMemberEmitter(this).EmitDynamicMember(parent, m);
+                case EventMember m:
+                    return new EventMemberEmitter(this).EmitDynamicMember(parent, m);
+                case EnumerationMember m:
+                    return new EnumerationMemberEmitter(this).EmitDynamicMember(parent, m);
+                case IntrospectionTypeMember m:
+                    return Enumerable.Empty<MemberInfo>();
                 default:
                     throw new InvalidOperationException();
             }
