@@ -71,7 +71,7 @@ namespace GObject.Introspection.Reflection
                 throw new ArgumentNullException(nameof(typeName));
 
             // generates a dictionary up front of type name to forwarded type symbols
-            return GetClrInfoTypes(ns).ToDictionary(i => ((IHasName)i).Name, i => new ForwardedTypeSymbol((IHasClrInfo)i));
+            return GetClrInfoTypes(ns).ToDictionary(i => ((IHasName)i).Name, i => new ForwardedTypeSymbol(((IHasClrInfo)i).ClrInfo.Type));
         }
 
         /// <summary>
@@ -95,6 +95,7 @@ namespace GObject.Introspection.Reflection
                 .Concat(ns.Unions)
                 .OfType<IHasName>()
                 .OfType<IHasClrInfo>()
+                .Where(i => i.ClrInfo?.Type != null)
                 .Cast<Element>();
         }
 

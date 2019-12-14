@@ -15,7 +15,7 @@
         /// <summary>
         /// Type is a .NET struct.
         /// </summary>
-        Struct,
+        Structure,
 
         /// <summary>
         /// Type is a .NET enum.

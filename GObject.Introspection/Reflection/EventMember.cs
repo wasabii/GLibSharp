@@ -4,18 +4,23 @@
     /// <summary>
     /// Describes a member of a class that is an event.
     /// </summary>
-    abstract class EventMember : IntrospectionMember
+    public abstract class EventMember : IntrospectionMember
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public EventMember(IntrospectionContext context) :
-            base(context)
+        public EventMember(IntrospectionContext context, IntrospectionType declaringType) :
+            base(context, declaringType)
         {
 
         }
+
+        /// <summary>
+        /// Gets the kind of the member.
+        /// </summary>
+        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Event;
 
         /// <summary>
         /// Gets the invokable to add a callback.

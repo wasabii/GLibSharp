@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Reflection;
+using System.Reflection.Emit;
 
 namespace GObject.Introspection.Reflection
 {
@@ -6,7 +8,7 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Describes a type that is a delegate.
     /// </summary>
-    abstract class DelegateType : IntrospectionType
+    public abstract class DelegateType : IntrospectionType
     {
 
         readonly Lazy<TypeSymbol> returnType;
@@ -21,7 +23,7 @@ namespace GObject.Introspection.Reflection
             returnType = new Lazy<TypeSymbol>(GetReturnType);
         }
 
-        public override IntrospectionTypeKind Kind => IntrospectionTypeKind.Delegate;
+        public sealed override IntrospectionTypeKind Kind => IntrospectionTypeKind.Delegate;
 
         /// <summary>
         /// Gets the return type of the method.

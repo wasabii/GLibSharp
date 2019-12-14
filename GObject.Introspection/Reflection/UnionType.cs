@@ -18,7 +18,7 @@ namespace GObject.Introspection.Reflection
         /// <param name="context"></param>
         /// <param name="union"></param>
         public UnionType(IntrospectionContext context, Union union) :
-            base(context, union)
+            base(context)
         {
             this.union = union ?? throw new ArgumentNullException(nameof(union));
         }
@@ -33,26 +33,23 @@ namespace GObject.Introspection.Reflection
         /// </summary>
         public override string Name => union.Name;
 
-        /// <summary>
-        /// Gets the type of the union.
-        /// </summary>
-        public override IntrospectionTypeKind Kind => IntrospectionTypeKind.Struct;
-
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {
             return base.GetMembers()
+                .Concat(GetFieldMembers())
                 .Concat(GetRecordMembers());
         }
 
-        protected override IEnumerable<IntrospectionMember> GetFieldMembers()
+        protected virtual IEnumerable<IntrospectionMember> GetFieldMembers()
         {
             // stack all fields on top of each other
-            return union.Fields.Select(i => new FieldMember(Context, i, 0));
+            return union.Fields.Select(i => new FieldElementMember(Context, this, i, 0));
         }
 
         protected virtual IEnumerable<IntrospectionMember> GetRecordMembers()
         {
-            return union.Records.Select(i => new IntrospectionTypeMember(Context, new RecordType(Context, i)));
+            // stack all records on top of each other
+            return union.Records.Select(i => new IntrospectionTypeMember(Context, this, new RecordElementType(Context, i)));
         }
 
     }

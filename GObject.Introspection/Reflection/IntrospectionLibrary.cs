@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Linq;
 
 using GObject.Introspection.Library;
+using GObject.Introspection.Model;
 
 namespace GObject.Introspection.Reflection
 {
 
     /// <summary>
-    /// Provides the capability of resolving <see cref="IntrospectionNamespace"/> instances, which form a model of
+    /// Provides the capability of resolving <see cref="IntrospectionModule"/> instances, which form a model of
     /// interaction with a loaded GObject introspected library.
     /// </summary>
     public class IntrospectionLibrary
@@ -16,7 +16,7 @@ namespace GObject.Introspection.Reflection
 
         readonly NamespaceLibrary namespaces;
         readonly TypeSymbolProvider symbols;
-        readonly ConcurrentDictionary<(string, string), IntrospectionNamespace> cache;
+        readonly ConcurrentDictionary<(string, string), IntrospectionModule> modules;
 
         /// <summary>
         /// Initializes a new instance.
@@ -26,24 +26,24 @@ namespace GObject.Introspection.Reflection
         {
             this.namespaces = namespaces ?? throw new ArgumentNullException(nameof(namespaces));
 
-            symbols = new TypeSymbolProvider(new RecursiveTypeSymbolSource(this), new ForwardedTypeSymbolSource(namespaces));
-            cache = new ConcurrentDictionary<(string, string), IntrospectionNamespace>();
+            symbols = new TypeSymbolProvider(new IntrospectionTypeSymbolSource(this), new ForwardedTypeSymbolSource(namespaces));
+            modules = new ConcurrentDictionary<(string, string), IntrospectionModule>();
         }
 
         /// <summary>
         /// Resolves the namespace of the given version.
         /// </summary>
-        /// <param name="name"></param>
+        /// <param name="ns"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public IntrospectionNamespace ResolveNamespace(string name, string version)
+        public IntrospectionModule ResolveModule(string ns, string version)
         {
-            if (name is null)
-                throw new ArgumentNullException(nameof(name));
+            if (ns is null)
+                throw new ArgumentNullException(nameof(ns));
             if (version is null)
                 throw new ArgumentNullException(nameof(version));
 
-            return cache.GetOrAdd((name, version), i => ResolveNamespaceInternal(i.Item1, i.Item2));
+            return modules.GetOrAdd((ns, version), i => ResolveModuleInternal(i.Item1, i.Item2));
         }
 
         /// <summary>
@@ -52,24 +52,9 @@ namespace GObject.Introspection.Reflection
         /// <param name="name"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        IntrospectionNamespace ResolveNamespaceInternal(string name, string version)
+        IntrospectionModule ResolveModuleInternal(string name, string version)
         {
-            // resolve namespace model
-            var model = namespaces.ResolveNamespace(name, version);
-            if (model == null)
-                return null;
-
-            // imports derived from repository of namespace, followed by self
-            var imports = model.Repository.Includes
-                .Select(i => (i.Name, i.Version))
-                .Append((model.Name, model.Version))
-                .ToList();
-
-            // namespace context configuration
-            var context = new IntrospectionContext(symbols, imports, name);
-
-            // generate new namespace
-            return new IntrospectionNamespace(context, model);
+            return namespaces.ResolveNamespace(name, version) is Namespace ns ? new IntrospectionModule(symbols, ns) : null;
         }
 
     }

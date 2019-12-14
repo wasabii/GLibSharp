@@ -1,7 +1,5 @@
 ﻿using System;
 
-using GObject.Introspection.Model;
-
 namespace GObject.Introspection.Reflection
 {
 
@@ -11,21 +9,21 @@ namespace GObject.Introspection.Reflection
     class ForwardedTypeSymbol : TypeSymbol
     {
 
-        readonly IHasClrInfo element;
+        readonly string typeName;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="clrTypeName"></param>
-        public ForwardedTypeSymbol(IHasClrInfo element)
+        /// <param name="typeName"></param>
+        public ForwardedTypeSymbol(string typeName)
         {
-            this.element = element ?? throw new ArgumentNullException(nameof(element));
+            this.typeName = typeName ?? throw new ArgumentNullException(nameof(typeName));
         }
 
         /// <summary>
         /// Gets the qualified CLR type name.
         /// </summary>
-        public override string QualifiedName => element.ClrInfo.Type;
+        public override string QualifiedName => typeName;
 
     }
 

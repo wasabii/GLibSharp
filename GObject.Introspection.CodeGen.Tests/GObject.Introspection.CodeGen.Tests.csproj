@@ -7,10 +7,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Cogito.Autofac" Version="1.2.21" />
     <PackageReference Include="FluentAssertions" Version="5.9.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.4.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="2.0.0" />
     <PackageReference Include="MSTest.TestFramework" Version="2.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GObject.Introspection.CodeGen\GObject.Introspection.CodeGen.csproj" />
+    <ProjectReference Include="..\GObject.Introspection\GObject.Introspection.csproj" />
   </ItemGroup>
 
   <ItemGroup>

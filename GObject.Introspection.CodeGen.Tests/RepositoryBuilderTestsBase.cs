@@ -3,7 +3,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Xml.Linq;
-
+using Autofac;
+using GObject.Introspection.Library;
 using GObject.Introspection.Model;
 
 using Microsoft.CodeAnalysis;
@@ -55,35 +56,30 @@ namespace GObject.Introspection.CodeGen.Tests
         /// Builds the given namespace out of the given XML into an assembly.
         /// </summary>
         /// <param name="xml"></param>
-        /// <param name="ns"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        protected Assembly Build(XDocument xml, string ns)
+        protected Assembly ExportNamespace(XDocument xml, string name, string version)
         {
-            // build container
-            var services = new ServiceCollection();
-            services.AddGirCodeGen();
-            var provider = services.BuildServiceProvider();
-
             // build workspace for code generation
             var workspace = new AdhocWorkspace();
             workspace.Options.WithChangedOption(CSharpFormattingOptions.IndentBraces, true);
-
-            // build generator and builder for transforming
             var syntax = SyntaxGenerator.GetGenerator(workspace, LanguageNames.CSharp);
-            var builder = provider.GetRequiredService<SyntaxBuilderFactory>().Create(syntax);
 
-            // add repositories to be built
-            var repositories = new RepositoryXmlSource();
-            repositories.Load(xml);
-            builder.AddSource(repositories);
-            builder.AddExport(ns);
+            // build container
+            var services = new ContainerBuilder();
+            services.RegisterAssemblyTypes(typeof(SyntaxBuilder).Assembly).Where(i => i.IsAssignableTo<ISyntaxNodeBuilder>()).As<ISyntaxNodeBuilder>();
+            services.RegisterType<SyntaxBuilder>().AsSelf();
+            services.RegisterInstance(syntax);
+            services.RegisterInstance(new NamespaceLibrary(new NamespaceXmlSource(xml));
+            var container = services.Build();
+            var builder = container.Resolve<SyntaxBuilder>();
 
             // export code and check for errors
-            var rsl = builder.Export();
-            if (rsl.Node == null)
-                throw new Exception(string.Join("\n", rsl.Messages));
+            var rsl = builder.ExportNamespace(name, version);
+            if (rsl == null)
+                throw new InvalidOperationException();
 
-            var syn = rsl.Node.NormalizeWhitespace();
+            var syn = rsl.NormalizeWhitespace();
 
             using (var wrt = new StringWriter())
             {

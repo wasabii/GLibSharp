@@ -1,8 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp3.0</TargetFramework>
-
+    <TargetFramework>net472</TargetFramework>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
@@ -13,6 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GObject.Introspection.Emit\GObject.Introspection.Dynamic.csproj" />
     <ProjectReference Include="..\GObject.Introspection\GObject.Introspection.csproj" />
   </ItemGroup>
 

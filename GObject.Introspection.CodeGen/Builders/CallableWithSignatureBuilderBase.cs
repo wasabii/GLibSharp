@@ -14,7 +14,7 @@ namespace GObject.Introspection.CodeGen.Builders
         where TElement : CallableWithSignature
     {
 
-        protected override IEnumerable<SyntaxNode> Build(IContext context, TElement callable)
+        protected override IEnumerable<SyntaxNode> Build(TElement callable)
         {
             var sig = context.Annotation<CallableBuilderOptions>()?.SignatureOnly == true;
 
@@ -31,22 +31,22 @@ namespace GObject.Introspection.CodeGen.Builders
             return rlt;
         }
 
-        protected virtual IEnumerable<SyntaxNode> BuildNativeFunction(IContext context, TElement callable)
+        protected virtual IEnumerable<SyntaxNode> BuildNativeFunction(TElement callable)
         {
-            return BuilderUtil.BuildNativeFunction(context, callable);
+            return BuilderUtil.BuildNativeFunction(callable);
         }
 
-        protected virtual string GetName(IContext context, TElement symbol)
+        protected virtual string GetName(TElement symbol)
         {
             return symbol.Name.ToPascalCase();
         }
 
-        protected virtual IEnumerable<SyntaxNode> BuildParameters(IContext context, TElement callable)
+        protected virtual IEnumerable<SyntaxNode> BuildParameters(TElement callable)
         {
-            return callable.Parameters.OfType<Parameter>().SelectMany(i => BuildParameter(context, callable, i));
+            return callable.Parameters.OfType<Parameter>().SelectMany(i => BuildParameter(callable, i));
         }
 
-        IEnumerable<SyntaxNode> BuildParameter(IContext context, TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameter(TElement callable, Parameter parameter)
         {
             // obtain parameter name
             var name = GetArgumentName(parameter);
@@ -71,13 +71,13 @@ namespace GObject.Introspection.CodeGen.Builders
                 throw new InvalidOperationException("Unable to retrieve type node.");
 
             // parameter declaration
-            var decl = context.Syntax.AddAttributes(
-                    context.Syntax.ParameterDeclaration(
+            var decl = Context.AddAttributes(
+                    Context.ParameterDeclaration(
                     name,
                     typeNode,
                     null,
                     GetParameterRefKind(parameter)),
-                BuildParameterAttributes(context, callable, parameter));
+                BuildParameterAttributes(callable, parameter));
 
             // varargs requires 'params' keyword
             if (parameter.VarArgs)
@@ -103,21 +103,21 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="callable"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        IEnumerable<SyntaxNode> BuildParameterAttributes(IContext context, TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameterAttributes(TElement callable, Parameter parameter)
         {
-            yield return BuildParameterAttribute(context, callable, parameter);
+            yield return BuildParameterAttribute(callable, parameter);
         }
 
-        SyntaxNode BuildParameterAttribute(IContext context, TElement callable, Parameter parameter)
+        SyntaxNode BuildParameterAttribute(TElement callable, Parameter parameter)
         {
-            return context.Syntax.Attribute(
+            return Context.Attribute(
                 typeof(ParameterAttribute).FullName,
-                BuildParameterAttributeArguments(context, callable, parameter));
+                BuildParameterAttributeArguments(callable, parameter));
         }
 
-        IEnumerable<SyntaxNode> BuildParameterAttributeArguments(IContext context, TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameterAttributeArguments(TElement callable, Parameter parameter)
         {
-            yield return context.Syntax.AttributeArgument(context.Syntax.LiteralExpression(parameter.Name));
+            yield return context.Syntax.AttributeArgument(Context.LiteralExpression(parameter.Name));
         }
 
         /// <summary>
@@ -139,7 +139,7 @@ namespace GObject.Introspection.CodeGen.Builders
                 _ => throw new InvalidOperationException(),
             };
         }
-        protected virtual IEnumerable<string> BuildTypeParameters(IContext context, TElement symbol)
+        protected virtual IEnumerable<string> BuildTypeParameters(TElement symbol)
         {
             yield break;
         }
@@ -150,7 +150,7 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="method"></param>
         /// <returns></returns>
-        protected virtual SyntaxNode BuildReturnType(IContext context, TElement method)
+        protected virtual SyntaxNode BuildReturnType(TElement method)
         {
             var returnTypeElement = method.ReturnValue?.Type;
             if (returnTypeElement == null)
@@ -172,17 +172,17 @@ namespace GObject.Introspection.CodeGen.Builders
             return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
-        protected virtual Accessibility GetAccessibility(IContext context, TElement symbol)
+        protected virtual Accessibility GetAccessibility(TElement symbol)
         {
             return Accessibility.Public;
         }
 
-        protected virtual DeclarationModifiers GetModifiers(IContext context, TElement symbol)
+        protected virtual DeclarationModifiers GetModifiers(TElement symbol)
         {
             return DeclarationModifiers.None;
         }
 
-        protected virtual IEnumerable<SyntaxNode> BuildStatements(IContext context, TElement symbol)
+        protected virtual IEnumerable<SyntaxNode> BuildStatements(TElement symbol)
         {
             var sigOnly = context.Annotation<CallableBuilderOptions>()?.SignatureOnly == true;
             if (sigOnly)
@@ -200,12 +200,12 @@ namespace GObject.Introspection.CodeGen.Builders
                 yield return context.Syntax.ReturnStatement(invoke);
         }
 
-        protected virtual IEnumerable<SyntaxNode> GetNativeArguments(IContext context, TElement symbol)
+        protected virtual IEnumerable<SyntaxNode> GetNativeArguments(TElement symbol)
         {
             return symbol.Parameters.Select(i => BuildNativeArgument(context, symbol, i));
         }
 
-        protected virtual SyntaxNode BuildNativeArgument(IContext context, TElement symbol, IParameter parameter)
+        protected virtual SyntaxNode BuildNativeArgument(TElement symbol, IParameter parameter)
         {
             // instance parameter represents the instance itself
             if (parameter is InstanceParameter)

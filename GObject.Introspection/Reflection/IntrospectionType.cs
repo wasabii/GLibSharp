@@ -12,7 +12,9 @@ namespace GObject.Introspection.Reflection
     public abstract class IntrospectionType
     {
 
-        readonly Lazy<List<TypeSymbol>> baseTypes;
+        readonly IntrospectionContext context;
+        readonly Lazy<TypeSymbol> baseType;
+        readonly Lazy<List<TypeSymbol>> implementedInterfaces;
         readonly Lazy<List<IntrospectionMember>> members;
         readonly ConcurrentDictionary<string, IntrospectionMember> memberNameCache;
 
@@ -21,9 +23,10 @@ namespace GObject.Introspection.Reflection
         /// </summary>
         public IntrospectionType(IntrospectionContext context)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
 
-            baseTypes = new Lazy<List<TypeSymbol>>(() => GetBaseTypes().ToList());
+            baseType = new Lazy<TypeSymbol>(() => GetBaseType());
+            implementedInterfaces = new Lazy<List<TypeSymbol>>(() => GetImplementedInterfaces().ToList());
             members = new Lazy<List<IntrospectionMember>>(() => GetMembers().ToList());
             memberNameCache = new ConcurrentDictionary<string, IntrospectionMember>();
         }
@@ -31,7 +34,12 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the current introspection context of the type.
         /// </summary>
-        public IntrospectionContext Context { get; }
+        public IntrospectionContext Context => context;
+
+        /// <summary>
+        /// Gets the owning module.
+        /// </summary>
+        public IntrospectionModule Module => Context.Module;
 
         /// <summary>
         /// Gets the original name of the type.
@@ -61,21 +69,35 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the base types of the type.
         /// </summary>
-        public virtual IReadOnlyList<TypeSymbol> BaseTypes => baseTypes.Value;
-
-        /// <summary>
-        /// Gets the members of the type.
-        /// </summary>
-        public virtual IReadOnlyList<IntrospectionMember> Members => members.Value;
+        public virtual TypeSymbol BaseType => baseType.Value;
 
         /// <summary>
         /// Gets the base types of the type.
         /// </summary>
         /// <returns></returns>
-        protected virtual IEnumerable<TypeSymbol> GetBaseTypes()
+        protected virtual TypeSymbol GetBaseType()
+        {
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the base types of the type.
+        /// </summary>
+        public virtual IReadOnlyList<TypeSymbol> ImplementedInterfaces => implementedInterfaces.Value;
+
+        /// <summary>
+        /// Gets the base types of the type.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual IEnumerable<TypeSymbol> GetImplementedInterfaces()
         {
             return Enumerable.Empty<TypeSymbol>();
         }
+
+        /// <summary>
+        /// Gets the members of the type.
+        /// </summary>
+        public virtual IReadOnlyList<IntrospectionMember> Members => members.Value;
 
         /// <summary>
         /// Gets the members of the type.
@@ -94,6 +116,15 @@ namespace GObject.Introspection.Reflection
         public IntrospectionMember ResolveMember(string name)
         {
             return memberNameCache.GetOrAdd(name, Members.FirstOrDefault(i => i.Name == name));
+        }
+
+        /// <summary>
+        /// Returns a string representation of the type.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return Name;
         }
 
     }

@@ -1,36 +1,29 @@
-﻿using System;
-
-using GObject.Introspection.Internal;
-using GObject.Introspection.Model;
-
-namespace GObject.Introspection.Reflection
+﻿namespace GObject.Introspection.Reflection
 {
 
-    class EnumerationMember : IntrospectionMember
+    public abstract class EnumerationMember : IntrospectionMember
     {
-
-        readonly Member member;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="member"></param>
-        public EnumerationMember(IntrospectionContext context, Member member) :
-            base(context)
+        /// <param name="declaringType"></param>
+        public EnumerationMember(IntrospectionContext context, IntrospectionType declaringType) :
+            base(context, declaringType)
         {
-            this.member = member ?? throw new ArgumentNullException(nameof(member));
-        }
 
-        /// <summary>
-        /// Gets the name of the member.
-        /// </summary>
-        public override string Name => member.Name.ToPascalCase();
+        }
 
         /// <summary>
         /// Gets the kind of the member.
         /// </summary>
-        public override IntrospectionMemberKind Kind => IntrospectionMemberKind.Member;
+        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Member;
+
+        /// <summary>
+        /// Gets the value of the enumeration member.
+        /// </summary>
+        public abstract object Value { get; }
 
     }
 

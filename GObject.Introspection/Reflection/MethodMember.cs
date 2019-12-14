@@ -12,8 +12,9 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public MethodMember(IntrospectionContext context) :
-            base(context)
+        /// <param name="declaringType"></param>
+        public MethodMember(IntrospectionContext context, IntrospectionType declaringType) :
+            base(context, declaringType)
         {
             returnType = new Lazy<TypeSymbol>(GetReturnType);
         }
@@ -21,7 +22,7 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the kind of the member.
         /// </summary>
-        public override IntrospectionMemberKind Kind => IntrospectionMemberKind.Method;
+        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Method;
 
         /// <summary>
         /// Gets the return type of the method.

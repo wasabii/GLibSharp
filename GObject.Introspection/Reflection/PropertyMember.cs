@@ -1,39 +1,28 @@
 ﻿using System;
 
-using GObject.Introspection.Internal;
-using GObject.Introspection.Model;
-
 namespace GObject.Introspection.Reflection
 {
 
-    public class PropertyMember : IntrospectionMember
+    public abstract class PropertyMember : IntrospectionMember
     {
 
-        readonly Property property;
         readonly Lazy<TypeSymbol> propertyType;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="property"></param>
-        public PropertyMember(IntrospectionContext context, Property property) :
-            base(context)
+        /// <param name="declaringType"></param>
+        public PropertyMember(IntrospectionContext context, IntrospectionType declaringType) :
+            base(context, declaringType)
         {
-            this.property = property ?? throw new ArgumentNullException(nameof(property));
-
             propertyType = new Lazy<TypeSymbol>(GetPropertyType);
         }
 
         /// <summary>
-        /// Gets the name of the member.
-        /// </summary>
-        public override string Name => property.Name.ToPascalCase();
-
-        /// <summary>
         /// Gets the kind of the member.
         /// </summary>
-        public override IntrospectionMemberKind Kind => IntrospectionMemberKind.Property;
+        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Property;
 
         /// <summary>
         /// Gets the type of the property.
@@ -44,28 +33,19 @@ namespace GObject.Introspection.Reflection
         /// Gets the property type.
         /// </summary>
         /// <returns></returns>
-        TypeSymbol GetPropertyType()
-        {
-            return property.Type?.ToSymbol(Context);
-        }
+        protected abstract TypeSymbol GetPropertyType();
 
         /// <summary>
         /// Gets the invokable for the property getter.
         /// </summary>
         /// <returns></returns>
-        public IntrospectionInvokable GetGetterInvokable()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract IntrospectionInvokable GetGetterInvokable();
 
         /// <summary>
         /// Gets the invokable for the property setter.
         /// </summary>
         /// <returns></returns>
-        public IntrospectionInvokable GetSetterInvokable()
-        {
-            throw new NotImplementedException();
-        }
+        public abstract IntrospectionInvokable GetSetterInvokable();
 
     }
 

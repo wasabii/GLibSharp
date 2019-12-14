@@ -1,7 +1,9 @@
+using System;
 using System.IO;
 using System.Xml.Linq;
 using System.Xml.Xsl;
 
+using GObject.Introspection.Dynamic;
 using GObject.Introspection.Library;
 using GObject.Introspection.Reflection;
 
@@ -25,10 +27,19 @@ namespace GObject.Introspection.Tests
                 z.Transform(XDocument.Parse(File.ReadAllText("GLib-2.0.gir")).CreateReader(), wrt);
 
             var l2 = new IntrospectionLibrary(new NamespaceLibrary((NamespaceXmlSource)new NamespaceXmlSource(t)));
-            var n2 = l2.ResolveNamespace("GLib", "2.0");
+            var n2 = l2.ResolveModule("GLib", "2.0");
             var t2 = n2.ResolveType("ByteArray");
             var f2 = (FieldMember)t2.ResolveMember("Data");
             var r2 = f2.FieldType;
+
+            var em = new DynamicModuleEmitter(l2);
+            var am = em.Emit(n2, AppDomain.CurrentDomain.GetAssemblies());
+
+            var fn = am.GetName().Name + ".dll";
+            if (File.Exists(fn))
+                File.Delete(fn);
+
+            am.Save(fn);
         }
 
         [TestMethod]

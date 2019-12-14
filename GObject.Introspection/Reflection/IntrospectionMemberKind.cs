@@ -18,11 +18,6 @@
         Field,
 
         /// <summary>
-        /// Members is a constructor.
-        /// </summary>
-        Constructor,
-
-        /// <summary>
         /// Member is a property.
         /// </summary>
         Property,

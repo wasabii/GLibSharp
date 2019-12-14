@@ -10,6 +10,7 @@ namespace GObject.Introspection.Reflection
     public class IntrospectionContext
     {
 
+        readonly IntrospectionModule module;
         readonly TypeSymbolProvider symbols;
         readonly IList<(string Namespace, string Version)> imports;
         readonly string current;
@@ -17,15 +18,23 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
+        /// <param name="module"></param>
         /// <param name="symbols"></param>
+        /// <param name="resolve"></param>
         /// <param name="imports"></param>
         /// <param name="current"></param>
-        internal IntrospectionContext(TypeSymbolProvider symbols, IList<(string, string)> imports, string current)
+        internal IntrospectionContext(IntrospectionModule module, TypeSymbolProvider symbols, IList<(string, string)> imports, string current)
         {
+            this.module = module ?? throw new ArgumentNullException(nameof(module));
             this.symbols = symbols ?? throw new ArgumentNullException(nameof(symbols));
             this.imports = imports ?? throw new ArgumentNullException(nameof(imports));
             this.current = current;
         }
+
+        /// <summary>
+        /// Gets the current module.
+        /// </summary>
+        public IntrospectionModule Module => module;
 
         /// <summary>
         /// Gets the current namespace of the context.

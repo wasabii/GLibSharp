@@ -1,15 +1,11 @@
 ﻿using System;
 
-using GObject.Introspection.Internal;
-using GObject.Introspection.Model;
-
 namespace GObject.Introspection.Reflection
 {
 
-    public class FieldMember : IntrospectionMember
+    public abstract class FieldMember : IntrospectionMember
     {
 
-        readonly Field field;
         readonly int? offset;
         readonly Lazy<TypeSymbol> fieldType;
 
@@ -17,12 +13,10 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="field"></param>
-        public FieldMember(IntrospectionContext context, Field field) :
-            base(context)
+        /// <param name="declaringType"></param>
+        public FieldMember(IntrospectionContext context, IntrospectionType declaringType) :
+            base(context, declaringType)
         {
-            this.field = field ?? throw new ArgumentNullException(nameof(field));
-
             fieldType = new Lazy<TypeSymbol>(GetFieldType);
         }
 
@@ -30,23 +24,18 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="field"></param>
+        /// <param name="declaringType"></param>
         /// <param name="offset"></param>
-        public FieldMember(IntrospectionContext context, Field field, int offset) :
-            this(context, field)
+        public FieldMember(IntrospectionContext context, IntrospectionType declaringType, int offset) :
+            this(context, declaringType)
         {
             this.offset = offset;
         }
 
         /// <summary>
-        /// Gets the name of the member.
-        /// </summary>
-        public override string Name => field.Name.ToPascalCase();
-
-        /// <summary>
         /// Gets the kind of the member.
         /// </summary>
-        public override IntrospectionMemberKind Kind => IntrospectionMemberKind.Field;
+        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Field;
 
         /// <summary>
         /// Gets the offset of the field.
@@ -62,28 +51,12 @@ namespace GObject.Introspection.Reflection
         /// Gets the field type.
         /// </summary>
         /// <returns></returns>
-        TypeSymbol GetFieldType()
-        {
-            return field.Type?.ToSymbol(Context);
-        }
+        protected abstract TypeSymbol GetFieldType();
 
         /// <summary>
-        /// Gets the invokable for the field getter.
+        /// Gets the default value to be assigned to the field.
         /// </summary>
-        /// <returns></returns>
-        public IntrospectionInvokable GetGetterInvokable()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets the invokable for the field setter.
-        /// </summary>
-        /// <returns></returns>
-        public IntrospectionInvokable GetSetterInvokable()
-        {
-            throw new NotImplementedException();
-        }
+        public virtual object DefaultValue => null;
 
     }
 
