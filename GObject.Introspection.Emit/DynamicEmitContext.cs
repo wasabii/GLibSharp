@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
@@ -40,7 +40,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        public IEnumerable<DynamicTypeInfo> EmitDynamicType(IntrospectionType type, TypeBuilder nestedTypeParent = null)
+        public IEnumerable<DynamicTypeInfo> EmitDynamicType(Model.Type type, TypeBuilder nestedTypeParent = null)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
@@ -68,7 +68,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        public IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder parent, IntrospectionMember member)
+        public IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder parent, Member member)
         {
             if (parent is null)
                 throw new ArgumentNullException(nameof(parent));
@@ -87,7 +87,7 @@ namespace GObject.Introspection.Dynamic
                     return new EventMemberEmitter(this).EmitDynamicMember(parent, m);
                 case EnumMember m:
                     return new EnumMemberEmitter(this).EmitDynamicMember(parent, m);
-                case IntrospectionTypeMember m:
+                case TypeMember m:
                     return Enumerable.Empty<MemberInfo>();
                 default:
                     throw new InvalidOperationException();

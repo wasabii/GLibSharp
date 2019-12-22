@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
 using Microsoft.CodeAnalysis;
 

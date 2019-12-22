@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>

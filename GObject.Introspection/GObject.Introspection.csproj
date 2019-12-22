@@ -10,7 +10,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Include="C-1.0.gir" />
+      <EmbeddedResource Include="Library\C-1.0.gir" />
     </ItemGroup>
 
     <ItemGroup>

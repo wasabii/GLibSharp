@@ -1,69 +1,52 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Xml.Linq;
+﻿using System;
 
 namespace GObject.Introspection.Model
 {
 
     /// <summary>
-    /// Element defining a member of a bit field or an enumeration
+    /// Describes a member of an introspection type.
     /// </summary>
-    public class Member : Element, IHasInfo
+    public abstract class Member
     {
 
-        public static IEnumerable<Member> LoadFrom(XContainer container)
-        {
-            return container.Elements().Select(i => Load(i)).OfType<Member>();
-        }
-
-        public static Member Load(XElement element)
-        {
-            return element.Name == Xmlns.Core_1_0_NS + "member" ? Populate(new Member(), element) : null;
-        }
-
-        public static Member Populate(Member target, XElement element)
-        {
-            Element.Populate(target, element);
-            target.Info = Info.Load(element);
-            target.Documentation = Documentation.Load(element);
-            target.Annotations = Annotation.LoadFrom(element).ToList();
-            target.Name = (string)element.Attribute("name");
-            target.Value = (string)element.Attribute("value");
-            target.CIdentifier = (string)element.Attribute(Xmlns.C_1_0_NS + "identifier");
-            target.GLibNick = (string)element.Attribute(Xmlns.GLib_1_0_NS + "nick");
-            return target;
-        }
-
-        public Info Info { get; set; }
-
-        public Documentation Documentation { get; set; }
-
-        public List<Annotation> Annotations { get; set; }
+        readonly Context context;
+        readonly Type declaringType;
 
         /// <summary>
-        /// Name of the member.
+        /// Initializes a new instance.
         /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Value of the member.
-        /// </summary>
-        public string Value { get; set; }
-
-        /// <summary>
-        /// Corresponding C type of the member.
-        /// </summary>
-        public string CIdentifier { get; set; }
-
-        /// <summary>
-        /// Short nickname of the member.
-        /// </summary>
-        public string GLibNick { get; set; }
-
-        public override string ToString()
+        /// <param name="context"></param>
+        /// <param name="declaringType"></param>
+        internal Member(Context context, Type declaringType)
         {
-            return Name ?? GLibNick ?? CIdentifier;
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.declaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
         }
+
+        /// <summary>
+        /// Gets the current introspection context of the type.
+        /// </summary>
+        internal Context Context => context;
+
+        /// <summary>
+        /// Gets the parent type of this member.
+        /// </summary>
+        public Type DeclaringType => declaringType;
+
+        /// <summary>
+        /// Gets the name of the member.
+        /// </summary>
+        public abstract string Name { get; }
+
+        /// <summary>
+        /// Gets the visibility of the member.
+        /// </summary>
+        public virtual Visibility Visibility => Visibility.Public;
+
+        /// <summary>
+        /// Gets the modifiers applied to the member.
+        /// </summary>
+        public virtual MemberModifier Modifiers => MemberModifier.Default;
 
     }
 

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     class MethodMemberEmitter : MemberEmitter
@@ -21,9 +21,9 @@ namespace GObject.Introspection.Dynamic
 
         }
 
-        Type[] GetMethodParameterTypes(TypeBuilder type, MethodMember method)
+        System.Type[] GetMethodParameterTypes(TypeBuilder type, MethodMember method)
         {
-            return new Type[0];
+            return new System.Type[0];
         }
 
         MethodAttributes GetMethodAttributes(TypeBuilder type, MethodMember method)
@@ -32,18 +32,18 @@ namespace GObject.Introspection.Dynamic
 
             switch (method.Visibility)
             {
-                case IntrospectionVisibility.Public:
+                case Visibility.Public:
                     a |= MethodAttributes.Public;
                     break;
-                case IntrospectionVisibility.Private:
+                case Visibility.Private:
                     a |= MethodAttributes.Private;
                     break;
-                case IntrospectionVisibility.Internal:
+                case Visibility.Internal:
                     a |= MethodAttributes.Family;
                     break;
             }
 
-            if (method.Modifiers.HasFlag(IntrospectionMemberModifier.Static))
+            if (method.Modifiers.HasFlag(MemberModifier.Static))
                 a |= MethodAttributes.Static;
 
             return a;
@@ -55,7 +55,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="member"></param>
         /// <returns></returns>
-        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, IntrospectionMember member)
+        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, Member member)
         {
             return EmitDynamicMember(type, (MethodMember)member);
         }

@@ -1,4 +1,4 @@
-﻿namespace GObject.Introspection.Dynamic
+﻿namespace GObject.Introspection.Emit
 {
 
     class ClassTypeEmitter : TypeEmitter

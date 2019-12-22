@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 namespace GObject.Introspection.Library
 {
@@ -15,7 +15,7 @@ namespace GObject.Introspection.Library
     {
 
         readonly IEnumerable<INamespaceSource> sources;
-        readonly ConcurrentDictionary<(string, string), Namespace> cache;
+        readonly ConcurrentDictionary<(string, string), NamespaceElement> cache;
 
         /// <summary>
         /// Initializes a new instance.
@@ -24,9 +24,9 @@ namespace GObject.Introspection.Library
         public NamespaceLibrary(IEnumerable<INamespaceSource> sources)
         {
             this.sources = sources ?? throw new ArgumentNullException(nameof(sources));
-            this.sources = this.sources.Append(new BaseNamespaceSource());
+            this.sources = this.sources.Append(new CNamespaceSource());
 
-            cache = new ConcurrentDictionary<(string, string), Namespace>();
+            cache = new ConcurrentDictionary<(string, string), NamespaceElement>();
         }
 
         /// <summary>
@@ -40,17 +40,17 @@ namespace GObject.Introspection.Library
         }
 
         /// <summary>
-        /// Resolves the <see cref="Namespace"/> record with the given name and version.
+        /// Resolves the <see cref="NamespaceElement"/> record with the given name and version.
         /// </summary>
         /// <param name="name"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        public Namespace ResolveNamespace(string name, string version)
+        public NamespaceElement ResolveNamespace(string name, string version)
         {
             return cache.GetOrAdd((name, version), i => ResolveNamespaceInternal(i.Item1, i.Item2));
         }
 
-        Namespace ResolveNamespaceInternal(string name, string version)
+        NamespaceElement ResolveNamespaceInternal(string name, string version)
         {
             return sources.Select(i => i.Resolve(name, version)).FirstOrDefault(i => i != null);
         }

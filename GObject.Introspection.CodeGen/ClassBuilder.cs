@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -62,10 +62,10 @@ namespace GObject.Introspection.CodeGen
         {
             var modifiers = DeclarationModifiers.Partial;
 
-            if (klass.Modifiers.HasFlag(IntrospectionTypeModifier.Static))
+            if (klass.Modifiers.HasFlag(TypeModifier.Static))
                 modifiers |= DeclarationModifiers.Static;
 
-            if (klass.Modifiers.HasFlag(IntrospectionTypeModifier.Abstract))
+            if (klass.Modifiers.HasFlag(TypeModifier.Abstract))
                 modifiers |= DeclarationModifiers.Abstract;
 
             return modifiers;
@@ -91,7 +91,7 @@ namespace GObject.Introspection.CodeGen
             return klass.Members.SelectMany(i => BuildMember(klass, i));
         }
 
-        IEnumerable<SyntaxNode> BuildMember(ClassType klass, IntrospectionMember member)
+        IEnumerable<SyntaxNode> BuildMember(ClassType klass, Member member)
         {
             return Context.Build(member);
         }

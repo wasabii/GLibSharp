@@ -2,9 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     class PropertyMemberEmitter : MemberEmitter
@@ -20,7 +20,7 @@ namespace GObject.Introspection.Dynamic
 
         }
 
-        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, IntrospectionMember member)
+        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, Member member)
         {
             return EmitDynamicMember(type, (FieldMember)member);
         }

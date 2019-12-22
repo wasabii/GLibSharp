@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     class DelegateTypeEmitter : TypeEmitter
@@ -19,17 +19,17 @@ namespace GObject.Introspection.Dynamic
 
         }
 
-        protected override TypeInfo GetParentType(IntrospectionType type)
+        protected override TypeInfo GetParentType(Model.Type type)
         {
             return typeof(MulticastDelegate).GetTypeInfo();
         }
 
-        protected override TypeAttributes GetTypeAttributes(IntrospectionType type, bool isNestedType)
+        protected override TypeAttributes GetTypeAttributes(Model.Type type, bool isNestedType)
         {
             return base.GetTypeAttributes(type, isNestedType) | TypeAttributes.Sealed;
         }
 
-        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, IntrospectionType type)
+        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
         {
             EmitDelegateMethods(builder, (DelegateType)type);
             return base.FinalizeDynamicType(builder, type);
@@ -45,7 +45,7 @@ namespace GObject.Introspection.Dynamic
             var methodInvoke = builder.DefineMethod("Invoke",
                 MethodAttributes.Public | MethodAttributes.HideBySig | MethodAttributes.NewSlot | MethodAttributes.Virtual, CallingConventions.Standard,
                 null,
-                new Type[] { typeof(string) });
+                new System.Type[] { typeof(string) });
             methodInvoke.SetImplementationFlags(MethodImplAttributes.CodeTypeMask);
         }
 

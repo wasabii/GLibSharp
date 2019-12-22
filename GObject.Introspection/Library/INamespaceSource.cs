@@ -1,4 +1,4 @@
-﻿using GObject.Introspection.Model;
+﻿using GObject.Introspection.Xml;
 
 namespace GObject.Introspection.Library
 {
@@ -15,7 +15,7 @@ namespace GObject.Introspection.Library
         /// <param name="name"></param>
         /// <param name="version"></param>
         /// <returns></returns>
-        Namespace Resolve(string name, string version);
+        NamespaceElement Resolve(string name, string version);
 
     }
 

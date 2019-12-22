@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
@@ -36,7 +36,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="member"></param>
         /// <returns></returns>
-        public abstract IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, IntrospectionMember member);
+        public abstract IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, Member member);
 
     }
 

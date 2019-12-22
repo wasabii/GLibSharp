@@ -4,24 +4,24 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
-    /// Provides support for emitting an <see cref="IntrospectionModule"/> as a dynamic assembly.
+    /// Provides support for emitting an <see cref="Model.Module"/> as a dynamic assembly.
     /// </summary>
     public class DynamicModuleEmitter
     {
 
-        readonly IntrospectionLibrary library;
+        readonly ModuleLibrary library;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="library"></param>
-        public DynamicModuleEmitter(IntrospectionLibrary library)
+        public DynamicModuleEmitter(ModuleLibrary library)
         {
             this.library = library ?? throw new ArgumentNullException(nameof(library));
         }
@@ -33,7 +33,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="references"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public AssemblyBuilder Emit(IntrospectionModule module, IEnumerable<Assembly> references, string name = null)
+        public AssemblyBuilder Emit(Model.Module module, IEnumerable<Assembly> references, string name = null)
         {
             if (module is null)
                 throw new ArgumentNullException(nameof(module));
@@ -58,7 +58,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="references"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public ModuleBuilder Emit(IntrospectionModule module, AssemblyBuilder assembly, IEnumerable<Assembly> references, string name, string fileName)
+        public ModuleBuilder Emit(Model.Module module, AssemblyBuilder assembly, IEnumerable<Assembly> references, string name, string fileName)
         {
             if (assembly is null)
                 throw new ArgumentNullException(nameof(assembly));
@@ -80,7 +80,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="module"></param>
         /// <param name="builder"></param>
         /// <param name="references"></param>
-        public void Emit(IntrospectionModule module, ModuleBuilder builder, IEnumerable<Assembly> references)
+        public void Emit(Model.Module module, ModuleBuilder builder, IEnumerable<Assembly> references)
         {
             if (module is null)
                 throw new ArgumentNullException(nameof(module));

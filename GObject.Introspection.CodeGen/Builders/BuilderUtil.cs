@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -20,7 +20,7 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="callable"></param>
         /// <returns></returns>
-        public static IEnumerable<SyntaxNode> BuildNativeFunction(IContext context, CallableWithSignature callable)
+        public static IEnumerable<SyntaxNode> BuildNativeFunction(IContext context, CallableWithSignatureElement callable)
         {
             if (callable is null)
                 throw new ArgumentNullException(nameof(callable));
@@ -82,7 +82,7 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="callable"></param>
         /// <returns></returns>
-        static IEnumerable<SyntaxNode> BuildNativeFunctionReturnAttributes(IContext context, CallableWithSignature callable)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionReturnAttributes(IContext context, CallableWithSignatureElement callable)
         {
             yield break;
 
@@ -93,12 +93,12 @@ namespace GObject.Introspection.CodeGen.Builders
         }
 
         /// <summary>
-        /// Builds a syntax node for the return value of the specified <see cref="Callable"/>.
+        /// Builds a syntax node for the return value of the specified <see cref="CallableElement"/>.
         /// </summary>
         /// <param name="syntax"></param>
         /// <param name="callable"></param>
         /// <returns></returns>
-        static SyntaxNode BuildNativeFunctionReturn(IContext context, Callable callable)
+        static SyntaxNode BuildNativeFunctionReturn(IContext context, CallableElement callable)
         {
             var returnTypeElement = callable.ReturnValue?.Type;
             if (returnTypeElement == null)
@@ -120,25 +120,25 @@ namespace GObject.Introspection.CodeGen.Builders
             return typeSpec.GetClrTypeExpression(context.Syntax);
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameters(IContext context, Callable callable)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameters(IContext context, CallableElement callable)
         {
             return callable.Parameters.SelectMany(i => BuildNativeFunctionParameter(context, callable, i));
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, Callable callable, IParameter parameter)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, CallableElement callable, IParameter parameter)
         {
             switch (parameter)
             {
-                case Parameter p:
+                case ParameterElement p:
                     return BuildNativeFunctionParameter(context, callable, p);
-                case InstanceParameter i:
+                case InstanceParameterElement i:
                     return BuildNativeFunctionParameter(context, callable, i);
                 default:
                     throw new InvalidOperationException();
             }
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, Callable callable, Parameter parameter)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, CallableElement callable, ParameterElement parameter)
         {
             // replace varargs name with args
             var name = parameter.Name;
@@ -186,13 +186,13 @@ namespace GObject.Introspection.CodeGen.Builders
             yield return decl;
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, Callable callable, Parameter parameter, QualifiedTypeName typeName)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, CallableElement callable, ParameterElement parameter, QualifiedTypeName typeName)
         {
             if (BuildNativeFunctionParameterMarshalAsAttribute(context, callable, parameter, typeName) is SyntaxNode n)
                 yield return n;
         }
 
-        static SyntaxNode BuildNativeFunctionParameterMarshalAsAttribute(IContext context, Callable callable, Parameter parameter, QualifiedTypeName typeName)
+        static SyntaxNode BuildNativeFunctionParameterMarshalAsAttribute(IContext context, CallableElement callable, ParameterElement parameter, QualifiedTypeName typeName)
         {
             var clrTypeInfo = context.ResolveTypeInfo(typeName);
             if (clrTypeInfo == null)
@@ -217,7 +217,7 @@ namespace GObject.Introspection.CodeGen.Builders
             return null;
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, Callable callable, InstanceParameter parameter)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameter(IContext context, CallableElement callable, InstanceParameterElement parameter)
         {
             if (context is null)
                 throw new ArgumentNullException(nameof(context));
@@ -242,7 +242,7 @@ namespace GObject.Introspection.CodeGen.Builders
             yield return decl;
         }
 
-        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, Callable callable, InstanceParameter parameter)
+        static IEnumerable<SyntaxNode> BuildNativeFunctionParameterAttributes(IContext context, CallableElement callable, InstanceParameterElement parameter)
         {
             yield break;
 
@@ -278,15 +278,15 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        public static TypeSpec GetTypeSpec(IContext context, AnyType type)
+        public static TypeSpec GetTypeSpec(IContext context, AnyTypeElement type)
         {
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
             return type switch
             {
-                GObject.Introspection.Model.Type t => BuildTypeSpec(context, t),
-                ArrayType a => BuildTypeSpec(context, a),
+                GObject.Introspection.Xml.TypeElement t => BuildTypeSpec(context, t),
+                ArrayTypeElement a => BuildTypeSpec(context, a),
                 _ => throw new InvalidOperationException(),
             };
         }
@@ -297,7 +297,7 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        static TypeSpec BuildTypeSpec(IContext context, GObject.Introspection.Model.Type type)
+        static TypeSpec BuildTypeSpec(IContext context, GObject.Introspection.Xml.TypeElement type)
         {
             // default to object for unknown types
             if (type == null || type.Name == "none")
@@ -320,7 +320,7 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        static TypeSpec BuildTypeSpec(IContext context, ArrayType type)
+        static TypeSpec BuildTypeSpec(IContext context, ArrayTypeElement type)
         {
             return GetTypeSpec(context, type.Type).AsArrayType();
         }

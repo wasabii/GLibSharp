@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 
+using GObject.Introspection.Xml;
 using GObject.Introspection.Model;
-using GObject.Introspection.Reflection;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -80,7 +80,7 @@ namespace GObject.Introspection.CodeGen
             yield return BuildGetHashCodeMethod(structure);
         }
 
-        IEnumerable<SyntaxNode> BuildMember(IntrospectionMember member)
+        IEnumerable<SyntaxNode> BuildMember(Model.Member member)
         {
             return Context.Build(member);
         }
@@ -188,7 +188,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="record"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        IEnumerable<SyntaxNode> BuildField(StructureType record, Field field)
+        IEnumerable<SyntaxNode> BuildField(StructureType record, FieldElement field)
         {
             context = context.WithDebugText($"Field({field.Name})");
 
@@ -205,7 +205,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="record"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        SyntaxNode BuildTypeField(StructureType record, Field field) =>
+        SyntaxNode BuildTypeField(StructureType record, FieldElement field) =>
             Context.AddAttributes(
                 Context.FieldDeclaration(
                     GetFieldName(context, field),
@@ -222,7 +222,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="record"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        SyntaxNode BuildCallbackField(StructureType record, Field field) =>
+        SyntaxNode BuildCallbackField(StructureType record, FieldElement field) =>
             Context.AddAttributes(
                 Context.FieldDeclaration(
                     GetFieldName(field),
@@ -249,7 +249,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="context"></param>
         /// <param name="field"></param>
         /// <returns></returns>
-        SyntaxNode BuildTypeFieldType(IContext context, Record record, Field field)
+        SyntaxNode BuildTypeFieldType(IContext context, RecordElement record, FieldElement field)
         {
             if (record is null)
                 throw new ArgumentNullException(nameof(record));

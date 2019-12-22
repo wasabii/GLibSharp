@@ -4,9 +4,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     class FieldMemberEmitter : MemberEmitter
@@ -28,13 +28,13 @@ namespace GObject.Introspection.Dynamic
 
             switch (field.Visibility)
             {
-                case IntrospectionVisibility.Public:
+                case Visibility.Public:
                     a |= FieldAttributes.Public;
                     break;
-                case IntrospectionVisibility.Private:
+                case Visibility.Private:
                     a |= FieldAttributes.Private;
                     break;
-                case IntrospectionVisibility.Internal:
+                case Visibility.Internal:
                     a |= FieldAttributes.Family;
                     break;
             }
@@ -42,7 +42,7 @@ namespace GObject.Introspection.Dynamic
             return a;
         }
 
-        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, IntrospectionMember member)
+        public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, Member member)
         {
             return EmitDynamicMember(type, (FieldMember)member);
         }
@@ -99,14 +99,14 @@ namespace GObject.Introspection.Dynamic
                     TypeAttributes.Sealed |
                     TypeAttributes.BeforeFieldInit,
                 typeof(ValueType));
-            fixedTypeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(CompilerGeneratedAttribute).GetConstructor(new Type[0]), new object[0]));
-            fixedTypeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(UnsafeValueTypeAttribute).GetConstructor(new Type[0]), new object[0]));
+            fixedTypeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(CompilerGeneratedAttribute).GetConstructor(new System.Type[0]), new object[0]));
+            fixedTypeBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(UnsafeValueTypeAttribute).GetConstructor(new System.Type[0]), new object[0]));
             fixedTypeBuilder.DefineField("FixedElementField", baseType, FieldAttributes.Public);
             fixedTypeBuilder.CreateTypeInfo();
 
             // field is typed as the nested type
             var fieldBuilder = type.DefineField(field.Name, fixedTypeBuilder, GetFieldAttributes(type, field));
-            fieldBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(FixedBufferAttribute).GetConstructor(new[] { typeof(Type), typeof(Int32) }), new object[] { baseType, typeSpec.FixedSize }));
+            fieldBuilder.SetCustomAttribute(new CustomAttributeBuilder(typeof(FixedBufferAttribute).GetConstructor(new[] { typeof(System.Type), typeof(Int32) }), new object[] { baseType, typeSpec.FixedSize }));
 
             // set explicit offset if required
             if (field.Offset != null)

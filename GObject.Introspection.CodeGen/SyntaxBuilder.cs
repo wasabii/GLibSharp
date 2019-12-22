@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -17,7 +17,7 @@ namespace GObject.Introspection.CodeGen
     {
 
         readonly SyntaxGenerator syntax;
-        readonly IntrospectionLibrary library;
+        readonly ModuleLibrary library;
         readonly IEnumerable<ISyntaxNodeBuilder> builders;
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="syntax"></param>
         /// <param name="library"></param>
         /// <param name="builders"></param>
-        public SyntaxBuilder(SyntaxGenerator syntax, IntrospectionLibrary library, IEnumerable<ISyntaxNodeBuilder> builders)
+        public SyntaxBuilder(SyntaxGenerator syntax, ModuleLibrary library, IEnumerable<ISyntaxNodeBuilder> builders)
         {
             this.syntax = syntax ?? throw new ArgumentNullException(nameof(syntax));
             this.library = library ?? throw new ArgumentNullException(nameof(library));
@@ -77,7 +77,7 @@ namespace GObject.Introspection.CodeGen
         /// <param name="name"></param>
         /// <param name="types"></param>
         /// <returns></returns>
-        IEnumerable<SyntaxNode> BuildNamespace(string name, IEnumerable<IntrospectionType> types)
+        IEnumerable<SyntaxNode> BuildNamespace(string name, IEnumerable<Model.Type> types)
         {
             yield return syntax.NamespaceDeclaration(name, types.SelectMany(i => BuildNode(i)));
         }

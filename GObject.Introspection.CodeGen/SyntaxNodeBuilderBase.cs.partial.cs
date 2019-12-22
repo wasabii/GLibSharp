@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;

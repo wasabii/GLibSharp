@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
@@ -37,19 +37,19 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="isNestedType"></param>
         /// <returns></returns>
-        protected virtual TypeAttributes GetTypeAttributes(IntrospectionType type, bool isNestedType)
+        protected virtual TypeAttributes GetTypeAttributes(Model.Type type, bool isNestedType)
         {
             var a = TypeAttributes.AnsiClass;
 
             switch (type.Visibility)
             {
-                case IntrospectionVisibility.Public:
+                case Visibility.Public:
                     a |= isNestedType == false ? TypeAttributes.Public : TypeAttributes.NestedPublic;
                     break;
-                case IntrospectionVisibility.Private:
+                case Visibility.Private:
                     a |= isNestedType == false ? TypeAttributes.NotPublic : TypeAttributes.NestedPrivate;
                     break;
-                case IntrospectionVisibility.Internal:
+                case Visibility.Internal:
                     break;
             }
 
@@ -60,7 +60,7 @@ namespace GObject.Introspection.Dynamic
         /// Gets the parent type to apply on generation.
         /// </summary>
         /// <returns></returns>
-        protected virtual TypeInfo GetParentType(IntrospectionType type)
+        protected virtual TypeInfo GetParentType(Model.Type type)
         {
             return type.BaseType != null ? Context.ResolveTypeInfo(type.BaseType) : null;
         }
@@ -71,14 +71,14 @@ namespace GObject.Introspection.Dynamic
         /// <param name="type"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        public virtual IEnumerable<DynamicTypeInfo> EmitDynamicType(IntrospectionType type, TypeBuilder nestedTypeParent)
+        public virtual IEnumerable<DynamicTypeInfo> EmitDynamicType(Model.Type type, TypeBuilder nestedTypeParent)
         {
             // build the new type definition
             var builder = DefineType(type, GetTypeAttributes(type, nestedTypeParent != null), GetParentType(type), nestedTypeParent);
             yield return DynamicTypeInfo.Create(type, builder, t => FinalizeDynamicType(builder, t));
 
             // emit nested type members
-            foreach (var nested in type.Members.OfType<IntrospectionTypeMember>())
+            foreach (var nested in type.Members.OfType<TypeMember>())
                 foreach (var info in Context.EmitDynamicType(nested.Type, builder))
                     yield return info;
         }
@@ -91,7 +91,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="parent"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        protected virtual TypeBuilder DefineType(IntrospectionType type, TypeAttributes attr, Type parent, TypeBuilder nestedTypeParent)
+        protected virtual TypeBuilder DefineType(Model.Type type, TypeAttributes attr, System.Type parent, TypeBuilder nestedTypeParent)
         {
             if (nestedTypeParent == null)
             {
@@ -112,7 +112,7 @@ namespace GObject.Introspection.Dynamic
         /// <param name="builder"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        protected virtual TypeInfo FinalizeDynamicType(TypeBuilder builder, IntrospectionType type)
+        protected virtual TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));
@@ -130,7 +130,7 @@ namespace GObject.Introspection.Dynamic
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="type"></param>
-        protected virtual void EmitCustomAttributes(TypeBuilder builder, IntrospectionType type)
+        protected virtual void EmitCustomAttributes(TypeBuilder builder, Model.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));
@@ -143,7 +143,7 @@ namespace GObject.Introspection.Dynamic
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="type"></param>
-        protected virtual void EmitMembers(TypeBuilder builder, IntrospectionType type)
+        protected virtual void EmitMembers(TypeBuilder builder, Model.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));

@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Xml.Linq;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 namespace GObject.Introspection.Library
 {
@@ -38,7 +38,7 @@ namespace GObject.Introspection.Library
 
         }
 
-        public Namespace Resolve(string name, string version)
+        public NamespaceElement Resolve(string name, string version)
         {
             return cache.GetOrAdd((name, version), ((string ns, string version) i) => Load(i.ns, i.version))?.Resolve(name, version);
         }

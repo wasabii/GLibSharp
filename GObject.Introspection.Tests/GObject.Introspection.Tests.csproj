@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GObject.Introspection.Emit\GObject.Introspection.Dynamic.csproj" />
+    <ProjectReference Include="..\GObject.Introspection.Emit\GObject.Introspection.Emit.csproj" />
     <ProjectReference Include="..\GObject.Introspection\GObject.Introspection.csproj" />
   </ItemGroup>
 

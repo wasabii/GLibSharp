@@ -2,9 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
@@ -23,17 +23,17 @@ namespace GObject.Introspection.Dynamic
 
         }
 
-        protected override TypeInfo GetParentType(IntrospectionType type)
+        protected override TypeInfo GetParentType(Model.Type type)
         {
             return typeof(Enum).GetTypeInfo();
         }
 
-        protected override TypeAttributes GetTypeAttributes(IntrospectionType type, bool nested)
+        protected override TypeAttributes GetTypeAttributes(Model.Type type, bool nested)
         {
             return base.GetTypeAttributes(type, nested) | TypeAttributes.Sealed;
         }
 
-        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, IntrospectionType type)
+        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
         {
             return FinalizeDynamicType(builder, (FlagElementType)type);
         }

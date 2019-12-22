@@ -2,9 +2,9 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
-namespace GObject.Introspection.Dynamic
+namespace GObject.Introspection.Emit
 {
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace GObject.Introspection.Dynamic
                 throw new ArgumentNullException(nameof(symbol));
 
             // recurse back into introspection library
-            if (symbol is IntrospectionTypeSymbol s)
+            if (symbol is ModuleTypeSymbol s)
             {
                 try
                 {

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GObject.Introspection.Reflection;
+using GObject.Introspection.Model;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;

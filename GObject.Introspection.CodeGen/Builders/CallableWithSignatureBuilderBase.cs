@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
@@ -11,7 +11,7 @@ namespace GObject.Introspection.CodeGen.Builders
 {
 
     abstract class CallableWithSignatureBuilderBase<TElement> : CallableBuilderBase<TElement>
-        where TElement : CallableWithSignature
+        where TElement : CallableWithSignatureElement
     {
 
         protected override IEnumerable<SyntaxNode> Build(TElement callable)
@@ -43,10 +43,10 @@ namespace GObject.Introspection.CodeGen.Builders
 
         protected virtual IEnumerable<SyntaxNode> BuildParameters(TElement callable)
         {
-            return callable.Parameters.OfType<Parameter>().SelectMany(i => BuildParameter(callable, i));
+            return callable.Parameters.OfType<ParameterElement>().SelectMany(i => BuildParameter(callable, i));
         }
 
-        IEnumerable<SyntaxNode> BuildParameter(TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameter(TElement callable, ParameterElement parameter)
         {
             // obtain parameter name
             var name = GetArgumentName(parameter);
@@ -103,19 +103,19 @@ namespace GObject.Introspection.CodeGen.Builders
         /// <param name="callable"></param>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        IEnumerable<SyntaxNode> BuildParameterAttributes(TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameterAttributes(TElement callable, ParameterElement parameter)
         {
             yield return BuildParameterAttribute(callable, parameter);
         }
 
-        SyntaxNode BuildParameterAttribute(TElement callable, Parameter parameter)
+        SyntaxNode BuildParameterAttribute(TElement callable, ParameterElement parameter)
         {
             return Context.Attribute(
                 typeof(ParameterAttribute).FullName,
                 BuildParameterAttributeArguments(callable, parameter));
         }
 
-        IEnumerable<SyntaxNode> BuildParameterAttributeArguments(TElement callable, Parameter parameter)
+        IEnumerable<SyntaxNode> BuildParameterAttributeArguments(TElement callable, ParameterElement parameter)
         {
             yield return context.Syntax.AttributeArgument(Context.LiteralExpression(parameter.Name));
         }
@@ -208,7 +208,7 @@ namespace GObject.Introspection.CodeGen.Builders
         protected virtual SyntaxNode BuildNativeArgument(TElement symbol, IParameter parameter)
         {
             // instance parameter represents the instance itself
-            if (parameter is InstanceParameter)
+            if (parameter is InstanceParameterElement)
                 return context.Syntax.ThisExpression();
 
             return context.Syntax.Argument(

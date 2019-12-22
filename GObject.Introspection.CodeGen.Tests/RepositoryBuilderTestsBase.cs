@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Xml.Linq;
 using Autofac;
 using GObject.Introspection.Library;
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;

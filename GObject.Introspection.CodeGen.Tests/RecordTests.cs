@@ -3,7 +3,7 @@ using System.Xml.Linq;
 
 using FluentAssertions;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 

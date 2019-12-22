@@ -3,7 +3,7 @@ using System.Linq;
 using System.Xml;
 using System.Xml.Linq;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.Xml;
 
 namespace GObject.Introspection.Library
 {
@@ -14,14 +14,14 @@ namespace GObject.Introspection.Library
     public class NamespaceXmlSource : INamespaceSource
     {
 
-        readonly Repository repository;
+        readonly RepositoryElement repository;
 
         /// <summary>
         /// Adds an input GIR file to the builder.
         /// </summary>
         /// <param name="repository"></param>
         /// <returns></returns>
-        public NamespaceXmlSource(Repository repository)
+        public NamespaceXmlSource(RepositoryElement repository)
         {
             this.repository = repository ?? throw new ArgumentNullException(nameof(repository));
         }
@@ -32,7 +32,7 @@ namespace GObject.Introspection.Library
         /// <param name="girXml"></param>
         /// <returns></returns>
         public NamespaceXmlSource(XDocument girXml) :
-            this(Repository.LoadFrom(girXml).FirstOrDefault())
+            this(RepositoryElement.LoadFrom(girXml).FirstOrDefault())
         {
 
         }
@@ -53,7 +53,7 @@ namespace GObject.Introspection.Library
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Namespace Resolve(string name, string version)
+        public NamespaceElement Resolve(string name, string version)
         {
             if (name is null)
                 throw new ArgumentNullException(nameof(name));
