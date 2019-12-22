@@ -27,7 +27,7 @@ namespace GObject.Introspection.Dynamic
 
         public TypeInfo ResolveTypeInfo(TypeSymbol symbol)
         {
-            return assemblies.Select(i => i.GetType(symbol.QualifiedName)?.GetTypeInfo()).FirstOrDefault(i => i != null);
+            return assemblies.Select(i => i.GetType(symbol.Name)?.GetTypeInfo()).FirstOrDefault(i => i != null);
         }
 
     }

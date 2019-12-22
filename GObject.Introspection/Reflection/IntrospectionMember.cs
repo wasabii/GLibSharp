@@ -9,36 +9,34 @@ namespace GObject.Introspection.Reflection
     public abstract class IntrospectionMember
     {
 
+        readonly IntrospectionContext context;
+        readonly IntrospectionType declaringType;
+
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="declaringType"></param>
-        public IntrospectionMember(IntrospectionContext context, IntrospectionType declaringType)
+        internal IntrospectionMember(IntrospectionContext context, IntrospectionType declaringType)
         {
-            Context = context ?? throw new ArgumentNullException(nameof(context));
-            DeclaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
+            this.context = context ?? throw new ArgumentNullException(nameof(context));
+            this.declaringType = declaringType ?? throw new ArgumentNullException(nameof(declaringType));
         }
 
         /// <summary>
         /// Gets the current introspection context of the type.
         /// </summary>
-        protected IntrospectionContext Context { get; }
+        internal IntrospectionContext Context => context;
 
         /// <summary>
         /// Gets the parent type of this member.
         /// </summary>
-        public IntrospectionType DeclaringType { get; }
+        public IntrospectionType DeclaringType => declaringType;
 
         /// <summary>
         /// Gets the name of the member.
         /// </summary>
         public abstract string Name { get; }
-
-        /// <summary>
-        /// Gets the kind of the member.
-        /// </summary>
-        public abstract IntrospectionMemberKind Kind { get; }
 
         /// <summary>
         /// Gets the visibility of the member.

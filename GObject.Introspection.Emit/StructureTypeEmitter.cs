@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Reflection;
+using System.Reflection.Emit;
+using System.Runtime.InteropServices;
 
 using GObject.Introspection.Reflection;
 
@@ -19,17 +21,40 @@ namespace GObject.Introspection.Dynamic
 
         }
 
-        protected override TypeAttributes GetTypeAttributes(IntrospectionType type, bool nested)
+        protected override TypeAttributes GetTypeAttributes(IntrospectionType type, bool isNestedType)
         {
-            return base.GetTypeAttributes(type, nested) |
+            var t = (StructureType)type;
+
+            var a = base.GetTypeAttributes(type, isNestedType) |
                 TypeAttributes.Sealed |
-                TypeAttributes.Serializable |
-                TypeAttributes.AnsiClass;
+                TypeAttributes.Serializable;
+
+            if (t.LayoutKind == LayoutKind.Sequential)
+                a |= TypeAttributes.SequentialLayout;
+
+            if (t.LayoutKind == LayoutKind.Explicit)
+                a |= TypeAttributes.ExplicitLayout;
+
+            return a;
         }
 
         protected override TypeInfo GetParentType(IntrospectionType type)
         {
             return typeof(ValueType).GetTypeInfo();
+        }
+
+        protected override void EmitCustomAttributes(TypeBuilder builder, IntrospectionType type)
+        {
+            base.EmitCustomAttributes(builder, type);
+            EmitStructLayoutAttribute(builder, (StructureType)type);
+        }
+
+        protected virtual void EmitStructLayoutAttribute(TypeBuilder builder, StructureType type)
+        {
+            if (type.LayoutKind != LayoutKind.Auto)
+                builder.SetCustomAttribute(new CustomAttributeBuilder(
+                    typeof(StructLayoutAttribute).GetConstructor(new[] { typeof(LayoutKind) }),
+                    new object[] { type.LayoutKind }));
         }
 
     }

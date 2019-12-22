@@ -1,34 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 
+using GObject.Introspection.Model;
+
 namespace GObject.Introspection.Reflection
 {
 
     /// <summary>
     /// Describes services available to an introspection element.
     /// </summary>
-    public class IntrospectionContext
+    class IntrospectionContext
     {
 
         readonly IntrospectionModule module;
+        readonly IManagedTypeResolver resolver;
         readonly TypeSymbolProvider symbols;
+        readonly NativeTypeSymbolProvider nativeSymbols;
         readonly IList<(string Namespace, string Version)> imports;
         readonly string current;
+        readonly IntrospectionTypeFactory factory;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="module"></param>
+        /// <param name="resolver"></param>
         /// <param name="symbols"></param>
-        /// <param name="resolve"></param>
+        /// <param name="nativeSymbols"></param>
         /// <param name="imports"></param>
         /// <param name="current"></param>
-        internal IntrospectionContext(IntrospectionModule module, TypeSymbolProvider symbols, IList<(string, string)> imports, string current)
+        internal IntrospectionContext(
+            IntrospectionModule module,
+            IManagedTypeResolver resolver,
+            TypeSymbolProvider symbols,
+            NativeTypeSymbolProvider nativeSymbols,
+            IList<(string, string)> imports,
+            string current)
         {
             this.module = module ?? throw new ArgumentNullException(nameof(module));
+            this.resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
             this.symbols = symbols ?? throw new ArgumentNullException(nameof(symbols));
+            this.nativeSymbols = nativeSymbols ?? throw new ArgumentNullException(nameof(nativeSymbols));
             this.imports = imports ?? throw new ArgumentNullException(nameof(imports));
             this.current = current;
+
+            factory = new IntrospectionTypeFactory(this);
         }
 
         /// <summary>
@@ -44,7 +60,7 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Attempts to resolve the given full or partial type name given the context.
         /// </summary>
-        /// <param name="typeName"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
         public TypeSymbol ResolveSymbol(string name)
         {
@@ -76,6 +92,53 @@ namespace GObject.Introspection.Reflection
 
             // could not locate, return null
             return null;
+        }
+
+        /// <summary>
+        /// Attempts to resolve the given full or partial type name given the context.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public NativeTypeSymbol ResolveNativeSymbol(string name)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            // some well known type names
+            if (name == "" || name == "none")
+                return null;
+
+            // check the imported namespaces in reverse order
+            for (var i = imports.Count - 1; i >= 0; i--)
+                if (nativeSymbols.Resolve(imports[i].Namespace, imports[i].Version, name) is NativeTypeSymbol s)
+                    return s;
+
+            // could not locate, return null
+            return null;
+        }
+
+        /// <summary>
+        /// Resolves a type symbol for the specified managed type.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public TypeSymbol ResolveManagedSymbol(string name)
+        {
+            var type = resolver.Resolve(name);
+            if (type != null)
+                return new ManagedTypeSymbol(resolver.Resolve(name));
+
+            return null;
+        }
+
+        /// <summary>
+        /// Creates a <see cref="IntrospectionType"/> based on the given element.
+        /// </summary>
+        /// <param name="element"></param>
+        /// <returns></returns>
+        public IntrospectionTypeDef CreateType(Element element)
+        {
+            return factory.CreateType(element);
         }
 
     }

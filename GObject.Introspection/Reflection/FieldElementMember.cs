@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+
 using GObject.Introspection.Internal;
 using GObject.Introspection.Model;
 
@@ -42,11 +43,11 @@ namespace GObject.Introspection.Reflection
         /// Gets the field type.
         /// </summary>
         /// <returns></returns>
-        protected override TypeSymbol GetFieldType()
+        protected override TypeSpec GetFieldType()
         {
             // standard field type
             if (field.Type != null)
-                return field.Type.ToSymbol(Context);
+                return field.Type.ToSpec(Context);
 
             // field is an unnamed callback type
             if (field.Callback != null)
@@ -58,7 +59,9 @@ namespace GObject.Introspection.Reflection
                 if (cb is null)
                     throw new InvalidOperationException("Could not locate generated field delegate type.");
 
-                return new IntrospectionTypeSymbol(cb);
+                // define inline delegate type
+                var typeDef = new IntrospectionTypeDef(DeclaringType.QualifiedName + "+" + cb.Name, cb.IntrospectionName, cb.NativeName, () => cb);
+                return new TypeSpec(new IntrospectionTypeSymbol(typeDef), new IntrospectionNativeTypeSymbol(typeDef));
             }
 
             throw new InvalidOperationException();

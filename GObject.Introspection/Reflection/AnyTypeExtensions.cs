@@ -8,37 +8,16 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Provides some extension methods for working with <see cref="AnyType"/> elements.
     /// </summary>
-    public static class AnyTypeExtensions
+    static class AnyTypeExtensions
     {
 
         /// <summary>
-        /// Translates the given <see cref="AnyType"/> element into a <see cref="TypeSymbol"/>.
+        /// Looks up the symbol describing the specified type.
         /// </summary>
-        /// <param name="context"></param>
         /// <param name="type"></param>
-        /// <returns></returns>
-        public static TypeSymbol ToSymbol(this AnyType type, IntrospectionContext context)
-        {
-            if (type is null)
-                throw new ArgumentNullException(nameof(type));
-            if (context is null)
-                throw new ArgumentNullException(nameof(context));
-
-            return type switch
-            {
-                GObject.Introspection.Model.Type t => GetTypeSymbol(context, t),
-                ArrayType a => GetTypeSymbol(context, a),
-                _ => throw new InvalidOperationException(),
-            };
-        }
-
-        /// <summary>
-        /// Translates the given <see cref="Type"/> element into a <see cref="TypeSymbol"/>.
-        /// </summary>
         /// <param name="context"></param>
-        /// <param name="type"></param>
         /// <returns></returns>
-        static TypeSymbol GetTypeSymbol(IntrospectionContext context, Model.Type type)
+        public static TypeSymbol ToSymbol(this Model.Type type, IntrospectionContext context)
         {
             if (context is null)
                 throw new ArgumentNullException(nameof(context));
@@ -59,19 +38,85 @@ namespace GObject.Introspection.Reflection
         }
 
         /// <summary>
-        /// Translates the given <see cref="ArrayType"/> element into a <see cref="TypeSymbol"/>.
+        /// Translates the given <see cref="AnyType"/> element into a <see cref="TypeSymbol"/>.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        static TypeSymbol GetTypeSymbol(IntrospectionContext context, ArrayType type)
+        public static TypeSpec ToSpec(this AnyType type, IntrospectionContext context)
+        {
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
+            if (context is null)
+                throw new ArgumentNullException(nameof(context));
+
+            return type switch
+            {
+                GObject.Introspection.Model.Type t => GetTypeSpec(context, t),
+                ArrayType a => GetTypeSpec(context, a),
+                _ => throw new InvalidOperationException(),
+            };
+        }
+
+        /// <summary>
+        /// Translates the given <see cref="Type"/> element into a <see cref="TypeSpec"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        static TypeSpec GetTypeSpec(IntrospectionContext context, Model.Type type)
+        {
+            if (context is null)
+                throw new ArgumentNullException(nameof(context));
+
+            var typeName = type.Name;
+            if (typeName == "" || typeName == "none")
+                typeName = null;
+
+            var nativeTypeName = type.CType;
+            if (nativeTypeName == "" || nativeTypeName == "none")
+                nativeTypeName = null;
+
+            if (typeName == null && nativeTypeName == null)
+                throw new InvalidOperationException("Neither type name nor native type specified.");
+
+            var symbol = typeName != null ? context.ResolveSymbol(typeName) : null;
+            if (symbol == null && typeName != null)
+                throw new IntrospectionException($"Could not resolve type symbol {typeName}.");
+
+            var nativeSymbol = nativeTypeName != null ? NativeTypeSymbol.Parse(nativeTypeName, context.ResolveNativeSymbol) : null;
+            if (nativeSymbol == null && nativeTypeName != null)
+                throw new IntrospectionException($"Could not resolve native type symbol {nativeTypeName}.");
+
+            return new TypeSpec(symbol, nativeSymbol);
+        }
+
+        /// <summary>
+        /// Translates the given <see cref="ArrayType"/> element into a <see cref="TypeSpec"/>.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        static TypeSpec GetTypeSpec(IntrospectionContext context, ArrayType type)
         {
             if (context is null)
                 throw new ArgumentNullException(nameof(context));
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
-            return new ArrayTypeSymbol(type.Type.ToSymbol(context));
+            var typeName = type.Name;
+            if (typeName == "" || typeName == "none")
+                typeName = null;
+
+            var nativeTypeName = type.CType;
+            if (nativeTypeName == "" || nativeTypeName == "none")
+                nativeTypeName = null;
+
+            return new ArrayTypeSpec(
+                typeName != null ? context.ResolveSymbol(typeName) : null,
+                nativeTypeName != null ? context.ResolveNativeSymbol(nativeTypeName) : null,
+                ToSpec(type.Type, context),
+                type.FixedSize);
         }
 
     }

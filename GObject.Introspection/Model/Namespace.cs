@@ -37,6 +37,7 @@ namespace GObject.Introspection.Model
             target.Records = Record.LoadFrom(element).ToList();
             target.Enums = Enumeration.LoadFrom(element).ToList();
             target.Functions = Function.LoadFrom(element).ToList();
+            target.FunctionMacros = FunctionMacro.LoadFrom(element).ToList();
             target.Unions = Union.LoadFrom(element).ToList();
             target.BitFields = BitField.LoadFrom(element).ToList();
             target.Callbacks = Callback.LoadFrom(element).ToList();
@@ -96,6 +97,8 @@ namespace GObject.Introspection.Model
         public List<Enumeration> Enums { get; set; }
 
         public List<Function> Functions { get; set; }
+
+        public List<FunctionMacro> FunctionMacros { get; set; }
 
         public List<Union> Unions { get; set; }
 

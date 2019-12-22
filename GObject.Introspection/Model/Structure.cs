@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace GObject.Introspection.Model
 {
 
-    public abstract class Structure : Element, IHasName, IHasInfo, IHasClrInfo
+    public abstract class Structure : Element, IHasName, IHasCType, IHasInfo, IHasClrInfo
     {
 
         public static IEnumerable<Structure> LoadFrom(XContainer container)

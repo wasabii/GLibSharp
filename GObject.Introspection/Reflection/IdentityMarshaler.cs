@@ -6,7 +6,7 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Describes marshaling a parameter to a native method merely by passing the same value.
     /// </summary>
-    public class IdentityMarshaler
+    public class IdentityMarshaler : IntrospectionMarshaler
     {
 
         /// <summary>

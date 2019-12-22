@@ -4,7 +4,7 @@ namespace GObject.Introspection.Reflection
 {
 
     /// <summary>
-    /// Describes a flag type generated from a bitfield.
+    /// Describes an enum type.
     /// </summary>
     public abstract class EnumType : IntrospectionType
     {
@@ -13,14 +13,11 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="flag"></param>
-        public EnumType(IntrospectionContext context) :
+        internal EnumType(IntrospectionContext context) :
             base(context)
         {
 
         }
-
-        public sealed override IntrospectionTypeKind Kind => IntrospectionTypeKind.Enum;
 
         protected sealed override IEnumerable<IntrospectionMember> GetMembers()
         {
@@ -31,7 +28,7 @@ namespace GObject.Introspection.Reflection
         /// Gets the members of the enum.
         /// </summary>
         /// <returns></returns>
-        protected abstract IEnumerable<EnumerationMember> GetMemberMembers();
+        protected abstract IEnumerable<EnumMember> GetMemberMembers();
 
     }
 

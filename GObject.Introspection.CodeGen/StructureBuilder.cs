@@ -67,7 +67,7 @@ namespace GObject.Introspection.CodeGen
 
         IEnumerable<SyntaxNode> BuildInterfaceTypes(StructureType structure)
         {
-            return structure.ImplementedInterfaces.Select(i => Syntax.DottedName(i.QualifiedName));
+            return structure.ImplementedInterfaces.Select(i => Syntax.DottedName(i.Name));
         }
 
         IEnumerable<SyntaxNode> BuildMembers(StructureType structure)
@@ -296,7 +296,7 @@ namespace GObject.Introspection.CodeGen
         /// <returns></returns>
         SyntaxNode GetFieldType(FieldMember field)
         {
-            return Context.DottedName(field.FieldType.QualifiedName);
+            return Context.DottedName(field.FieldType.Name);
         }
 
         Accessibility GetFieldAccessibility(FieldMember field)

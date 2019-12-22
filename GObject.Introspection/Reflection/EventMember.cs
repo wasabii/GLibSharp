@@ -11,16 +11,11 @@
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public EventMember(IntrospectionContext context, IntrospectionType declaringType) :
+        internal EventMember(IntrospectionContext context, IntrospectionType declaringType) :
             base(context, declaringType)
         {
 
         }
-
-        /// <summary>
-        /// Gets the kind of the member.
-        /// </summary>
-        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Event;
 
         /// <summary>
         /// Gets the invokable to add a callback.

@@ -1,4 +1,6 @@
-﻿namespace GObject.Introspection.Reflection
+﻿using System.Runtime.InteropServices;
+
+namespace GObject.Introspection.Reflection
 {
 
     /// <summary>
@@ -11,13 +13,16 @@
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public StructureType(IntrospectionContext context) :
+        internal StructureType(IntrospectionContext context) :
             base(context)
         {
 
         }
 
-        public sealed override IntrospectionTypeKind Kind => IntrospectionTypeKind.Structure;
+        /// <summary>
+        /// Gets the layout kind of the type.
+        /// </summary>
+        public virtual LayoutKind LayoutKind => LayoutKind.Auto;
 
     }
 

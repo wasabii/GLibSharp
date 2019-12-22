@@ -23,12 +23,17 @@ namespace GObject.Introspection.Reflection
             this.klass = klass ?? throw new ArgumentNullException(nameof(klass));
         }
 
+        public override string Name => klass.Name;
+
         /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => klass.Name;
 
-        public override string Name => klass.Name;
+        /// <summary>
+        /// Gets the native name of the class.
+        /// </summary>
+        public override string NativeName => klass.CType;
 
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {
@@ -43,17 +48,17 @@ namespace GObject.Introspection.Reflection
 
         protected virtual IEnumerable<IntrospectionTypeMember> GetRecordMembers()
         {
-            return klass.Records.Select(i => new IntrospectionTypeMember(Context, this, new RecordElementType(Context, i)));
+            return klass.Records.Select(i => new IntrospectionTypeMember(Context, this, Context.CreateType(i).Type));
         }
 
         protected virtual IEnumerable<IntrospectionTypeMember> GetCallbackMembers()
         {
-            return klass.Callbacks.Select(i => new IntrospectionTypeMember(Context, this, new CallbackElementType(Context, i)));
+            return klass.Callbacks.Select(i => new IntrospectionTypeMember(Context, this, Context.CreateType(i).Type));
         }
 
         protected virtual IEnumerable<IntrospectionTypeMember> GetUnionMembers()
         {
-            return klass.Unions.Select(i => new IntrospectionTypeMember(Context, this, new UnionType(Context, i)));
+            return klass.Unions.Select(i => new IntrospectionTypeMember(Context, this, Context.CreateType(i).Type));
         }
 
         protected virtual IEnumerable<FieldMember> GetConstantMembers()

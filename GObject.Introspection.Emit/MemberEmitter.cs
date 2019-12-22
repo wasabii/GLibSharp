@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+
 using GObject.Introspection.Reflection;
 
 namespace GObject.Introspection.Dynamic

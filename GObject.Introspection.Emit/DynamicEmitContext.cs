@@ -53,7 +53,7 @@ namespace GObject.Introspection.Dynamic
                     return new StructureTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
                 case InterfaceType t:
                     return new InterfaceTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
-                case EnumType t:
+                case FlagElementType t:
                     return new EnumTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
                 case DelegateType t:
                     return new DelegateTypeEmitter(this).EmitDynamicType(t, nestedTypeParent);
@@ -85,8 +85,8 @@ namespace GObject.Introspection.Dynamic
                     return new PropertyMemberEmitter(this).EmitDynamicMember(parent, m);
                 case EventMember m:
                     return new EventMemberEmitter(this).EmitDynamicMember(parent, m);
-                case EnumerationMember m:
-                    return new EnumerationMemberEmitter(this).EmitDynamicMember(parent, m);
+                case EnumMember m:
+                    return new EnumMemberEmitter(this).EmitDynamicMember(parent, m);
                 case IntrospectionTypeMember m:
                     return Enumerable.Empty<MemberInfo>();
                 default:

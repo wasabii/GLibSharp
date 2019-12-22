@@ -12,21 +12,23 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Resolves type symbols from forwarded types.
     /// </summary>
-    class ForwardedTypeSymbolSource : ITypeSymbolSource
+    class ManagedTypeSymbolSource : ITypeSymbolSource
     {
 
         readonly NamespaceLibrary namespaces;
-        readonly ConcurrentDictionary<Namespace, Dictionary<string, ForwardedTypeSymbol>> cache;
+        readonly IManagedTypeResolver resolver;
+        readonly ConcurrentDictionary<Namespace, Dictionary<string, ManagedTypeSymbol>> cache;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="namespaces"></param>
-        public ForwardedTypeSymbolSource(NamespaceLibrary namespaces)
+        public ManagedTypeSymbolSource(NamespaceLibrary namespaces, IManagedTypeResolver resolver)
         {
             this.namespaces = namespaces ?? throw new ArgumentNullException(nameof(namespaces));
+            this.resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
 
-            cache = new ConcurrentDictionary<Namespace, Dictionary<string, ForwardedTypeSymbol>>();
+            cache = new ConcurrentDictionary<Namespace, Dictionary<string, ManagedTypeSymbol>>();
         }
 
         /// <summary>
@@ -63,7 +65,7 @@ namespace GObject.Introspection.Reflection
         /// <param name="ns"></param>
         /// <param name="typeName"></param>
         /// <returns></returns>
-        Dictionary<string, ForwardedTypeSymbol> GetClrInfoTypeMap(Namespace ns, string typeName)
+        Dictionary<string, ManagedTypeSymbol> GetClrInfoTypeMap(Namespace ns, string typeName)
         {
             if (ns is null)
                 throw new ArgumentNullException(nameof(ns));
@@ -71,7 +73,24 @@ namespace GObject.Introspection.Reflection
                 throw new ArgumentNullException(nameof(typeName));
 
             // generates a dictionary up front of type name to forwarded type symbols
-            return GetClrInfoTypes(ns).ToDictionary(i => ((IHasName)i).Name, i => new ForwardedTypeSymbol(((IHasClrInfo)i).ClrInfo.Type));
+            return GetClrInfoTypes(ns).ToDictionary(i => ((IHasName)i).Name, i => GetTypeSymbol(((IHasClrInfo)i).ClrInfo.Type));
+        }
+
+        /// <summary>
+        /// Attempts to load the managed type symbol by name from the references.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        ManagedTypeSymbol GetTypeSymbol(string name)
+        {
+            if (name is null)
+                throw new ArgumentNullException(nameof(name));
+
+            var type = resolver.Resolve(name);
+            if (type != null)
+                return ManagedTypeSymbol.FromType(type);
+
+            return null;
         }
 
         /// <summary>

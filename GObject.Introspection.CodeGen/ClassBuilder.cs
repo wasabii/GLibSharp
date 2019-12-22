@@ -73,7 +73,7 @@ namespace GObject.Introspection.CodeGen
 
         SyntaxNode BuildBaseType(ClassType klass)
         {
-            return klass.BaseType != null ? Syntax.DottedName(klass.BaseType.QualifiedName) : null;
+            return klass.BaseType != null ? Syntax.DottedName(klass.BaseType.Name) : null;
         }
 
         IEnumerable<SyntaxNode> BuildInterfaceTypes(ClassType klass)
@@ -83,7 +83,7 @@ namespace GObject.Introspection.CodeGen
 
         IEnumerable<SyntaxNode> BuildInterfaceType(ClassType klass, TypeSymbol interfaceType)
         {
-            yield return Syntax.DottedName(interfaceType.QualifiedName);
+            yield return Syntax.DottedName(interfaceType.Name);
         }
 
         IEnumerable<SyntaxNode> BuildMembers(ClassType klass)

@@ -6,7 +6,7 @@ using GObject.Introspection.Model;
 namespace GObject.Introspection.Reflection
 {
 
-    class MemberElementMember : EnumerationMember
+    class MemberElementMember : EnumMember
     {
 
         readonly Member member;

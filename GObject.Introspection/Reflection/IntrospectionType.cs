@@ -13,6 +13,7 @@ namespace GObject.Introspection.Reflection
     {
 
         readonly IntrospectionContext context;
+        readonly Lazy<bool> isBlittable;
         readonly Lazy<TypeSymbol> baseType;
         readonly Lazy<List<TypeSymbol>> implementedInterfaces;
         readonly Lazy<List<IntrospectionMember>> members;
@@ -21,11 +22,12 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        public IntrospectionType(IntrospectionContext context)
+        internal IntrospectionType(IntrospectionContext context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
 
-            baseType = new Lazy<TypeSymbol>(() => GetBaseType());
+            isBlittable = new Lazy<bool>(GetIsBlittable);
+            baseType = new Lazy<TypeSymbol>(GetBaseType);
             implementedInterfaces = new Lazy<List<TypeSymbol>>(() => GetImplementedInterfaces().ToList());
             members = new Lazy<List<IntrospectionMember>>(() => GetMembers().ToList());
             memberNameCache = new ConcurrentDictionary<string, IntrospectionMember>();
@@ -34,17 +36,12 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the current introspection context of the type.
         /// </summary>
-        public IntrospectionContext Context => context;
+        internal IntrospectionContext Context => context;
 
         /// <summary>
-        /// Gets the owning module.
+        /// Gets the namespace of the type.
         /// </summary>
-        public IntrospectionModule Module => Context.Module;
-
-        /// <summary>
-        /// Gets the original name of the type.
-        /// </summary>
-        public abstract string IntrospectionName { get; }
+        public IntrospectionModule Module => context.Module;
 
         /// <summary>
         /// Gets the name of the type within its namespace.
@@ -52,14 +49,45 @@ namespace GObject.Introspection.Reflection
         public abstract string Name { get; }
 
         /// <summary>
+        /// Gets the original name of the type.
+        /// </summary>
+        public abstract string IntrospectionName { get; }
+
+        /// <summary>
+        /// Gets the native name of the type.
+        /// </summary>
+        public abstract string NativeName { get; }
+
+        /// <summary>
         /// Gets the qualified name of the type.
         /// </summary>
         public virtual string QualifiedName => Context.CurrentNamespace + "." + Name;
 
         /// <summary>
-        /// Gets the type of the type.
+        /// Does the type represent a value which is blittable to the corresponding native type.
         /// </summary>
-        public abstract IntrospectionTypeKind Kind { get; }
+        public bool IsBlittable => isBlittable.Value;
+
+        /// <summary>
+        /// Returns whether or not the type is blittable.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual bool GetIsBlittable()
+        {
+            switch (this)
+            {
+                case ClassType c:
+                case DelegateType d:
+                case InterfaceType i:
+                    return false;
+                case StructureType s:
+                    return Members.OfType<FieldMember>().All(i => i.FieldType.IsBlittable);
+                case EnumType e:
+                    return true;
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
 
         /// <summary>
         /// Gets the visibility of the type.

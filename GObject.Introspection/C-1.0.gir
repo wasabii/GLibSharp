@@ -1,0 +1,27 @@
+﻿<?xml version="1.0"?>
+
+<repository
+    version="1.2"
+    xmlns="http://www.gtk.org/introspection/core/1.0"
+    xmlns:c="http://www.gtk.org/introspection/c/1.0"
+    xmlns:glib="http://www.gtk.org/introspection/glib/1.0"
+    xmlns:clr="http://www.gtk.org/introspection/clr/1.0">
+    <namespace name="C" version="1.0">
+        <primitive name="void" c:type="void" clr:type="System.Void" />
+        <primitive name="char" c:type="char" clr:type="System.Byte" />
+        <primitive name="signed char" c:type="signed char" clr:type="System.SByte" />
+        <primitive name="unsigned char" c:type="unsigned char" clr:type="System.Byte" />
+        <primitive name="short" c:type="short" clr:type="System.Int16" />
+        <primitive name="short int" c:type="short int" clr:type="System.Int16" />
+        <primitive name="signed short int" c:type="signed short int" clr:type="System.Int16" />
+        <primitive name="unsigned short" c:type="signed short int" clr:type="System.UInt16" />
+        <primitive name="unsigned short int" c:type="signed short int" clr:type="System.UInt16" />
+        <primitive name="int" c:type="int" clr:type="System.Int32" />
+        <primitive name="signed" c:type="signed" clr:type="System.Int32" />
+        <primitive name="signed int" c:type="signed int" clr:type="System.Int32" />
+        <primitive name="unsigned" c:type="unsigned" clr:type="System.UInt32" />
+        <primitive name="unsigned int" c:type="unsigned int" clr:type="System.UInt32" />
+        <primitive name="long double" clr:type="System.UInt64" />
+        <primitive name="va_list" c:type="va_list" clr:type="System.IntPtr" />
+    </namespace>
+</repository>

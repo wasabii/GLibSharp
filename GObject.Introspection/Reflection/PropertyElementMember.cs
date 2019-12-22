@@ -32,7 +32,7 @@ namespace GObject.Introspection.Reflection
         /// Gets the property type.
         /// </summary>
         /// <returns></returns>
-        protected override TypeSymbol GetPropertyType() => property.Type?.ToSymbol(Context);
+        protected override TypeSpec GetPropertyType() => property.Type?.ToSpec(Context);
 
         public override IntrospectionInvokable GetGetterInvokable()
         {

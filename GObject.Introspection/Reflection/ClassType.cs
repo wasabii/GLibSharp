@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
-
-namespace GObject.Introspection.Reflection
+﻿namespace GObject.Introspection.Reflection
 {
 
     public abstract class ClassType : IntrospectionType
@@ -11,13 +8,11 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public ClassType(IntrospectionContext context) :
+        internal ClassType(IntrospectionContext context) :
             base(context)
         {
 
         }
-
-        public sealed override IntrospectionTypeKind Kind => IntrospectionTypeKind.Class;
 
     }
 

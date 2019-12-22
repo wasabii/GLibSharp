@@ -25,12 +25,14 @@ namespace GObject.Introspection.Reflection
             this.callback = callback ?? throw new ArgumentNullException(nameof(callback));
         }
 
+        public override string Name => callback.Name;
+
         /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => callback.Name;
 
-        public override string Name => callback.Name;
+        public override string NativeName => callback.CType;
 
         public override IntrospectionInvokable GetInvokable()
         {

@@ -24,6 +24,7 @@ namespace GObject.Introspection.Library
         public NamespaceLibrary(IEnumerable<INamespaceSource> sources)
         {
             this.sources = sources ?? throw new ArgumentNullException(nameof(sources));
+            this.sources = this.sources.Append(new BaseNamespaceSource());
 
             cache = new ConcurrentDictionary<(string, string), Namespace>();
         }

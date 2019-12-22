@@ -9,7 +9,7 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Provides available managed type symbols for lookup by full introspected name.
     /// </summary>
-    public class TypeSymbolProvider
+    class TypeSymbolProvider
     {
 
         readonly IEnumerable<ITypeSymbolSource> sources;
@@ -35,9 +35,9 @@ namespace GObject.Introspection.Reflection
         {
 
         }
-
+        
         /// <summary>
-        /// Looks up a <see cref="TypeSymbol"/> given the specified full GObject name.
+        /// Attempts to resolve a type symbol referencing a type by the given introspection name.
         /// </summary>
         /// <param name="ns"></param>
         /// <param name="version"></param>

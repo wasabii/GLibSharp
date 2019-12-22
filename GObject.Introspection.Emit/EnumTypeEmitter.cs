@@ -8,7 +8,7 @@ namespace GObject.Introspection.Dynamic
 {
 
     /// <summary>
-    /// Emits <see cref="EnumType"/>s to dynamic interop assemblies.
+    /// Emits <see cref="FlagElementType"/>s to dynamic interop assemblies.
     /// </summary>
     class EnumTypeEmitter : TypeEmitter
     {
@@ -35,10 +35,10 @@ namespace GObject.Introspection.Dynamic
 
         protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, IntrospectionType type)
         {
-            return FinalizeDynamicType(builder, (EnumType)type);
+            return FinalizeDynamicType(builder, (FlagElementType)type);
         }
 
-        TypeInfo FinalizeDynamicType(TypeBuilder builder, EnumType type)
+        TypeInfo FinalizeDynamicType(TypeBuilder builder, FlagElementType type)
         {
             builder.DefineField("value__", typeof(int), FieldAttributes.Private | FieldAttributes.SpecialName);
             return base.FinalizeDynamicType(builder, type);

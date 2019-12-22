@@ -5,7 +5,7 @@ using System.Xml.Linq;
 namespace GObject.Introspection.Model
 {
 
-    public class Primitive : Element, IHasName, IHasInfo, IHasClrInfo
+    public class Primitive : Element, IHasName, IHasCType, IHasInfo, IHasClrInfo
     {
 
         public static IEnumerable<Primitive> LoadFrom(XContainer container)

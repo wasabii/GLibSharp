@@ -10,7 +10,7 @@
         /// <summary>
         /// Gets the qualified CLR type name.
         /// </summary>
-        public abstract string QualifiedName { get; }
+        public abstract string Name { get; }
 
         /// <summary>
         /// Returns <c>true</c> if the type symbol references an array.
@@ -18,12 +18,17 @@
         public virtual bool IsArray => false;
 
         /// <summary>
+        /// Returns <c>true</c> if the type is blittable to the native version of the type.
+        /// </summary>
+        public virtual bool IsBlittable => false;
+
+        /// <summary>
         /// Gets a string representation of the type symbol.
         /// </summary>
         /// <returns></returns>
         public override string ToString()
         {
-            return QualifiedName;
+            return Name;
         }
 
     }

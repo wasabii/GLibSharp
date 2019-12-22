@@ -6,6 +6,14 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <None Remove="C-1.0.gir" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Include="C-1.0.gir" />
+    </ItemGroup>
+
+    <ItemGroup>
       <PackageReference Include="System.Collections.Immutable" Version="1.7.0" />
     </ItemGroup>
 

@@ -54,7 +54,7 @@ namespace GObject.Introspection.CodeGen
         /// <returns></returns>
         SyntaxNode BuildType(PropertyMember property)
         {
-            return Syntax.DottedName(property.PropertyType.QualifiedName);
+            return Syntax.DottedName(property.PropertyType.Name);
         }
 
         Accessibility GetAccessibility(PropertyMember property)

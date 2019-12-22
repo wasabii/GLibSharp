@@ -18,12 +18,14 @@ namespace GObject.Introspection.Reflection
             IntrospectionNativeFunction function,
             IEnumerable<IntrospectionArgument> parameters,
             IntrospectionArgument @return,
-            IEnumerable<IntrospectionMarshaler> marshalers)
+            IEnumerable<IntrospectionMarshaler> marshalers,
+            bool isVarArg = false)
         {
             Function = function ?? throw new ArgumentNullException(nameof(function));
             Parameters = parameters?.ToList() ?? new List<IntrospectionArgument>();
             Return = @return;
             Marshalers = marshalers?.ToList() ?? new List<IntrospectionMarshaler>();
+            IsVarArg = isVarArg;
         }
 
         /// <summary>
@@ -40,6 +42,11 @@ namespace GObject.Introspection.Reflection
         /// Gets the arguments that describe the parameters of the invokable.
         /// </summary>
         public IReadOnlyList<IntrospectionArgument> Parameters { get; }
+
+        /// <summary>
+        /// Gets whether or not the invokable has varadic arguments.
+        /// </summary>
+        public bool IsVarArg { get; }
 
         /// <summary>
         /// Describes how marshaling of invokable parameters is conducted.

@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 using GObject.Introspection.Model;
 
 namespace GObject.Introspection.Reflection
 {
 
-    class UnionType : StructureType
+    class UnionElementStructureType : StructureType
     {
 
         readonly Union union;
@@ -17,11 +18,16 @@ namespace GObject.Introspection.Reflection
         /// </summary>
         /// <param name="context"></param>
         /// <param name="union"></param>
-        public UnionType(IntrospectionContext context, Union union) :
+        public UnionElementStructureType(IntrospectionContext context, Union union) :
             base(context)
         {
             this.union = union ?? throw new ArgumentNullException(nameof(union));
         }
+
+        /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        public override string Name => union.Name;
 
         /// <summary>
         /// Gets the original introspected name of the type.
@@ -29,9 +35,23 @@ namespace GObject.Introspection.Reflection
         public override string IntrospectionName => union.Name;
 
         /// <summary>
-        /// Gets the name of the union.
+        /// Gets the native name of the type.
         /// </summary>
-        public override string Name => union.Name;
+        public override string NativeName => union.CType;
+
+        /// <summary>
+        /// Unions are always sequential.
+        /// </summary>
+        public override LayoutKind LayoutKind => LayoutKind.Explicit;
+
+        /// <summary>
+        /// Blittability is determined by whether the record is a struct or class implementation.
+        /// </summary>
+        /// <returns></returns>
+        protected override bool GetIsBlittable()
+        {
+            return true;
+        }
 
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {
@@ -49,7 +69,7 @@ namespace GObject.Introspection.Reflection
         protected virtual IEnumerable<IntrospectionMember> GetRecordMembers()
         {
             // stack all records on top of each other
-            return union.Records.Select(i => new IntrospectionTypeMember(Context, this, new RecordElementType(Context, i)));
+            return union.Records.Select(i => new IntrospectionTypeMember(Context, this, new RecordElementStructureType(Context, i)));
         }
 
     }

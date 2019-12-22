@@ -7,7 +7,10 @@ using GObject.Introspection.Model;
 namespace GObject.Introspection.Reflection
 {
 
-    class RecordElementType : ClassType
+    /// <summary>
+    /// Describes a record that must be reflected as a reference type.
+    /// </summary>
+    class RecordElementClassType : ClassType
     {
 
         readonly Record record;
@@ -17,19 +20,31 @@ namespace GObject.Introspection.Reflection
         /// </summary>
         /// <param name="context"></param>
         /// <param name="record"></param>
-        public RecordElementType(IntrospectionContext context, Record record) :
+        public RecordElementClassType(IntrospectionContext context, Record record) :
             base(context)
         {
             this.record = record ?? throw new ArgumentNullException(nameof(record));
         }
 
         /// <summary>
+        /// Gets the name of the type.
+        /// </summary>
+        public override string Name => record.Name;
+
+        /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => record.Name;
 
-        public override string Name => record.Name;
+        /// <summary>
+        /// Gets the native name of the type.
+        /// </summary>
+        public override string NativeName => record.CType;
 
+        /// <summary>
+        /// Gets the members of the type.
+        /// </summary>
+        /// <returns></returns>
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {
             return base.GetMembers()
@@ -63,7 +78,8 @@ namespace GObject.Introspection.Reflection
 
         protected virtual IEnumerable<FieldMember> GetFieldMembers()
         {
-            return record.Fields.Select(i => new FieldElementMember(Context, this, i));
+            // no fields for a class
+            yield break;
         }
 
         protected virtual IEnumerable<MethodMember> GetConstructorMembers()
@@ -83,7 +99,7 @@ namespace GObject.Introspection.Reflection
 
         protected virtual IEnumerable<IntrospectionTypeMember> GetUnionMembers()
         {
-            return record.Unions.Select(i => new IntrospectionTypeMember(Context, this, new UnionType(Context, i)));
+            return record.Unions.Select(i => new IntrospectionTypeMember(Context, this, Context.CreateType(i).Type));
         }
 
     }

@@ -1,4 +1,5 @@
-﻿using System.Xml.Linq;
+﻿using System;
+using System.Xml.Linq;
 
 namespace GObject.Introspection.Model
 {
@@ -11,7 +12,8 @@ namespace GObject.Introspection.Model
             return new ClrInfo()
             {
                 Type = (string)element.Attribute(Xmlns.CLR_1_0_NS + "type"),
-                MarshalerType = (string)element.Attribute(Xmlns.CLR_1_0_NS + "marshaler-type")
+                MarshalerType = (string)element.Attribute(Xmlns.CLR_1_0_NS + "marshaler-type"),
+                Kind = (string)element.Attribute(Xmlns.CLR_1_0_NS + "kind") is string s ? (ClrObjectKind)Enum.Parse(typeof(ClrObjectKind), s) : ClrObjectKind.Auto,
             };
         }
 
@@ -22,6 +24,8 @@ namespace GObject.Introspection.Model
         public string NullExpression { get; set; }
 
         public string MarshalerType { get; set; }
+
+        public ClrObjectKind Kind { get; set; }
 
     }
 

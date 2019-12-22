@@ -13,7 +13,7 @@ namespace GObject.Introspection.CodeGen
     /// <summary>
     /// Builds the syntax for class elements.
     /// </summary>
-    abstract class EnumBuilder : SyntaxNodeBuilderBase<EnumType>
+    abstract class EnumBuilder : SyntaxNodeBuilderBase<FlagElementType>
     {
 
         /// <summary>
@@ -26,39 +26,39 @@ namespace GObject.Introspection.CodeGen
 
         }
 
-        protected override IEnumerable<SyntaxNode> Build(EnumType type)
+        protected override IEnumerable<SyntaxNode> Build(FlagElementType type)
         {
             yield return BuildEnum(type);
         }
 
-        protected virtual SyntaxNode BuildEnum(EnumType type) =>
+        protected virtual SyntaxNode BuildEnum(FlagElementType type) =>
             Syntax.EnumDeclaration(
                 GetName(type),
                 GetAccessibility(type),
                 GetModifiers(type),
                 BuildMembers(type));
 
-        string GetName(EnumType type)
+        string GetName(FlagElementType type)
         {
             return type.Name;
         }
 
-        Accessibility GetAccessibility(EnumType type)
+        Accessibility GetAccessibility(FlagElementType type)
         {
             return Accessibility.Public;
         }
 
-        DeclarationModifiers GetModifiers(EnumType type)
+        DeclarationModifiers GetModifiers(FlagElementType type)
         {
             return DeclarationModifiers.Partial;
         }
 
-        IEnumerable<SyntaxNode> BuildMembers(EnumType type)
+        IEnumerable<SyntaxNode> BuildMembers(FlagElementType type)
         {
-            return type.Members.OfType<EnumerationMember>().SelectMany(i => BuildMember(type, i));
+            return type.Members.OfType<EnumMember>().SelectMany(i => BuildMember(type, i));
         }
 
-        IEnumerable<SyntaxNode> BuildMember(EnumType type, EnumerationMember member)
+        IEnumerable<SyntaxNode> BuildMember(FlagElementType type, EnumMember member)
         {
             yield return Syntax.EnumMember(member.Name, ConvertValue(member.Value));
         }

@@ -37,7 +37,7 @@ namespace GObject.Introspection.Reflection
                 throw new ArgumentNullException(nameof(name));
 
             // recurse back into introspection library
-            if (library.ResolveModule(ns, version).ResolveTypeByIntrospectionName(name) is IntrospectionType type)
+            if (library.ResolveModule(ns, version).ResolveTypeDef(name) is IntrospectionTypeDef type)
                 return new IntrospectionTypeSymbol(type);
 
             return null;

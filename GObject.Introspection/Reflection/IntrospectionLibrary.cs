@@ -15,18 +15,24 @@ namespace GObject.Introspection.Reflection
     {
 
         readonly NamespaceLibrary namespaces;
+        readonly IManagedTypeResolver resolver;
+
         readonly TypeSymbolProvider symbols;
+        readonly NativeTypeSymbolProvider nativeSymbols;
         readonly ConcurrentDictionary<(string, string), IntrospectionModule> modules;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="namespaces"></param>
-        public IntrospectionLibrary(NamespaceLibrary namespaces)
+        /// <param name="resolver"></param>
+        public IntrospectionLibrary(NamespaceLibrary namespaces, IManagedTypeResolver resolver)
         {
             this.namespaces = namespaces ?? throw new ArgumentNullException(nameof(namespaces));
+            this.resolver = resolver ?? throw new ArgumentNullException(nameof(resolver));
 
-            symbols = new TypeSymbolProvider(new IntrospectionTypeSymbolSource(this), new ForwardedTypeSymbolSource(namespaces));
+            symbols = new TypeSymbolProvider(new IntrospectionTypeSymbolSource(this), new ManagedTypeSymbolSource(namespaces, resolver));
+            nativeSymbols = new NativeTypeSymbolProvider(new IntrospectionNativeTypeSymbolSource(this), new PrimitiveNativeTypeSymbolSource(namespaces));
             modules = new ConcurrentDictionary<(string, string), IntrospectionModule>();
         }
 
@@ -54,7 +60,11 @@ namespace GObject.Introspection.Reflection
         /// <returns></returns>
         IntrospectionModule ResolveModuleInternal(string name, string version)
         {
-            return namespaces.ResolveNamespace(name, version) is Namespace ns ? new IntrospectionModule(symbols, ns) : null;
+            // attempt to resolve namespace
+            if (namespaces.ResolveNamespace(name, version) is Namespace ns)
+                return new IntrospectionModule(resolver, symbols, nativeSymbols, ns);
+            else
+                return null;
         }
 
     }

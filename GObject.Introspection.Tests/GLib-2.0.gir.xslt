@@ -37,11 +37,10 @@
             <core:primitive name="guchar" clr:type="System.Byte" />
             <core:primitive name="gsize" clr:type="System.UInt64" />
             <core:primitive name="gssize" clr:type="System.Int64" />
-            <core:primitive name="utf8" clr:type="System.String" clr:marshaler-type="GLib.Utf8Marshaler" />
-            <core:primitive name="filename" clr:type="System.String" clr:marshaler-type="GLib.FilenameMarshaler" />
-            <core:primitive name="gunichar" clr:type="GLib.Unichar" />
-
-            <core:primitive name="GType" clr:type="GLib.GType" clr:marshaler-type="GLib.GTypeMarshaler" />
+            <core:primitive name="utf8" clr:type="System.String" />
+            <core:primitive name="filename" clr:type="System.String" />
+            <core:primitive name="gunichar" clr:type="System.IntPtr" />
+            <core:primitive name="GType" clr:type="System.IntPtr" />
         </xsl:copy>
     </xsl:template>
 
@@ -59,6 +58,10 @@
 
     <xsl:template match="core:record[@name='TestLogMsg']/core:field[@name='nums']/core:type">
         <core:type name="gdouble" c:type="gdouble*" />
+    </xsl:template>
+
+    <xsl:template match="core:record[@name='IConv']/core:method[@name='']">
+        <!-- remove -->
     </xsl:template>
 
     <xsl:template match="core:enumeration[@name='SpawnError']/core:member[@name='2big']">

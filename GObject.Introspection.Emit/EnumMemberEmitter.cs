@@ -7,14 +7,14 @@ using GObject.Introspection.Reflection;
 namespace GObject.Introspection.Dynamic
 {
 
-    class EnumerationMemberEmitter : MemberEmitter
+    class EnumMemberEmitter : MemberEmitter
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public EnumerationMemberEmitter(DynamicEmitContext context) :
+        public EnumMemberEmitter(DynamicEmitContext context) :
             base(context)
         {
 
@@ -22,10 +22,10 @@ namespace GObject.Introspection.Dynamic
 
         public override IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, IntrospectionMember member)
         {
-            return EmitDynamicMember(type, (EnumerationMember)member);
+            return EmitDynamicMember(type, (EnumMember)member);
         }
 
-        IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, EnumerationMember member)
+        IEnumerable<MemberInfo> EmitDynamicMember(TypeBuilder type, EnumMember member)
         {
             var f = type.DefineField(member.Name, typeof(int), FieldAttributes.Public | FieldAttributes.Literal | FieldAttributes.Static);
             f.SetConstant(member.Value);

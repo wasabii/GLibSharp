@@ -34,12 +34,12 @@ namespace GObject.Introspection.Reflection
 
             public override string Name => "Value";
 
-            protected override TypeSymbol GetFieldType()
+            protected override TypeSpec GetFieldType()
             {
                 if (alias.Type != null && alias.Type.Name != "none")
-                    return alias.Type.ToSymbol(Context);
+                    return alias.Type.ToSpec(Context);
                 else
-                    return new ForwardedTypeSymbol(typeof(IntPtr).FullName);
+                    return null;
             }
 
         }
@@ -58,14 +58,19 @@ namespace GObject.Introspection.Reflection
         }
 
         /// <summary>
+        /// Gets the CLR name of the type.
+        /// </summary>
+        public override string Name => alias.Name;
+
+        /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => alias.Name;
 
         /// <summary>
-        /// Gets the CLR name of the type.
+        /// Gets the native name of the type.
         /// </summary>
-        public override string Name => alias.Name;
+        public override string NativeName => alias.CType;
 
         /// <summary>
         /// Gets the members of the type.

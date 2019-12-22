@@ -26,11 +26,19 @@ namespace GObject.Introspection.Reflection
         }
 
         /// <summary>
+        /// Gets the managed name of the type.
+        /// </summary>
+        public override string Name => "Functions";
+
+        /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => null;
 
-        public override string Name => "Functions";
+        /// <summary>
+        /// Gets the native name of the type.
+        /// </summary>
+        public override string NativeName => null;
 
         protected override IEnumerable<IntrospectionMember> GetMembers()
         {

@@ -1,4 +1,6 @@
-﻿namespace GObject.Introspection.Reflection
+﻿using System;
+
+namespace GObject.Introspection.Reflection
 {
 
     /// <summary>
@@ -8,6 +10,19 @@
     {
 
         /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="type"></param>
+        /// <param name="direction"></param>
+        public IntrospectionArgument(string name, TypeSpec type, IntrospectionArgumentDirection direction = IntrospectionArgumentDirection.In)
+        {
+            Name = name ?? throw new ArgumentNullException(nameof(name));
+            Type = type ?? throw new ArgumentNullException(nameof(type));
+            Direction = direction;
+        }
+
+        /// <summary>
         /// Gets the name of the introspected argument.
         /// </summary>
         public string Name { get; }
@@ -15,7 +30,7 @@
         /// <summary>
         /// Gets the type of the argument.
         /// </summary>
-        public TypeSymbol Type { get; }
+        public TypeSpec Type { get; }
 
         /// <summary>
         /// Describes the direction of the argument.

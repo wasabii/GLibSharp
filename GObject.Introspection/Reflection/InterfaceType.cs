@@ -1,7 +1,4 @@
-﻿using System.Reflection;
-using System.Reflection.Emit;
-
-namespace GObject.Introspection.Reflection
+﻿namespace GObject.Introspection.Reflection
 {
 
     public abstract class InterfaceType : IntrospectionType
@@ -11,13 +8,11 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public InterfaceType(IntrospectionContext context) :
+        internal InterfaceType(IntrospectionContext context) :
             base(context)
         {
 
         }
-
-        public sealed override IntrospectionTypeKind Kind => IntrospectionTypeKind.Interface;
 
         protected sealed override TypeSymbol GetBaseType()
         {

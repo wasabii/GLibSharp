@@ -36,7 +36,17 @@ namespace GObject.Introspection.Dynamic
 
             // recurse back into introspection library
             if (symbol is IntrospectionTypeSymbol s)
-                return module.GetType(s.QualifiedName).GetTypeInfo();
+            {
+                try
+                {
+                    var t = module.GetType(s.Name);
+                    return t.GetTypeInfo();
+                }
+                catch (Exception e)
+                {
+                    throw;
+                }
+            }
 
             return null;
         }

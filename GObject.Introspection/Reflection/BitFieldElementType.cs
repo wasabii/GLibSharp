@@ -10,7 +10,7 @@ namespace GObject.Introspection.Reflection
     /// <summary>
     /// Describes a flag type generated from a bitfield.
     /// </summary>
-    class BitFieldElementType : EnumType
+    class BitFieldElementType : FlagElementType
     {
 
         readonly BitField bitfield;
@@ -19,21 +19,14 @@ namespace GObject.Introspection.Reflection
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="flag"></param>
+        /// <param name="bitfield"></param>
         public BitFieldElementType(IntrospectionContext context, BitField bitfield) :
-            base(context)
+            base(context, bitfield)
         {
             this.bitfield = bitfield ?? throw new ArgumentNullException(nameof(bitfield));
         }
 
-        /// <summary>
-        /// Gets the original introspected name of the type.
-        /// </summary>
-        public override string IntrospectionName => bitfield.Name;
-
-        public override string Name => bitfield.Name;
-
-        protected override IEnumerable<EnumerationMember> GetMemberMembers()
+        protected override IEnumerable<EnumMember> GetMemberMembers()
         {
             return bitfield.Members.Select(i => new MemberElementMember(Context, this, i));
         }

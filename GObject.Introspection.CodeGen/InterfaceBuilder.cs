@@ -62,7 +62,7 @@ namespace GObject.Introspection.CodeGen
 
         SyntaxNode BuildImplementedInterface(InterfaceType iface, TypeSymbol implementedInterface)
         {
-            return Syntax.DottedName(implementedInterface.QualifiedName);
+            return Syntax.DottedName(implementedInterface.Name);
         }
 
         IEnumerable<SyntaxNode> BuildMembers(InterfaceType iface)

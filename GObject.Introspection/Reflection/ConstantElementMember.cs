@@ -26,7 +26,7 @@ namespace GObject.Introspection.Reflection
 
         public override object DefaultValue => constant.Value;
 
-        protected override TypeSymbol GetFieldType() => constant.Type?.ToSymbol(Context);
+        protected override TypeSpec GetFieldType() => constant.Type?.ToSpec(Context);
 
     }
 

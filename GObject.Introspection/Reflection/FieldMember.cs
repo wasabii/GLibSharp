@@ -7,17 +7,17 @@ namespace GObject.Introspection.Reflection
     {
 
         readonly int? offset;
-        readonly Lazy<TypeSymbol> fieldType;
+        readonly Lazy<TypeSpec> fieldType;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
         /// <param name="declaringType"></param>
-        public FieldMember(IntrospectionContext context, IntrospectionType declaringType) :
+        internal FieldMember(IntrospectionContext context, IntrospectionType declaringType) :
             base(context, declaringType)
         {
-            fieldType = new Lazy<TypeSymbol>(GetFieldType);
+            fieldType = new Lazy<TypeSpec>(GetFieldType);
         }
 
         /// <summary>
@@ -26,16 +26,11 @@ namespace GObject.Introspection.Reflection
         /// <param name="context"></param>
         /// <param name="declaringType"></param>
         /// <param name="offset"></param>
-        public FieldMember(IntrospectionContext context, IntrospectionType declaringType, int offset) :
+        internal FieldMember(IntrospectionContext context, IntrospectionType declaringType, int offset) :
             this(context, declaringType)
         {
             this.offset = offset;
         }
-
-        /// <summary>
-        /// Gets the kind of the member.
-        /// </summary>
-        public sealed override IntrospectionMemberKind Kind => IntrospectionMemberKind.Field;
 
         /// <summary>
         /// Gets the offset of the field.
@@ -45,18 +40,27 @@ namespace GObject.Introspection.Reflection
         /// <summary>
         /// Gets the type of the field.
         /// </summary>
-        public TypeSymbol FieldType => fieldType.Value;
+        public TypeSpec FieldType => fieldType.Value;
 
         /// <summary>
         /// Gets the field type.
         /// </summary>
         /// <returns></returns>
-        protected abstract TypeSymbol GetFieldType();
+        protected abstract TypeSpec GetFieldType();
 
         /// <summary>
         /// Gets the default value to be assigned to the field.
         /// </summary>
         public virtual object DefaultValue => null;
+
+        /// <summary>
+        /// Returns a string representation of this member.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToString()
+        {
+            return $"Field {Name}";
+        }
 
     }
 

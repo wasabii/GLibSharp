@@ -94,8 +94,13 @@ namespace GObject.Introspection.Dynamic
         protected virtual TypeBuilder DefineType(IntrospectionType type, TypeAttributes attr, Type parent, TypeBuilder nestedTypeParent)
         {
             if (nestedTypeParent == null)
+            {
+                var n = type.Name;
+                Console.WriteLine("Emitting {0}", type.Name);
+
                 // standard type, at the module level
                 return Context.Module.DefineType(type.Module.Name + "." + type.Name, attr, parent);
+            }
             else
                 // nested type, within a parent type
                 return nestedTypeParent.DefineNestedType(type.Name, attr, parent);
@@ -114,10 +119,23 @@ namespace GObject.Introspection.Dynamic
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
 
-            // emit members of the type
+            EmitCustomAttributes(builder, type);
             EmitMembers(builder, type);
 
             return builder.CreateTypeInfo();
+        }
+
+        /// <summary>
+        /// Emits custom attributes on the type.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="type"></param>
+        protected virtual void EmitCustomAttributes(TypeBuilder builder, IntrospectionType type)
+        {
+            if (builder is null)
+                throw new ArgumentNullException(nameof(builder));
+            if (type is null)
+                throw new ArgumentNullException(nameof(type));
         }
 
         /// <summary>
@@ -131,7 +149,7 @@ namespace GObject.Introspection.Dynamic
                 throw new ArgumentNullException(nameof(builder));
             if (type is null)
                 throw new ArgumentNullException(nameof(type));
-            
+
             foreach (var member in type.Members)
                 foreach (var info in Context.EmitDynamicMember(builder, member))
                     info.GetHashCode();

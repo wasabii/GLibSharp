@@ -17,7 +17,7 @@ namespace GObject.Introspection.Reflection
         /// <param name="context"></param>
         /// <param name="declaringType"></param>
         /// <param name="type"></param>
-        public IntrospectionTypeMember(IntrospectionContext context, IntrospectionType declaringType, IntrospectionType type) :
+        internal IntrospectionTypeMember(IntrospectionContext context, IntrospectionType declaringType, IntrospectionType type) :
             base(context, declaringType)
         {
             this.type = type ?? throw new ArgumentNullException(nameof(type));
@@ -27,11 +27,6 @@ namespace GObject.Introspection.Reflection
         /// Gets the name of the member.
         /// </summary>
         public override string Name => type.Name;
-
-        /// <summary>
-        /// Gets the kind of the member.
-        /// </summary>
-        public override IntrospectionMemberKind Kind => IntrospectionMemberKind.Type;
 
         /// <summary>
         /// Gets the type that is a member.

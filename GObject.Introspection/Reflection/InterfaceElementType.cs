@@ -24,14 +24,19 @@ namespace GObject.Introspection.Reflection
         }
 
         /// <summary>
+        /// Gets the managed name of the type.
+        /// </summary>
+        public override string Name => iface.Name;
+
+        /// <summary>
         /// Gets the original introspected name of the type.
         /// </summary>
         public override string IntrospectionName => iface.Name;
 
         /// <summary>
-        /// Gets the name of the type.
+        /// Gets the native name of the type.
         /// </summary>
-        public override string Name => iface.Name;
+        public override string NativeName => iface.CType;
 
         /// <summary>
         /// Gets the implemented interfaces of this interface.

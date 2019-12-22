@@ -52,7 +52,7 @@ namespace GObject.Introspection.CodeGen
         /// <returns></returns>
         SyntaxNode BuildType(FieldMember field)
         {
-            return Syntax.DottedName(field.FieldType.QualifiedName);
+            return Syntax.DottedName(field.FieldType.Name);
         }
 
         Accessibility GetAccessibility(FieldMember field)
