@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {

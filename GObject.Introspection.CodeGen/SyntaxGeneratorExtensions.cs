@@ -5,7 +5,7 @@ using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Editing;
 
-namespace GObject.Introspection.CodeGen
+namespace GObject.Introspection.CodeGen.Syntax
 {
 
     /// <summary>

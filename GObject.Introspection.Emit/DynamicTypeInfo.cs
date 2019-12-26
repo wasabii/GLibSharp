@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Reflection;
 
-using GObject.Introspection.Model;
-
 namespace GObject.Introspection.Emit
 {
 
@@ -11,7 +9,7 @@ namespace GObject.Introspection.Emit
     /// </summary>
     public class DynamicTypeInfo<TIntrospectionType> :
         DynamicTypeInfo
-        where TIntrospectionType : Model.Type
+        where TIntrospectionType : Dynamic.Type
     {
 
         readonly TIntrospectionType type;
@@ -49,7 +47,7 @@ namespace GObject.Introspection.Emit
         /// <param name="finalizer"></param>
         /// <returns></returns>
         public static DynamicTypeInfo Create<TIntrospectionType>(TIntrospectionType type, System.Type built, Func<TIntrospectionType, TypeInfo> finalizer)
-            where TIntrospectionType : Model.Type
+            where TIntrospectionType : Dynamic.Type
         {
             return new DynamicTypeInfo<TIntrospectionType>(type, built, finalizer);
         }

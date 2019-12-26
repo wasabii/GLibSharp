@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 using System.Reflection.Emit;
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -13,23 +13,23 @@ namespace GObject.Introspection.Emit
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public DelegateTypeEmitter(DynamicEmitContext context) :
+        public DelegateTypeEmitter(Context context) :
             base(context)
         {
 
         }
 
-        protected override TypeInfo GetParentType(Model.Type type)
+        protected override TypeInfo GetParentType(Dynamic.Type type)
         {
             return typeof(MulticastDelegate).GetTypeInfo();
         }
 
-        protected override TypeAttributes GetTypeAttributes(Model.Type type, bool isNestedType)
+        protected override TypeAttributes GetTypeAttributes(Dynamic.Type type, bool isNestedType)
         {
             return base.GetTypeAttributes(type, isNestedType) | TypeAttributes.Sealed;
         }
 
-        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
+        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Dynamic.Type type)
         {
             EmitDelegateMethods(builder, (DelegateType)type);
             return base.FinalizeDynamicType(builder, type);

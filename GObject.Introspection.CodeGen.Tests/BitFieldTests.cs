@@ -4,11 +4,11 @@ using System.Xml.Linq;
 
 using FluentAssertions;
 
-using GObject.Introspection.Xml;
+using GObject.Introspection.Library.Model;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GObject.Introspection.CodeGen.Tests
+namespace GObject.Introspection.CodeGen.Syntax.Tests
 {
 
     [TestClass]
@@ -18,7 +18,7 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_enum_with_flags()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "bitfield",
                     new XAttribute("name", "TestFlags"),
                     new XElement(Xmlns.Core_1_0_NS + "member",

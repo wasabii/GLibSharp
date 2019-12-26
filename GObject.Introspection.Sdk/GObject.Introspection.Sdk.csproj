@@ -20,7 +20,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\GObject.Introspection.CodeGen\GObject.Introspection.CodeGen.csproj" />
+      <ProjectReference Include="..\GObject.Introspection.CodeGen\GObject.Introspection.CodeGen.Syntax.csproj" />
       <ProjectReference Include="..\GObject.Introspection\GObject.Introspection.csproj" />
     </ItemGroup>
 

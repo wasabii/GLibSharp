@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -17,23 +17,23 @@ namespace GObject.Introspection.Emit
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public EnumTypeEmitter(DynamicEmitContext context) :
+        public EnumTypeEmitter(Context context) :
             base(context)
         {
 
         }
 
-        protected override TypeInfo GetParentType(Model.Type type)
+        protected override TypeInfo GetParentType(Dynamic.Type type)
         {
             return typeof(Enum).GetTypeInfo();
         }
 
-        protected override TypeAttributes GetTypeAttributes(Model.Type type, bool nested)
+        protected override TypeAttributes GetTypeAttributes(Dynamic.Type type, bool nested)
         {
             return base.GetTypeAttributes(type, nested) | TypeAttributes.Sealed;
         }
 
-        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
+        protected override TypeInfo FinalizeDynamicType(TypeBuilder builder, Dynamic.Type type)
         {
             return FinalizeDynamicType(builder, (FlagElementType)type);
         }

@@ -3,11 +3,11 @@ using System.Xml.Linq;
 
 using FluentAssertions;
 
-using GObject.Introspection.Xml;
+using GObject.Introspection.Library.Model;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace GObject.Introspection.CodeGen.Tests
+namespace GObject.Introspection.CodeGen.Syntax.Tests
 {
 
     [TestClass]
@@ -17,21 +17,21 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_valuetype()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "record",
                     new XAttribute("name", "TestRecord"),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "fieldOne"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint"))),
+                            new XAttribute("name", "unsigned int"))),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "fieldTwo"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint"))),
+                            new XAttribute("name", "unsigned int"))),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "fieldThree"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint")))));
+                            new XAttribute("name", "unsigned int")))));
 
             var t = asm.GetType("Test.TestRecord");
             t.Should().NotBeNull();
@@ -59,13 +59,13 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_equals()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "record",
                     new XAttribute("name", "TestRecord"),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "field"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint")))));
+                            new XAttribute("name", "int")))));
 
             var t = asm.GetType("Test.TestRecord");
             var m = t.GetMethod("Equals", new[] { typeof(object) });
@@ -77,13 +77,13 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_typed_equals()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "record",
                     new XAttribute("name", "TestRecord"),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "field"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint")))));
+                            new XAttribute("name", "int")))));
 
             var t = asm.GetType("Test.TestRecord");
             var m = t.GetMethod("Equals", new[] { t });
@@ -95,13 +95,13 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_gethashcode()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "record",
                     new XAttribute("name", "TestRecord"),
                     new XElement(Xmlns.Core_1_0_NS + "field",
                         new XAttribute("name", "field"),
                         new XElement(Xmlns.Core_1_0_NS + "type",
-                            new XAttribute("name", "guint")))));
+                            new XAttribute("name", "int")))));
 
             var t = asm.GetType("Test.TestRecord");
             var m = t.GetMethod("GetHashCode");
@@ -113,7 +113,7 @@ namespace GObject.Introspection.CodeGen.Tests
         [TestMethod]
         public void Should_generate_callback_field()
         {
-            var asm = Build(
+            var asm = ExportNamespace(
                 new XElement(Xmlns.Core_1_0_NS + "record",
                     new XAttribute("name", "TestRecord"),
                     new XElement(Xmlns.Core_1_0_NS + "field",

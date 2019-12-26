@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.IO;
 using System.Xml.Linq;
 
-using GObject.Introspection.Xml;
+using GObject.Introspection.Library.Model;
 
 namespace GObject.Introspection.Library
 {

@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Xml;
 using System.Xml.Linq;
 
-using GObject.Introspection.CodeGen;
+using GObject.Introspection.CodeGen.Syntax;
 
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -15,13 +15,13 @@ namespace GObject.Introspection.Emit
     abstract class TypeEmitter
     {
 
-        readonly DynamicEmitContext context;
+        readonly Context context;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public TypeEmitter(DynamicEmitContext context)
+        public TypeEmitter(Context context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -29,7 +29,7 @@ namespace GObject.Introspection.Emit
         /// <summary>
         /// Gets the context of the emission process.
         /// </summary>
-        public DynamicEmitContext Context => context;
+        public Context Context => context;
 
         /// <summary>
         /// Gets the <see cref="TypeAttributes"/> to apply on generation.
@@ -37,7 +37,7 @@ namespace GObject.Introspection.Emit
         /// <param name="type"></param>
         /// <param name="isNestedType"></param>
         /// <returns></returns>
-        protected virtual TypeAttributes GetTypeAttributes(Model.Type type, bool isNestedType)
+        protected virtual TypeAttributes GetTypeAttributes(Dynamic.Type type, bool isNestedType)
         {
             var a = TypeAttributes.AnsiClass;
 
@@ -60,7 +60,7 @@ namespace GObject.Introspection.Emit
         /// Gets the parent type to apply on generation.
         /// </summary>
         /// <returns></returns>
-        protected virtual TypeInfo GetParentType(Model.Type type)
+        protected virtual TypeInfo GetParentType(Dynamic.Type type)
         {
             return type.BaseType != null ? Context.ResolveTypeInfo(type.BaseType) : null;
         }
@@ -71,7 +71,7 @@ namespace GObject.Introspection.Emit
         /// <param name="type"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        public virtual IEnumerable<DynamicTypeInfo> EmitDynamicType(Model.Type type, TypeBuilder nestedTypeParent)
+        public virtual IEnumerable<DynamicTypeInfo> EmitDynamicType(Dynamic.Type type, TypeBuilder nestedTypeParent)
         {
             // build the new type definition
             var builder = DefineType(type, GetTypeAttributes(type, nestedTypeParent != null), GetParentType(type), nestedTypeParent);
@@ -91,7 +91,7 @@ namespace GObject.Introspection.Emit
         /// <param name="parent"></param>
         /// <param name="nestedTypeParent"></param>
         /// <returns></returns>
-        protected virtual TypeBuilder DefineType(Model.Type type, TypeAttributes attr, System.Type parent, TypeBuilder nestedTypeParent)
+        protected virtual TypeBuilder DefineType(Dynamic.Type type, TypeAttributes attr, System.Type parent, TypeBuilder nestedTypeParent)
         {
             if (nestedTypeParent == null)
             {
@@ -112,7 +112,7 @@ namespace GObject.Introspection.Emit
         /// <param name="builder"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        protected virtual TypeInfo FinalizeDynamicType(TypeBuilder builder, Model.Type type)
+        protected virtual TypeInfo FinalizeDynamicType(TypeBuilder builder, Dynamic.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));
@@ -130,7 +130,7 @@ namespace GObject.Introspection.Emit
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="type"></param>
-        protected virtual void EmitCustomAttributes(TypeBuilder builder, Model.Type type)
+        protected virtual void EmitCustomAttributes(TypeBuilder builder, Dynamic.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));
@@ -143,7 +143,7 @@ namespace GObject.Introspection.Emit
         /// </summary>
         /// <param name="builder"></param>
         /// <param name="type"></param>
-        protected virtual void EmitMembers(TypeBuilder builder, Model.Type type)
+        protected virtual void EmitMembers(TypeBuilder builder, Dynamic.Type type)
         {
             if (builder is null)
                 throw new ArgumentNullException(nameof(builder));

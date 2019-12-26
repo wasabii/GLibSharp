@@ -1,6 +1,6 @@
 ﻿using System;
 
-using GObject.Introspection.Xml;
+using GObject.Introspection.Library.Model;
 
 namespace GObject.Introspection
 {

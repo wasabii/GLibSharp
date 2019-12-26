@@ -8,7 +8,7 @@
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public InterfaceTypeEmitter(DynamicEmitContext context) :
+        public InterfaceTypeEmitter(Context context) :
             base(context)
         {
 

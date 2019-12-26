@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.InteropServices;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -15,13 +15,13 @@ namespace GObject.Introspection.Emit
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public StructureTypeEmitter(DynamicEmitContext context) :
+        public StructureTypeEmitter(Context context) :
             base(context)
         {
 
         }
 
-        protected override TypeAttributes GetTypeAttributes(Model.Type type, bool isNestedType)
+        protected override TypeAttributes GetTypeAttributes(Dynamic.Type type, bool isNestedType)
         {
             var t = (StructureType)type;
 
@@ -38,12 +38,12 @@ namespace GObject.Introspection.Emit
             return a;
         }
 
-        protected override TypeInfo GetParentType(Model.Type type)
+        protected override TypeInfo GetParentType(Dynamic.Type type)
         {
             return typeof(ValueType).GetTypeInfo();
         }
 
-        protected override void EmitCustomAttributes(TypeBuilder builder, Model.Type type)
+        protected override void EmitCustomAttributes(TypeBuilder builder, Dynamic.Type type)
         {
             base.EmitCustomAttributes(builder, type);
             EmitStructLayoutAttribute(builder, (StructureType)type);

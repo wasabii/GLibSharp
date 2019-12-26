@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -14,13 +14,13 @@ namespace GObject.Introspection.Emit
     abstract class MemberEmitter
     {
 
-        readonly DynamicEmitContext context;
+        readonly Context context;
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public MemberEmitter(DynamicEmitContext context)
+        public MemberEmitter(Context context)
         {
             this.context = context ?? throw new ArgumentNullException(nameof(context));
         }
@@ -28,7 +28,7 @@ namespace GObject.Introspection.Emit
         /// <summary>
         /// Gets the context of the emission process.
         /// </summary>
-        public DynamicEmitContext Context => context;
+        public Context Context => context;
 
         /// <summary>
         /// Emits the member to the type.

@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using System.Runtime.CompilerServices;
 
-using GObject.Introspection.Model;
+using GObject.Introspection.CodeGen.Model;
 
 namespace GObject.Introspection.Emit
 {
@@ -16,7 +16,7 @@ namespace GObject.Introspection.Emit
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        public FieldMemberEmitter(DynamicEmitContext context) :
+        public FieldMemberEmitter(Context context) :
             base(context)
         {
 
