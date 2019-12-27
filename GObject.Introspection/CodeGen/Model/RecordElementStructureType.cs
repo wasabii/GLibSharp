@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using GObject.Introspection.CodeGen.Model.Expressions;
 using GObject.Introspection.Library.Model;
@@ -127,23 +128,24 @@ namespace GObject.Introspection.CodeGen.Model
         /// <returns></returns>
         MethodMember BuildEqualsMethod()
         {
-            var slf = new ParameterExpression(Context, new ThisArgument(Context, this));
-            var arg = new[] { new Argument("other", Context.ResolveManagedSymbol(typeof(object).FullName)) };
-            var prm = arg.Select(i => new ParameterExpression(Context, i)).ToArray();
-            var ret = new Argument("", Context.ResolveManagedSymbol(typeof(bool).FullName));
+            var self = new ThisParameter(Context, this);
+            var prms = new[] { new Parameter(Context, "other", Context.ResolveManagedSymbol(typeof(object).FullName)) };
 
-            var stm =
+            var body =
                 new ReturnStatement(Context,
                     new ConditionalExpression(Context,
-                        new IsTypeExpression(Context, prm[0], Context.ResolveSymbol(IntrospectionName)),
-                        new InvokeExpression(Context, Context.ResolveSymbol(IntrospectionName), nameof(object.Equals), Context.ResolveManagedSymbol(typeof(bool).FullName), slf, new ConvertExpression(Context, Context.ResolveSymbol(IntrospectionName), prm[0])),
+                        new IsTypeExpression(Context, prms[0].Expression, self.Type),
+                        new InvokeExpression(Context, self.Type, nameof(object.Equals), Context.ResolveManagedSymbol(typeof(bool).FullName), self.Expression, new ConvertExpression(Context, self.Type, prms[0].Expression)),
                         new LiteralExpression(Context, false)));
 
             return new InvokableMethodMember(
                 Context,
                 this,
                 nameof(object.Equals),
-                new Invokable(arg, ret, stm),
+                new Invokable(
+                    prms,
+                    Context.ResolveManagedSymbol(typeof(bool).FullName),
+                    body),
                 Visibility.Public,
                 MemberModifier.Override);
         }
@@ -154,70 +156,73 @@ namespace GObject.Introspection.CodeGen.Model
         /// <returns></returns>
         MethodMember BuildTypedEqualsMethod()
         {
-            var slf = new ParameterExpression(Context, new ThisArgument(Context, this));
-            var arg = new[] { new Argument("other", Context.ResolveSymbol(IntrospectionName)) };
-            var prm = arg.Select(i => new ParameterExpression(Context, i)).ToArray();
-            var ret = new Argument("", Context.ResolveManagedSymbol(typeof(bool).FullName));
+            var self = new ThisParameter(Context, this);
+            var prms = new[] { new Parameter(Context, "other", self.Type) };
 
-            var stm =
+            var body =
                 new ReturnStatement(Context,
                     BinaryExpression.AndAlso(
                         fields.Value.Select(i =>
                             new BinaryExpression(Context, BinaryExpressionType.Equal,
-                                new PropertyOrFieldExpression(Context, slf, i.Name, i.FieldType),
-                                new PropertyOrFieldExpression(Context, prm[0], i.Name, i.FieldType)))));
+                                new PropertyOrFieldExpression(Context, self.Expression, i.Name, i.FieldType),
+                                new PropertyOrFieldExpression(Context, prms[0].Expression, i.Name, i.FieldType)))));
 
             return new InvokableMethodMember(
                 Context,
                 this,
                 nameof(object.Equals),
-                new Invokable(arg, ret, stm),
+                new Invokable(
+                    prms,
+                    Context.ResolveManagedSymbol(typeof(bool).FullName),
+                    body),
                 Visibility.Public,
                 MemberModifier.Default);
         }
 
         MethodMember BuildGetHashCodeMethod()
         {
-            var slf = new ParameterExpression(Context, new ThisArgument(Context, this));
-            var ret = new Argument("", Context.ResolveManagedSymbol(typeof(int).FullName));
+            var self = new ThisParameter(Context, this);
+            var intType = Context.ResolveManagedSymbol(typeof(int).FullName);
+            var strType = Context.ResolveManagedSymbol(typeof(string).FullName);
 
             // begin with a call to GetType().FullName.GetHashCode()
             var exp = (Expression)new InvokeExpression(
                 Context,
                 Context.ResolveSymbol(IntrospectionName),
                 nameof(object.GetHashCode),
-                Context.ResolveManagedSymbol(typeof(int).FullName),
+                intType,
                 new PropertyOrFieldExpression(
                     Context,
                     new InvokeExpression(
                         Context,
-                        Context.ResolveSymbol(IntrospectionName),
+                        self.Type,
                         nameof(object.GetType),
                         Context.ResolveManagedSymbol(typeof(System.Type).FullName),
-                        slf),
+                        self.Expression),
                     nameof(System.Type.FullName),
-                    Context.ResolveManagedSymbol(typeof(string).FullName)));
+                    strType));
 
             // append GetHashCode calls for each field
             foreach (var i in fields.Value)
                 exp = new BinaryExpression(
-                    Context, 
+                    Context,
                     BinaryExpressionType.ExclusiveOr,
-                    exp, 
+                    exp,
                     new InvokeExpression(
                         Context,
-                        Context.ResolveSymbol(IntrospectionName),
+                        self.Type,
                         nameof(object.GetHashCode),
-                        Context.ResolveManagedSymbol(typeof(int).FullName),
-                        new PropertyOrFieldExpression(Context, slf, i.Name, i.FieldType)));
-
-            var stm = new ReturnStatement(Context, exp);
+                        intType,
+                        new PropertyOrFieldExpression(Context, self.Expression, i.Name, i.FieldType)));
 
             return new InvokableMethodMember(
                 Context,
                 this,
                 nameof(object.GetHashCode),
-                new Invokable(new List<Argument>(), ret, stm),
+                new Invokable(
+                    ImmutableList<Parameter>.Empty,
+                    intType,
+                    new ReturnStatement(Context, exp)),
                 Visibility.Public,
                 MemberModifier.Override);
         }

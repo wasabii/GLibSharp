@@ -1,6 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
+
 using GObject.Introspection.CodeGen.Model;
 
 using Microsoft.CodeAnalysis;
@@ -11,7 +10,7 @@ namespace GObject.Introspection.CodeGen.Syntax
     /// <summary>
     /// Builds the syntax for method elements.
     /// </summary>
-    class MethodMemberBuilder : SyntaxMemberBuilderBase<MethodMember>
+    class MethodMemberBuilder : MethodMemberBuilder<MethodMember>
     {
 
         /// <summary>
@@ -41,34 +40,55 @@ namespace GObject.Introspection.CodeGen.Syntax
                 .NormalizeWhitespace();
         }
 
-        IEnumerable<SyntaxNode> BuildParameters()
+    }
+
+    /// <summary>
+    /// Builds the syntax for method elements.
+    /// </summary>
+    abstract class MethodMemberBuilder<TMember> : SyntaxMemberBuilderBase<TMember>
+        where TMember : MethodMember
+    {
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="member"></param>
+        public MethodMemberBuilder(ModuleContext context, TMember member) :
+            base(context, member)
+        {
+
+        }
+
+        protected IEnumerable<SyntaxNode> BuildParameters()
         {
             // TODO should not really be allowed
             if (Member.Invokable == null)
                 yield break;
 
-            foreach (var arg in Member.Invokable.Arguments)
+            foreach (var arg in Member.Invokable.Parameters)
                 yield return Syntax.ParameterDeclaration(arg.Name, Syntax.TypeSymbol(arg.Type));
         }
 
-        IEnumerable<string> BuildTypeParameters()
+        protected IEnumerable<string> BuildTypeParameters()
         {
             yield break;
         }
 
-        SyntaxNode BuildReturnType()
+        protected SyntaxNode BuildReturnType()
         {
             // TODO should not really be allowed
             if (Member.Invokable == null)
                 return null;
 
-            if (Member.Invokable.ReturnArgument == null)
-                return Syntax.TypeExpression(SpecialType.System_Void);
+            // method has no return type
+            if (Member.Invokable.ReturnType == null)
+                return null;
 
-            return Syntax.TypeSymbol(Member.Invokable.ReturnArgument.Type);
+            return Syntax.TypeSymbol(Member.Invokable.ReturnType);
         }
 
-        IEnumerable<SyntaxNode> BuildStatements()
+        protected IEnumerable<SyntaxNode> BuildStatements()
         {
             // TODO should not really be allowed
             if (Member.Invokable == null)
@@ -78,7 +98,7 @@ namespace GObject.Introspection.CodeGen.Syntax
                 yield return Context.Build(statement);
         }
 
-        IEnumerable<SyntaxNode> BuildAttributes()
+        protected IEnumerable<SyntaxNode> BuildAttributes()
         {
             yield break;
         }

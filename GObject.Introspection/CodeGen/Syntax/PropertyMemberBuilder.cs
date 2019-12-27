@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using GObject.Introspection.CodeGen.Model;
 
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Editing;
 
 namespace GObject.Introspection.CodeGen.Syntax
 {
@@ -27,77 +27,135 @@ namespace GObject.Introspection.CodeGen.Syntax
 
         public override IEnumerable<SyntaxNode> Build()
         {
-            yield return BuildProperty(Member);
-        }
-
-        SyntaxNode BuildProperty(PropertyMember property) =>
-            Syntax.AddAttributes(
-                Syntax.PropertyDeclaration(
-                    GetName(property),
-                    BuildType(property),
-                    GetAccessibility(property),
-                    GetModifiers(property),
-                    BuildGetAccessorStatements(property),
-                    BuildSetAccessorStatements(property)),
-                BuildAttributes(property))
-            .NormalizeWhitespace();
-
-        string GetName(PropertyMember property)
-        {
-            return property.Name;
+            yield return Syntax.AddAttributes(
+                    BuildPropertyDeclaration(),
+                    BuildAttributes())
+                .NormalizeWhitespace();
         }
 
         /// <summary>
-        /// Resolves the specified type of a property.
+        /// Builds the property declaration.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="property"></param>
         /// <returns></returns>
-        SyntaxNode BuildType(PropertyMember property)
+        SyntaxNode BuildPropertyDeclaration()
         {
-            return Syntax.TypeSymbol(property.PropertyType);
+            var decl = Syntax.PropertyDeclaration(
+                GetName(),
+                BuildType(),
+                GetAccessibility(),
+                GetModifiers(),
+                BuildGetAccessorStatements(),
+                BuildSetAccessorStatements());
+
+            switch (decl)
+            {
+                case Microsoft.CodeAnalysis.CSharp.Syntax.PropertyDeclarationSyntax cs:
+                    var getter = cs.AccessorList.Accessors.FirstOrDefault(i => i.Kind() == Microsoft.CodeAnalysis.CSharp.SyntaxKind.GetAccessorDeclaration);
+                    if (getter != null)
+                        getter = getter.WithModifiers(new SyntaxTokenList(ToCSharpAccessibility(GetGetterAccessibility())));
+                    var setter = cs.AccessorList.Accessors.FirstOrDefault(i => i.Kind() == Microsoft.CodeAnalysis.CSharp.SyntaxKind.SetAccessorDeclaration);
+                    if (setter != null)
+                        setter = setter.WithModifiers(new SyntaxTokenList(ToCSharpAccessibility(GetSetterAccessibility())));
+                    decl = cs = cs.WithAccessorList(Microsoft.CodeAnalysis.CSharp.SyntaxFactory.AccessorList(new SyntaxList<Microsoft.CodeAnalysis.CSharp.Syntax.AccessorDeclarationSyntax>(new[] { getter, setter })));
+                    break;
+                case Microsoft.CodeAnalysis.VisualBasic.Syntax.PropertyBlockSyntax vb:
+                    break;
+            }
+            return decl;
         }
 
-        Accessibility GetAccessibility(PropertyMember property)
+        /// <summary>
+        /// Gets the tokens to apply to a CSharp declaration based on <see cref="Accessibility"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        IEnumerable<SyntaxToken> ToCSharpAccessibility(Accessibility value)
         {
-            return Accessibility.Public;
+            switch (value)
+            {
+                case Accessibility.Public:
+                    yield return Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PublicKeyword);
+                    break;
+                case Accessibility.Private:
+                    yield return Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.PrivateKeyword);
+                    break;
+                case Accessibility.Internal:
+                    yield return Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.InternalKeyword);
+                    break;
+                case Accessibility.Protected:
+                    yield return Microsoft.CodeAnalysis.CSharp.SyntaxFactory.Token(Microsoft.CodeAnalysis.CSharp.SyntaxKind.ProtectedKeyword);
+                    break;
+            }
         }
 
-        DeclarationModifiers GetModifiers(PropertyMember property)
+        /// <summary>
+        /// Gets the accessibility of the type.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Accessibility GetGetterAccessibility()
         {
-            return DeclarationModifiers.Partial;
+            return ToAccessibility(Member.GetterVisibility);
         }
 
-        IEnumerable<SyntaxNode> BuildGetAccessorStatements(PropertyMember property)
+        /// <summary>
+        /// Gets the accessibility of the type.
+        /// </summary>
+        /// <returns></returns>
+        protected virtual Accessibility GetSetterAccessibility()
         {
-            if (property.GetGetterInvokable() is Invokable invokable)
-                yield return Syntax.ReturnStatement(
-                    Syntax.InvocationExpression(
-                        Syntax.IdentifierName("get_property"),
-                        Syntax.ThisExpression(),
-                        Syntax.LiteralExpression(property.Name)));
+            return ToAccessibility(Member.SetterVisibility);
         }
 
-        IEnumerable<SyntaxNode> BuildSetAccessorStatements(PropertyMember property)
+        /// <summary>
+        /// Converts the visibility into an accessibility type.
+        /// </summary>
+        /// <param name="visibility"></param>
+        /// <returns></returns>
+        Accessibility ToAccessibility(Visibility visibility)
         {
-            if (property.GetSetterInvokable() is Invokable invokable)
-                yield return Syntax.InvocationExpression(
-                    Syntax.IdentifierName("set_property"),
-                    Syntax.ThisExpression(),
-                    Syntax.LiteralExpression(property.Name),
-                    Syntax.IdentifierName("value"));
+            return visibility switch
+            {
+                Visibility.Public => Accessibility.Public,
+                Visibility.Private => Accessibility.Private,
+                Visibility.Internal => Accessibility.Internal,
+                _ => throw new InvalidOperationException(),
+            };
         }
 
-        protected IEnumerable<SyntaxNode> BuildAttributes(PropertyMember property)
+        /// <summary>
+        /// Builds the property type syntax.
+        /// </summary>
+        /// <returns></returns>
+        SyntaxNode BuildType()
         {
-            yield return BuildPropertyAttribute(property);
+            return Syntax.TypeSymbol(Member.PropertyType);
         }
 
-        SyntaxNode BuildPropertyAttribute(PropertyMember property)
+        /// <summary>
+        /// Builds the statements within the getter.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<SyntaxNode> BuildGetAccessorStatements()
         {
-            return Syntax.Attribute(
-                typeof(PropertyAttribute).FullName,
-                Syntax.AttributeArgument(Syntax.LiteralExpression(property.Name)));
+            if (Member.GetterInvokable != null)
+                foreach (var statement in Member.GetterInvokable.Statements)
+                    yield return Context.Build(statement);
+        }
+
+        /// <summary>
+        /// Builds the statements within the setter.
+        /// </summary>
+        /// <returns></returns>
+        IEnumerable<SyntaxNode> BuildSetAccessorStatements()
+        {
+            if (Member.SetterInvokable != null)
+                foreach (var statement in Member.SetterInvokable.Statements)
+                    yield return Context.Build(statement);
+        }
+
+        protected IEnumerable<SyntaxNode> BuildAttributes()
+        {
+            yield break;
         }
 
     }

@@ -104,7 +104,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Gets the base types of the type.
         /// </summary>
-        public virtual ITypeSymbol BaseType => baseType.Value;
+        public ITypeSymbol BaseType => baseType.Value;
 
         /// <summary>
         /// Gets the base types of the type.
@@ -118,7 +118,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Gets the base types of the type.
         /// </summary>
-        public virtual IReadOnlyList<ITypeSymbol> ImplementedInterfaces => implementedInterfaces.Value;
+        public IReadOnlyList<ITypeSymbol> ImplementedInterfaces => implementedInterfaces.Value;
 
         /// <summary>
         /// Gets the base types of the type.
@@ -132,7 +132,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Gets the members of the type.
         /// </summary>
-        public virtual IReadOnlyList<Member> Members => members.Value;
+        public IReadOnlyList<Member> Members => members.Value;
 
         /// <summary>
         /// Gets the members of the type.

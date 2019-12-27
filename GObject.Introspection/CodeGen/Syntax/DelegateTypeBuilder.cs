@@ -50,7 +50,7 @@ namespace GObject.Introspection.CodeGen.Syntax
 
         SyntaxNode BuildReturnType()
         {
-            return null;
+            return Type.ReturnType != null ? Syntax.TypeSymbol(Type.ReturnType) : null;
         }
 
     }

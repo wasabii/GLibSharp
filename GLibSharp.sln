@@ -13,6 +13,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GObject.Introspection.Sdk",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GObject.Introspection.Tests", "GObject.Introspection.Tests\GObject.Introspection.Tests.csproj", "{1E3ED92B-857D-41E1-A952-7BFC97DFFE66}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GLib.Interop", "GLib.Interop\GLib.Interop.csproj", "{FEACE340-3177-4D9A-B0D6-4DE2570724CA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{1E3ED92B-857D-41E1-A952-7BFC97DFFE66}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1E3ED92B-857D-41E1-A952-7BFC97DFFE66}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1E3ED92B-857D-41E1-A952-7BFC97DFFE66}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FEACE340-3177-4D9A-B0D6-4DE2570724CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FEACE340-3177-4D9A-B0D6-4DE2570724CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FEACE340-3177-4D9A-B0D6-4DE2570724CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FEACE340-3177-4D9A-B0D6-4DE2570724CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GObject.Introspection.CodeGen.Model
 {
@@ -15,12 +16,12 @@ namespace GObject.Introspection.CodeGen.Model
         /// </summary>
         /// <param name="libraryName"></param>
         /// <param name="entryPoint"></param>
-        /// <param name="arguments"></param>
-        /// <param name="returnArgument"></param>
-        public NativeFunction(string libraryName, string entryPoint, IReadOnlyList<Argument> arguments, Argument returnArgument) :
-            this(libraryName, entryPoint, arguments)
+        /// <param name="parameters"></param>
+        /// <param name="returnType"></param>
+        public NativeFunction(string libraryName, string entryPoint, ITypeSymbol returnType, IReadOnlyList<Parameter> parameters) :
+            this(libraryName, entryPoint, parameters)
         {
-            ReturnArgument = returnArgument;
+            ReturnType = returnType;
         }
 
         /// <summary>
@@ -28,12 +29,37 @@ namespace GObject.Introspection.CodeGen.Model
         /// </summary>
         /// <param name="libraryName"></param>
         /// <param name="entryPoint"></param>
-        /// <param name="arguments"></param>
-        public NativeFunction(string libraryName, string entryPoint, IReadOnlyList<Argument> arguments)
+        /// <param name="parameters"></param>
+        /// <param name="returnType"></param>
+        public NativeFunction(string libraryName, string entryPoint, ITypeSymbol returnType, params Parameter[] parameters) :
+            this(libraryName, entryPoint, returnType, parameters.ToList())
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="libraryName"></param>
+        /// <param name="entryPoint"></param>
+        /// <param name="parameters"></param>
+        public NativeFunction(string libraryName, string entryPoint, IReadOnlyList<Parameter> parameters)
         {
             LibraryName = libraryName ?? throw new ArgumentNullException(nameof(libraryName));
             EntryPoint = entryPoint ?? throw new ArgumentNullException(nameof(entryPoint));
-            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="libraryName"></param>
+        /// <param name="entryPoint"></param>
+        /// <param name="parameters"></param>
+        public NativeFunction(string libraryName, string entryPoint, params Parameter[] parameters) :
+            this(libraryName, entryPoint, parameters.ToList())
+        {
+
         }
 
         /// <summary>
@@ -47,14 +73,14 @@ namespace GObject.Introspection.CodeGen.Model
         public string EntryPoint { get; }
 
         /// <summary>
-        /// Gets the native arguments that describe the native function to be invoked.
-        /// </summary>
-        public IReadOnlyList<Argument> Arguments { get; }
-
-        /// <summary>
         /// Gets the return value of the native function.
         /// </summary>
-        public Argument ReturnArgument { get; }
+        public ITypeSymbol ReturnType { get; }
+
+        /// <summary>
+        /// Gets the parameters that describe the native function to be invoked.
+        /// </summary>
+        public IReadOnlyList<Parameter> Parameters { get; }
 
     }
 

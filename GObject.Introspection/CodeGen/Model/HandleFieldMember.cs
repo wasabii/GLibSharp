@@ -17,7 +17,7 @@ namespace GObject.Introspection.CodeGen.Model
 
         }
 
-        public override string Name => "_handle";
+        public override string Name => "handle";
 
         protected override ITypeSymbol GetFieldType()
         {

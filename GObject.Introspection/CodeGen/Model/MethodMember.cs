@@ -22,7 +22,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Gets the return type of the method.
         /// </summary>
-        public ITypeSymbol ReturnType => invokable.Value.ReturnArgument.Type;
+        public ITypeSymbol ReturnType => invokable.Value.ReturnType;
 
         /// <summary>
         /// Gets the invokable which describes the method.

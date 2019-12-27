@@ -24,7 +24,17 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        public ITypeSymbol PropertyType => GetGetterInvokable().ReturnArgument.Type;
+        public ITypeSymbol PropertyType => GetterInvokable.ReturnType;
+
+        /// <summary>
+        /// Gets the visibility of the getter.
+        /// </summary>
+        public virtual Visibility GetterVisibility => Visibility.Public;
+
+        /// <summary>
+        /// Gets the visibility of the setter.
+        /// </summary>
+        public virtual Visibility SetterVisibility => Visibility.Public;
 
         /// <summary>
         /// Gets the invokable that describes the getter method.

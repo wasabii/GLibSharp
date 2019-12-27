@@ -6,9 +6,9 @@ namespace GObject.Introspection.CodeGen.Model.Expressions
 {
 
     /// <summary>
-    /// Describes the invokation of a native function.
+    /// Describes the invokation of a native function with no return value.
     /// </summary>
-    class PInvokeExpression : Expression
+    class PInvokeStatement : Statement
     {
 
         /// <summary>
@@ -17,8 +17,8 @@ namespace GObject.Introspection.CodeGen.Model.Expressions
         /// <param name="context"></param>
         /// <param name="function"></param>
         /// <param name="arguments"></param>
-        public PInvokeExpression(Context context, NativeFunction function, IReadOnlyList<Expression> arguments) :
-            base(context, function.ReturnType)
+        public PInvokeStatement(Context context, NativeFunction function, IReadOnlyList<Expression> arguments) :
+            base(context)
         {
             Function = function ?? throw new ArgumentNullException(nameof(function));
             Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
@@ -30,7 +30,7 @@ namespace GObject.Introspection.CodeGen.Model.Expressions
         /// <param name="context"></param>
         /// <param name="function"></param>
         /// <param name="arguments"></param>
-        public PInvokeExpression(Context context, NativeFunction function, params Expression[] arguments) :
+        public PInvokeStatement(Context context, NativeFunction function, params Expression[] arguments) :
             this(context, function, arguments?.ToList())
         {
 

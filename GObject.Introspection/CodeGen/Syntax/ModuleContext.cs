@@ -109,6 +109,7 @@ namespace GObject.Introspection.CodeGen.Syntax
             return member switch
             {
                 FieldMember m => new FieldMemberBuilder(this, m),
+                ConstructorMember m => new ConstructorMemberBuilder(this, m),
                 MethodMember m => new MethodMemberBuilder(this, m),
                 PropertyMember m => new PropertyMemberBuilder(this, m),
                 TypeMember m => new TypeMemberBuilder(this, m),
@@ -151,6 +152,7 @@ namespace GObject.Introspection.CodeGen.Syntax
             {
                 ExpressionStatement e => new ExpressionStatementBuilder(this, e),
                 ReturnStatement e => new ReturnStatementBuilder(this, e),
+                PInvokeStatement e => new PInvokeStatementBuilder(this, e),
                 _ => throw new NotSupportedException(statement.GetType().ToString()),
             };
         }

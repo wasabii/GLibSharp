@@ -4,7 +4,7 @@
     interface ITypeParameterSymbol : ITypeSymbol
     {
 
-        public string Name { get; }
+
 
     }
 

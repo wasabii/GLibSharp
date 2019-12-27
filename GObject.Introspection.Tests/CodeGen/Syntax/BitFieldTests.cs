@@ -12,7 +12,7 @@ namespace GObject.Introspection.Tests.CodeGen.Syntax
 {
 
     [TestClass]
-    public class BitFieldTests : RepositoryBuilderTestsBase
+    public class BitFieldTests : TestBase
     {
 
         [TestMethod]

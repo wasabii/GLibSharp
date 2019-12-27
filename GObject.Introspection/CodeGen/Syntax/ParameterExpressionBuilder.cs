@@ -22,7 +22,7 @@ namespace GObject.Introspection.CodeGen.Syntax
 
         public override SyntaxNode Build()
         {
-            if (Expression.Argument is ThisArgument self)
+            if (Expression.Parameter is ThisParameter self)
                 return Syntax.ThisExpression();
             else
                 return Syntax.IdentifierName(Expression.Name);

@@ -11,7 +11,7 @@ namespace GObject.Introspection.Tests.CodeGen.Syntax
 {
 
     [TestClass]
-    public class RecordTests : RepositoryBuilderTestsBase
+    public class RecordTests : TestBase
     {
 
         [TestMethod]
@@ -132,6 +132,39 @@ namespace GObject.Introspection.Tests.CodeGen.Syntax
             var f1 = t.GetField("FieldOne");
             f1.DeclaringType.Should().Be(t);
             f1.IsPublic.Should().BeTrue();
+        }
+
+        [TestMethod]
+        public void Should_pass_non_pointer_by_value()
+        {
+            var asm = ExportNamespace(
+                new XElement(Xmlns.Core_1_0_NS + "record",
+                    new XAttribute("name", "TestRecord"),
+                    new XAttribute(Xmlns.C_1_0_NS + "type", "GTestRecord"),
+                    new XElement(Xmlns.Core_1_0_NS + "field",
+                        new XAttribute("name", "field"),
+                        new XElement(Xmlns.Core_1_0_NS + "type",
+                            new XAttribute("name", "int"))),
+                    new XElement(Xmlns.Core_1_0_NS + "function",
+                        new XAttribute("name", "func"),
+                        new XElement(Xmlns.Core_1_0_NS + "parameters",
+                            new XElement(Xmlns.Core_1_0_NS + "parameter",
+                                new XAttribute("name", "arg"),
+                                new XElement(Xmlns.Core_1_0_NS + "type",
+                                    new XAttribute("name", "TestRecord"),
+                                    new XAttribute(Xmlns.C_1_0_NS + "type", "GTestRecord")))))));
+
+            var t = asm.GetType("Test.TestRecord");
+            t.Should().NotBeNull();
+            t.IsValueType.Should().BeTrue();
+            t.IsClass.Should().BeFalse();
+
+            var f1 = t.GetMethod("Func");
+            f1.DeclaringType.Should().Be(t);
+            f1.IsPublic.Should().BeTrue();
+            f1.GetParameters().Should().HaveCount(1);
+            f1.GetParameters()[0].Name.Should().Be("arg");
+            f1.GetParameters()[0].ParameterType.Should().Be(t);
         }
 
     }

@@ -13,17 +13,17 @@ namespace GObject.Introspection.CodeGen.Model.Expressions
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="type"></param>
-        public ParameterExpression(Context context, Argument argument) :
-            base(context, argument.Name, argument.Type)
+        /// <param name="parameter"></param>
+        internal ParameterExpression(Context context, Parameter parameter) :
+            base(context, parameter.Name, parameter.Type)
         {
-            Argument = argument ?? throw new ArgumentNullException(nameof(argument));
+            Parameter = parameter ?? throw new ArgumentNullException(nameof(parameter));
         }
 
         /// <summary>
         /// Gets the argument corresponding with the parameter.
         /// </summary>
-        public Argument Argument { get; }
+        public Parameter Parameter { get; }
 
     }
 

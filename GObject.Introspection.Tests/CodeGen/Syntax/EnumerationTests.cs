@@ -12,7 +12,7 @@ namespace GObject.Introspection.Tests.CodeGen.Syntax
 {
 
     [TestClass]
-    public class EnumerationTests : RepositoryBuilderTestsBase
+    public class EnumerationTests : TestBase
     {
 
         [TestMethod]

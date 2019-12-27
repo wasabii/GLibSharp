@@ -32,7 +32,10 @@ namespace GObject.Introspection.CodeGen.Model
 
         public override string NativeName => flag.CType;
 
-        public override ITypeSymbol BaseType => Context.ResolveManagedSymbol(typeof(int).FullName);
+        protected override ITypeSymbol GetBaseType()
+        {
+            return Context.ResolveManagedSymbol(typeof(int).FullName);
+        }
 
         /// <summary>
         /// Gets whether or not the enum is a flag.

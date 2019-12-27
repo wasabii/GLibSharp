@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace GObject.Introspection.CodeGen.Model
 {
@@ -13,58 +14,81 @@ namespace GObject.Introspection.CodeGen.Model
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="arguments"></param>
-        /// <param name="returnArgument"></param>
+        /// <param name="parameters"></param>
+        /// <param name="returnType"></param>
         /// <param name="statements"></param>
-        public Invokable(IReadOnlyList<Argument> arguments, Argument returnArgument, IReadOnlyList<Statement> statements) :
-            this(arguments, statements)
+        public Invokable(IReadOnlyList<Parameter> parameters, ITypeSymbol returnType, IReadOnlyList<Statement> statements) :
+            this(parameters, statements)
         {
-            ReturnArgument = returnArgument;
+            ReturnType = returnType;
         }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="arguments"></param>
+        /// <param name="parameters"></param>
         /// <param name="statements"></param>
-        public Invokable(IReadOnlyList<Argument> arguments, IReadOnlyList<Statement> statements)
+        public Invokable(IReadOnlyList<Parameter> parameters, IReadOnlyList<Statement> statements)
         {
-            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
+            Parameters = parameters ?? throw new ArgumentNullException(nameof(parameters));
             Statements = statements ?? throw new ArgumentNullException(nameof(statements));
         }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="arguments"></param>
-        /// <param name="returnArgument"></param>
+        /// <param name="parameters"></param>
+        /// <param name="returnType"></param>
         /// <param name="statements"></param>
-        public Invokable(IReadOnlyList<Argument> arguments, Argument returnArgument, params Statement[] statements) :
-            this(arguments, statements)
+        public Invokable(IReadOnlyList<Parameter> parameters, ITypeSymbol returnType, params Statement[] statements) :
+            this(parameters, returnType, statements.ToList())
         {
-            ReturnArgument = returnArgument;
+
         }
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
-        /// <param name="arguments"></param>
+        /// <param name="parameters"></param>
+        /// <param name="returnType"></param>
         /// <param name="statements"></param>
-        public Invokable(IReadOnlyList<Argument> arguments, params Statement[] statements)
+        public Invokable(Parameter[] parameters, ITypeSymbol returnType, params Statement[] statements) :
+            this(parameters.ToList(), returnType, statements.ToList())
         {
-            Arguments = arguments ?? throw new ArgumentNullException(nameof(arguments));
-            Statements = statements ?? throw new ArgumentNullException(nameof(statements));
+
         }
 
         /// <summary>
-        /// Describes the arguments of the invokable.
+        /// Initializes a new instance.
         /// </summary>
-        public IReadOnlyList<Argument> Arguments { get; }
+        /// <param name="parameters"></param>
+        /// <param name="statements"></param>
+        public Invokable(IReadOnlyList<Parameter> parameters, params Statement[] statements) :
+            this(parameters, statements.ToList())
+        {
+
+        }
+
+        /// <summary>
+        /// Initializes a new instance.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <param name="statements"></param>
+        public Invokable(Parameter[] parameters, params Statement[] statements) :
+            this(parameters.ToList(), statements.ToList())
+        {
+
+        }
+
+        /// <summary>
+        /// Describes the parameters of the invokable.
+        /// </summary>
+        public IReadOnlyList<Parameter> Parameters { get; }
 
         /// <summary>
         /// Describes the return value of the invokable.
         /// </summary>
-        public Argument ReturnArgument { get; }
+        public ITypeSymbol ReturnType { get; }
 
         /// <summary>
         /// Gets the statements that make up the body of the invokable.

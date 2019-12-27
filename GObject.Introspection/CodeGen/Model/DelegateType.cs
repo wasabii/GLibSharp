@@ -11,8 +11,8 @@ namespace GObject.Introspection.CodeGen.Model
     abstract class DelegateType : Type
     {
 
-        readonly Lazy<IReadOnlyList<Argument>> arguments;
-        readonly Lazy<Argument> returnArgument;
+        readonly Lazy<IReadOnlyList<Parameter>> parameters;
+        readonly Lazy<ITypeSymbol> returnType;
 
         /// <summary>
         /// Initializes a new instance.
@@ -21,31 +21,31 @@ namespace GObject.Introspection.CodeGen.Model
         internal DelegateType(Context context) :
             base(context)
         {
-            arguments = new Lazy<IReadOnlyList<Argument>>(() => GetArguments().ToList());
-            returnArgument = new Lazy<Argument>(GetReturnArgument);
+            parameters = new Lazy<IReadOnlyList<Parameter>>(() => GetParameters().ToList());
+            returnType = new Lazy<ITypeSymbol>(GetReturnType);
         }
 
         /// <summary>
         /// Gets the arguments that describe the delegate.
         /// </summary>
-        public IReadOnlyList<Argument> Arguments => arguments.Value;
+        public IReadOnlyList<Parameter> Parameters => parameters.Value;
 
         /// <summary>
         /// Gets the arguments that describe the delegate.
         /// </summary>
         /// <returns></returns>
-        protected abstract IEnumerable<Argument> GetArguments();
+        protected abstract IEnumerable<Parameter> GetParameters();
 
         /// <summary>
         /// Gets the return type of the method.
         /// </summary>
-        public Argument ReturnArgument => returnArgument.Value;
+        public ITypeSymbol ReturnType => returnType.Value;
 
         /// <summary>
         /// Gets the return type of the delegate.
         /// </summary>
         /// <returns></returns>
-        protected abstract Argument GetReturnArgument();
+        protected abstract ITypeSymbol GetReturnType();
 
     }
 

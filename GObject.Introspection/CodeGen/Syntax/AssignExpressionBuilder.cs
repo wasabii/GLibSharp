@@ -21,9 +21,13 @@ namespace GObject.Introspection.CodeGen.Syntax
 
         public override SyntaxNode Build()
         {
-            return Syntax.AssignmentStatement(
-                Syntax.IdentifierName(Expression.Variable.Name),
-                Context.Build(Expression.Value));
+            // assembly what should appear on the left of the assignment
+            var left = Context.Build(Expression.Target);
+            if (Expression.Member != null)
+                left = Syntax.MemberAccessExpression(left, Expression.Member);
+
+            // final assignment
+            return Syntax.AssignmentStatement(left, Context.Build(Expression.Value));
         }
 
     }

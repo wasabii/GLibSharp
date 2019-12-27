@@ -43,6 +43,16 @@ namespace GObject.Introspection.CodeGen.Model
         /// <returns></returns>
         protected override Invokable GetInvokable()
         {
+            var p = new List<Parameter>();
+            for (var i = 0; i < function.Parameters.Count; i++)
+            {
+                var parameter = (ParameterElement)function.Parameters[i];
+
+                var typeSpec = parameter.Type.ToSpec(Context);
+                if (typeSpec == null)
+                    throw new InvalidOperationException("Could not derive type specification from parameter.");
+            }
+
             return null;
         }
 

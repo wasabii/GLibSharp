@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 
 using GObject.Introspection.CodeGen.Model;
 using GObject.Introspection.CodeGen.Model.Expressions;
@@ -9,16 +8,16 @@ using Microsoft.CodeAnalysis;
 namespace GObject.Introspection.CodeGen.Syntax
 {
 
-    class PInvokeExpressionBuilder : SyntaxExpressionBuilderBase<PInvokeExpression>
+    class PInvokeStatementBuilder : SyntaxStatementBuilderBase<PInvokeStatement>
     {
 
         /// <summary>
         /// Initializes a new instance.
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="expression"></param>
-        public PInvokeExpressionBuilder(ModuleContext context, PInvokeExpression expression) :
-            base(context, expression)
+        /// <param name="statement"></param>
+        public PInvokeStatementBuilder(ModuleContext context, PInvokeStatement statement) :
+            base(context, statement)
         {
 
         }
@@ -26,8 +25,8 @@ namespace GObject.Introspection.CodeGen.Syntax
         public override SyntaxNode Build()
         {
             return Syntax.InvocationExpression(
-                Syntax.DottedName("__" + Expression.Function.EntryPoint),
-                Expression.Arguments.Zip(Expression.Function.Parameters, (e, a) => BuildArgument(a, e)));
+                Syntax.DottedName("__" + Statement.Function.EntryPoint),
+                Statement.Arguments.Zip(Statement.Function.Parameters, (e, a) => BuildArgument(a, e)));
         }
 
         SyntaxNode BuildArgument(Parameter argument, Expression value)

@@ -39,7 +39,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// Gets the arguments that describe the delegate.
         /// </summary>
         /// <returns></returns>
-        protected override IEnumerable<Argument> GetArguments()
+        protected override IEnumerable<Parameter> GetParameters()
         {
             return callback.Parameters.Select(i => GetArgument(i));
         }
@@ -49,7 +49,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        Argument GetArgument(IParameter parameter)
+        Parameter GetArgument(IParameter parameter)
         {
             switch (parameter)
             {
@@ -65,7 +65,7 @@ namespace GObject.Introspection.CodeGen.Model
         /// </summary>
         /// <param name="parameter"></param>
         /// <returns></returns>
-        Argument GetArgument(ParameterElement parameter)
+        Parameter GetArgument(ParameterElement parameter)
         {
             var typeInfo = parameter.Type;
             if (typeInfo == null)
@@ -75,14 +75,14 @@ namespace GObject.Introspection.CodeGen.Model
             if (typeSpec == null)
                 throw new InvalidOperationException("Could not resolve type spec for parameter.");
 
-            return new Argument(parameter.Name, typeSpec.Type);
+            return new Parameter(Context, parameter.Name, typeSpec.Type);
         }
 
         /// <summary>
         /// Gets the return argument of the delegate.
         /// </summary>
         /// <returns></returns>
-        protected override Argument GetReturnArgument()
+        protected override ITypeSymbol GetReturnType()
         {
             var returnTypeInfo = callback.ReturnValue?.Type;
             if (returnTypeInfo == null)
@@ -92,7 +92,7 @@ namespace GObject.Introspection.CodeGen.Model
             if (returnSpec == null)
                 throw new InvalidOperationException("Could not resolve type specification for callback return.");
 
-            return new Argument("", returnSpec.Type);
+            return returnSpec.Type;
         }
 
     }

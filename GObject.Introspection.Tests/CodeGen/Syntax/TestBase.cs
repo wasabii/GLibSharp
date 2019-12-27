@@ -17,7 +17,7 @@ using Microsoft.CodeAnalysis.Editing;
 namespace GObject.Introspection.Tests.CodeGen.Syntax
 {
 
-    public abstract class RepositoryBuilderTestsBase
+    public abstract class TestBase
     {
 
         /// <summary>
@@ -60,10 +60,12 @@ namespace GObject.Introspection.Tests.CodeGen.Syntax
             workspace.Options.WithChangedOption(CSharpFormattingOptions.IndentBraces, true);
 
             // finalize list
-            var metadata = Directory.GetFiles(Path.Combine(Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName, "refs"))
+            var directory = Directory.GetParent(Assembly.GetExecutingAssembly().Location).FullName;
+            var metadata = Directory.GetFiles(Path.Combine(directory, "refs"))
                 .Distinct()
                 .Where(i => File.Exists(i))
-                .Select(i => MetadataReference.CreateFromFile(i));
+                .Select(i => MetadataReference.CreateFromFile(i))
+                .Append(MetadataReference.CreateFromFile(Path.Combine(directory, "GLib.Interop.dll")));
 
             // begin generating a DLL
             var csharp = CSharpCompilation.Create("GInterop." + name, null, metadata, new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
