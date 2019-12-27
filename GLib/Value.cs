@@ -433,11 +433,15 @@ namespace GLib {
 			else if (t.IsSubclassOf (typeof (GLib.Opaque)))
 				return (GLib.Opaque) this;
 
-			MethodInfo mi = t.GetMethod ("New", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy);
+			MethodInfo mi = t.GetMethod ("New", BindingFlags.Static | BindingFlags.Public | BindingFlags.FlattenHierarchy, null, new Type[] { typeof(IntPtr) }, null);
 			if (mi != null)
 				return mi.Invoke (null, new object[] {boxed_ptr});
 
-			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(IntPtr) });
+			ConstructorInfo ci = t.GetConstructor (new Type[] { typeof(IntPtr), typeof (bool) });
+			if (ci != null)
+				return ci.Invoke (new object[] { boxed_ptr, false });
+
+			ci = t.GetConstructor (new Type[] { typeof(IntPtr) });
 			if (ci != null)
 				return ci.Invoke (new object[] { boxed_ptr });
 
@@ -569,9 +573,13 @@ namespace GLib {
 
 		internal void Update (object val)
 		{
-			if (GType.Is (type, GType.Boxed) && !(val is IWrapper)) {
+			if (GType.Is (type, GType.Boxed) && val != null && !(val is IWrapper)) {
 				MethodInfo mi = val.GetType ().GetMethod ("Update", BindingFlags.NonPublic | BindingFlags.Instance);
 				IntPtr boxed_ptr = g_value_get_boxed (ref this);
+
+				if (mi == null && !val.GetType ().IsDefined (typeof(StructLayoutAttribute), false))
+					return;
+
 				if (mi == null)
 					Marshal.StructureToPtr (val, boxed_ptr, false);
 				else

@@ -37,36 +37,11 @@ namespace GLib {
 		[UnmanagedFunctionPointer (CallingConvention.Cdecl)]
 		delegate bool IdleHandlerInternal ();
 
-
 		internal class IdleProxy : SourceProxy {
 			public IdleProxy (IdleHandler real)
 			{
 				real_handler = real;
 				proxy_handler = new IdleHandlerInternal (Handler);
-			}
-
-			~IdleProxy ()
-			{
-				Dispose (false);
-			}
-
-			public void Dispose ()
-			{
-				Dispose (true);
-				GC.SuppressFinalize (this);
-			}
-
-			protected virtual void Dispose (bool disposing)
-			{
-				// Both branches remove our delegate from the
-				// managed list of handlers, but only
-				// Source.Remove will remove it from the
-				// unmanaged list also.
-
-				if (disposing)
-					Remove ();
-				else
-					Source.Remove (ID);
 			}
 
 			public bool Handler ()
@@ -96,8 +71,7 @@ namespace GLib {
 		{
 			IdleProxy p = new IdleProxy (hndlr);
 			p.ID = g_idle_add ((IdleHandlerInternal) p.proxy_handler, IntPtr.Zero);
-			lock (Source.source_handlers)
-				Source.source_handlers [p.ID] = p;
+			Source.AddSourceHandler (p.ID, p);
 
 			return p.ID;
 		}
@@ -109,15 +83,11 @@ namespace GLib {
 		{
 			IdleProxy p = new IdleProxy (hndlr);
 			p.ID = g_idle_add_full ((int)priority, (IdleHandlerInternal)p.proxy_handler, IntPtr.Zero, null);
-			lock (Source.source_handlers)
-				Source.source_handlers [p.ID] = p;
+			Source.AddSourceHandler (p.ID, p);
 
 			return p.ID;
 		}
 		
-		[DllImport (Global.GLibNativeDll, CallingConvention = CallingConvention.Cdecl)]
-		static extern bool g_source_remove (uint id);
-                                                                                
 		public static void Remove (uint id)
 		{
 			Source.Remove (id);
@@ -125,24 +95,7 @@ namespace GLib {
 
 		public static bool Remove (IdleHandler hndlr)
 		{
-			bool result = false;
-			List<uint> keys = new List<uint> ();
-
-			lock (Source.source_handlers) {
-				foreach (uint code in Source.source_handlers.Keys) {
-					IdleProxy p = Source.source_handlers [code] as IdleProxy;
-				
-					if (p != null && p.real_handler == hndlr) {
-						keys.Add (code);
-						result = g_source_remove (code);
-					}
-				}
-
-				foreach (object key in keys)
-					Source.source_handlers.Remove (key);
-			}
-
-			return result;
+			return Source.RemoveSourceHandler (hndlr);
 		}
 	}
 }

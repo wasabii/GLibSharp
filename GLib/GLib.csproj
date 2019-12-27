@@ -1,15 +1,6 @@
-﻿<Project>
-    <Import Project="Sdk.props" Sdk="Microsoft.NET.Sdk" />
-    <Import Project="..\GObject.Introspection.Sdk\build\GObject.Introspection.Sdk.props" />
-
+﻿<Project Sdk="Microsoft.NET.Sdk">
     <PropertyGroup>
         <TargetFramework>net472</TargetFramework>
-        <_GirTaskFolder Condition=" '$(MSBuildRuntimeType)' == 'Core' ">netcoreapp2.0</_GirTaskFolder>
-        <_GirTaskFolder Condition=" '$(MSBuildRuntimeType)' != 'Core' ">net472</_GirTaskFolder>
-        <_GirToolFolder>netcoreapp2.1</_GirToolFolder>
-        <_GirSdkTaskAssembly>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\GObject.Introspection.Sdk\bin\Debug\$(_GirTaskFolder)\GObject.Introspection.Sdk.dll'))</_GirSdkTaskAssembly>
-        <_GirExecMode>Tool</_GirExecMode>
-        <_GirToolExec>dotnet $([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)\..\GObject.Introspection.Tools\bin\Debug\$(_GirToolFolder)\GObject.Introspection.Tools.dll'))</_GirToolExec>
     </PropertyGroup>
 
     <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
@@ -35,8 +26,4 @@
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </None>
     </ItemGroup>
-
-    <Import Project="Sdk.targets" Sdk="Microsoft.NET.Sdk" />
-    <Import Project="..\GObject.Introspection.Sdk\build\GObject.Introspection.Sdk.targets" />
-    
 </Project>
